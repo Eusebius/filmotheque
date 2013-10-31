@@ -47,6 +47,12 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   echo '<table border="1"><tr><th colspan="2" align="center">'
     . $movie->getTitle() . '</th></tr>' . "\n";
 
+  $originalTitle = $movie->getOriginalTitle();
+  if ($originalTitle != '') {
+    echo '<tr><td colspan="2" align="center"><em>'
+      . $movie->getOriginalTitle() . '</em></td></tr>' . "\n";
+  }
+
   echo '<tr><td>Année&nbsp;:</td><td>' . $movie->getYear() . '</td></tr>' . "\n" ;
 
   echo '<tr><td>Réalisateur(s)&nbsp;:</td><td>';

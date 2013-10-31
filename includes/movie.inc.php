@@ -152,6 +152,10 @@ class Movie {
     return $this->title;
   }
 
+  public function getOriginalTitle() {
+    return $this->originaltitle;
+  }
+
   public function getYear() {
     return $this->year;
   }
