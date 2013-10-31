@@ -117,6 +117,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     echo '<a href="?page=getimdb&id_movie=' . $id_movie . '">Lier à une fiche IMDb</a>';
     echo "<br /><br />\n";
   }
+  echo '<a href="dodeletemovie.php?id_movie=' . $id_movie . '"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
 
   // Fetching corresponding media
   $movie->retrieveMedia();

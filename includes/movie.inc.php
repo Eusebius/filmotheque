@@ -50,6 +50,20 @@ class Movie {
     }
   }
 
+  // Deletes the medium and all associated information from the base
+  public function delete() {
+    if ($this->id_movie != null) {
+      $conn = db_ensure_connected();
+      $delMovie=$conn->prepare('delete from `movies` where `id_movie`=?');
+      if (!$delMovie->execute(array($this->id_movie))) {
+	td($delMovie->errorInfo());
+	if ($_SESSION['debug']) {
+	  die();
+	}
+      }
+    }
+  }
+
   public function dump() {
     if ($_SESSION['debug']) {
 	echo "<pre>\n";
