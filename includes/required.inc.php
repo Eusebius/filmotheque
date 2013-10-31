@@ -32,7 +32,7 @@ require_once('db.inc.php');
 $_SESSION['basepath'] = $basepath;
 
 
-$_SESSION['debug'] = true;
+$_SESSION['debug'] = false;
 
 function gotoMainPage() {
   header('Location:.');
