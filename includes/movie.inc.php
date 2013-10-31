@@ -54,7 +54,7 @@ class Movie {
     if ($_SESSION['debug']) {
 	echo "<pre>\n";
 	print_r($this);
-	echo "</pre>\n";
+	echo "\n</pre>\n";
       }
   }
 
@@ -95,7 +95,7 @@ class Movie {
     $checkMovie = $conn->prepare('select id_movie from movies where id_movie = ?');
     $checkMovie->execute(array($this->id_movie));
     if ($checkMovie->rowCount() == 0) {
-      $insertMovie = $conn->prepare('insert into movies (title, year, imdb_id, originaltitle) values (?, ?)');
+      $insertMovie = $conn->prepare('insert into movies (title, year, imdb_id, originaltitle) values (?, ?, ?, ?)');
       $insertMovie->execute(array($this->title, ($this->year != ''? $this->year : null), ($this->imdb_id != ''? $this->imdb_id : null), ($this->originaltitle != ''? $this->originaltitle : null)));
       $this->id_movie = $conn->lastInsertId();
     }

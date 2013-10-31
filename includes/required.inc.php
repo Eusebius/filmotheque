@@ -39,6 +39,14 @@ function gotoMainPage() {
   die();
 }
 
+function td($array) {
+  if ($_SESSION['debug']) {
+    echo "<pre>\n";
+    print_r($array);
+    echo "\n</pre>\n";
+  }
+}
+
 function debug($string) {
   if ($_SESSION['debug']) {
     echo $string;

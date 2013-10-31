@@ -26,7 +26,7 @@ if (isset($_POST['title']) && $_POST['title'] != '') {
   $movie = new Movie(null);
   $movie->setValues(POSTValueOrNull('title'), POSTValueOrNull('year'), POSTValueOrNull('makers'), POSTValueOrNull('actors'), POSTValueOrNull('categories'), POSTValueOrNull('shortlists'), POSTValueOrNull('rating'), POSTValueOrNull('lastseen'));
 
-  $movie->dump();
+  //$movie->dump();die();
   $_SESSION['movie'] = $movie;
   header('Location:./?page=moviedetails&id_movie=' . $movie->getID());
 }
