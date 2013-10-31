@@ -32,6 +32,8 @@ require_once('includes/required.inc.php');
   <body>
 <?php
 
+  check_chmod();
+
   if (isset($_GET['page']) && $_GET['page'] == 'moviedetails') {
     include('moviedetails.inc.php');
   }

@@ -29,6 +29,8 @@ session_start();
 require_once('config.inc.php');
 require_once('db.inc.php');
 
+$_SESSION['basepath'] = $basepath;
+
 
 $_SESSION['debug'] = true;
 
@@ -49,6 +51,16 @@ function fatal($string) {
   }
   else {
     die();
+  }
+}
+
+function check_chmod() {
+  $f = fopen($_SESSION['basepath'] . '/covers/test', 'w');
+  if (!$f) {
+    echo '<center><strong><font color="red">Erreur de configuration&nbsp;: le répertoire "covers" doit être accessible en écriture.</font></strong></center>';
+  }
+  else {
+    fclose($f);
   }
 }
 
