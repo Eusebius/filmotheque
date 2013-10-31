@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le: Mar 29 Octobre 2013 à 09:51
+-- Généré le: Jeu 31 Octobre 2013 à 14:32
 -- Version du serveur: 5.5.33-1
 -- Version de PHP: 5.4.4-15.1
 
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
 --
 -- Structure de la table `experience`
 --
--- Création: Jeu 17 Octobre 2013 à 12:18
+-- Création: Jeu 31 Octobre 2013 à 13:27
 --
 
 DROP TABLE IF EXISTS `experience`;
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `languages` (
 --
 -- Structure de la table `media`
 --
--- Création: Jeu 17 Octobre 2013 à 12:18
+-- Création: Jeu 31 Octobre 2013 à 13:28
 --
 
 DROP TABLE IF EXISTS `media`;
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `media` (
   PRIMARY KEY (`id_medium`),
   UNIQUE KEY `shelfmark` (`shelfmark`),
   KEY `id_movie` (`id_movie`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=878 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=879 ;
 
 --
 -- RELATIONS POUR LA TABLE `media`:
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `media` (
 --
 -- Structure de la table `media-audio`
 --
--- Création: Jeu 17 Octobre 2013 à 12:18
+-- Création: Jeu 31 Octobre 2013 à 13:28
 --
 
 DROP TABLE IF EXISTS `media-audio`;
@@ -132,10 +132,10 @@ CREATE TABLE IF NOT EXISTS `media-audio` (
 
 --
 -- RELATIONS POUR LA TABLE `media-audio`:
---   `id_medium`
---       `media` -> `id_medium`
 --   `language`
 --       `languages` -> `language`
+--   `id_medium`
+--       `media` -> `id_medium`
 --
 
 -- --------------------------------------------------------
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS `media-audio` (
 --
 -- Structure de la table `media-borrowers`
 --
--- Création: Jeu 17 Octobre 2013 à 12:18
+-- Création: Jeu 31 Octobre 2013 à 13:26
 --
 
 DROP TABLE IF EXISTS `media-borrowers`;
@@ -153,15 +153,16 @@ CREATE TABLE IF NOT EXISTS `media-borrowers` (
   `loandate` date NOT NULL DEFAULT '0000-00-00',
   `backdate` date DEFAULT NULL,
   PRIMARY KEY (`id_medium`,`id_borrower`,`loandate`),
-  KEY `id_borrower` (`id_borrower`)
+  KEY `id_borrower` (`id_borrower`),
+  KEY `id_medium` (`id_medium`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- RELATIONS POUR LA TABLE `media-borrowers`:
---   `id_medium`
---       `media` -> `id_medium`
 --   `id_borrower`
 --       `borrowers` -> `id_borrower`
+--   `id_medium`
+--       `media` -> `id_medium`
 --
 
 -- --------------------------------------------------------
@@ -179,7 +180,7 @@ CREATE TABLE IF NOT EXISTS `media-quality` (
 --
 -- Structure de la table `media-subs`
 --
--- Création: Jeu 17 Octobre 2013 à 12:18
+-- Création: Jeu 31 Octobre 2013 à 13:28
 --
 
 DROP TABLE IF EXISTS `media-subs`;
@@ -192,10 +193,10 @@ CREATE TABLE IF NOT EXISTS `media-subs` (
 
 --
 -- RELATIONS POUR LA TABLE `media-subs`:
---   `id_medium`
---       `media` -> `id_medium`
 --   `language`
 --       `languages` -> `language`
+--   `id_medium`
+--       `media` -> `id_medium`
 --
 
 -- --------------------------------------------------------
@@ -216,14 +217,14 @@ CREATE TABLE IF NOT EXISTS `movies` (
   PRIMARY KEY (`id_movie`),
   UNIQUE KEY `imdb_id` (`imdb_id`),
   KEY `title` (`title`(255))
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=8990 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=8992 ;
 
 -- --------------------------------------------------------
 
 --
 -- Structure de la table `movies-actors`
 --
--- Création: Jeu 17 Octobre 2013 à 12:18
+-- Création: Jeu 31 Octobre 2013 à 13:28
 --
 
 DROP TABLE IF EXISTS `movies-actors`;
@@ -236,10 +237,10 @@ CREATE TABLE IF NOT EXISTS `movies-actors` (
 
 --
 -- RELATIONS POUR LA TABLE `movies-actors`:
---   `id_movie`
---       `movies` -> `id_movie`
 --   `id_person`
 --       `persons` -> `id_person`
+--   `id_movie`
+--       `movies` -> `id_movie`
 --
 
 -- --------------------------------------------------------
@@ -247,7 +248,7 @@ CREATE TABLE IF NOT EXISTS `movies-actors` (
 --
 -- Structure de la table `movies-categories`
 --
--- Création: Jeu 17 Octobre 2013 à 12:18
+-- Création: Jeu 31 Octobre 2013 à 13:29
 --
 
 DROP TABLE IF EXISTS `movies-categories`;
@@ -260,10 +261,10 @@ CREATE TABLE IF NOT EXISTS `movies-categories` (
 
 --
 -- RELATIONS POUR LA TABLE `movies-categories`:
---   `id_movie`
---       `movies` -> `id_movie`
 --   `category`
 --       `categories` -> `category`
+--   `id_movie`
+--       `movies` -> `id_movie`
 --
 
 -- --------------------------------------------------------
@@ -271,7 +272,7 @@ CREATE TABLE IF NOT EXISTS `movies-categories` (
 --
 -- Structure de la table `movies-makers`
 --
--- Création: Jeu 17 Octobre 2013 à 12:18
+-- Création: Jeu 31 Octobre 2013 à 13:29
 --
 
 DROP TABLE IF EXISTS `movies-makers`;
@@ -284,10 +285,10 @@ CREATE TABLE IF NOT EXISTS `movies-makers` (
 
 --
 -- RELATIONS POUR LA TABLE `movies-makers`:
---   `id_movie`
---       `movies` -> `id_movie`
 --   `id_person`
 --       `persons` -> `id_person`
+--   `id_movie`
+--       `movies` -> `id_movie`
 --
 
 -- --------------------------------------------------------
@@ -295,7 +296,7 @@ CREATE TABLE IF NOT EXISTS `movies-makers` (
 --
 -- Structure de la table `movies-shortlists`
 --
--- Création: Jeu 17 Octobre 2013 à 12:18
+-- Création: Jeu 31 Octobre 2013 à 13:29
 --
 
 DROP TABLE IF EXISTS `movies-shortlists`;
@@ -308,10 +309,10 @@ CREATE TABLE IF NOT EXISTS `movies-shortlists` (
 
 --
 -- RELATIONS POUR LA TABLE `movies-shortlists`:
---   `id_movie`
---       `movies` -> `id_movie`
 --   `id_shortlist`
 --       `shortlists` -> `id_shortlist`
+--   `id_movie`
+--       `movies` -> `id_movie`
 --
 
 -- --------------------------------------------------------
@@ -384,62 +385,62 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`films`@`localhost` SQL SECURITY DEFINER VIEW
 -- Contraintes pour la table `experience`
 --
 ALTER TABLE `experience`
-  ADD CONSTRAINT `experience_ibfk_2` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`);
+  ADD CONSTRAINT `experience_ibfk_2` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `media`
 --
 ALTER TABLE `media`
-  ADD CONSTRAINT `media_ibfk_2` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`);
+  ADD CONSTRAINT `media_ibfk_2` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `media-audio`
 --
 ALTER TABLE `media-audio`
-  ADD CONSTRAINT `media-audio_ibfk_1` FOREIGN KEY (`id_medium`) REFERENCES `media` (`id_medium`),
-  ADD CONSTRAINT `media-audio_ibfk_2` FOREIGN KEY (`language`) REFERENCES `languages` (`language`);
+  ADD CONSTRAINT `media-audio_ibfk_2` FOREIGN KEY (`language`) REFERENCES `languages` (`language`) ON DELETE CASCADE,
+  ADD CONSTRAINT `media-audio_ibfk_1` FOREIGN KEY (`id_medium`) REFERENCES `media` (`id_medium`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `media-borrowers`
 --
 ALTER TABLE `media-borrowers`
-  ADD CONSTRAINT `media-borrowers_ibfk_1` FOREIGN KEY (`id_medium`) REFERENCES `media` (`id_medium`),
-  ADD CONSTRAINT `media-borrowers_ibfk_2` FOREIGN KEY (`id_borrower`) REFERENCES `borrowers` (`id_borrower`);
+  ADD CONSTRAINT `media-borrowers_ibfk_2` FOREIGN KEY (`id_borrower`) REFERENCES `borrowers` (`id_borrower`) ON DELETE CASCADE,
+  ADD CONSTRAINT `media-borrowers_ibfk_1` FOREIGN KEY (`id_medium`) REFERENCES `media` (`id_medium`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `media-subs`
 --
 ALTER TABLE `media-subs`
-  ADD CONSTRAINT `media-subs_ibfk_1` FOREIGN KEY (`id_medium`) REFERENCES `media` (`id_medium`),
-  ADD CONSTRAINT `media-subs_ibfk_2` FOREIGN KEY (`language`) REFERENCES `languages` (`language`);
+  ADD CONSTRAINT `media-subs_ibfk_2` FOREIGN KEY (`language`) REFERENCES `languages` (`language`) ON DELETE CASCADE,
+  ADD CONSTRAINT `media-subs_ibfk_1` FOREIGN KEY (`id_medium`) REFERENCES `media` (`id_medium`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `movies-actors`
 --
 ALTER TABLE `movies-actors`
-  ADD CONSTRAINT `movies-actors_ibfk_1` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`),
-  ADD CONSTRAINT `movies-actors_ibfk_2` FOREIGN KEY (`id_person`) REFERENCES `persons` (`id_person`);
+  ADD CONSTRAINT `movies-actors_ibfk_2` FOREIGN KEY (`id_person`) REFERENCES `persons` (`id_person`) ON DELETE CASCADE,
+  ADD CONSTRAINT `movies-actors_ibfk_1` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `movies-categories`
 --
 ALTER TABLE `movies-categories`
-  ADD CONSTRAINT `movies-categories_ibfk_3` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`),
-  ADD CONSTRAINT `movies-categories_ibfk_4` FOREIGN KEY (`category`) REFERENCES `categories` (`category`);
+  ADD CONSTRAINT `movies-categories_ibfk_4` FOREIGN KEY (`category`) REFERENCES `categories` (`category`) ON DELETE CASCADE,
+  ADD CONSTRAINT `movies-categories_ibfk_3` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `movies-makers`
 --
 ALTER TABLE `movies-makers`
-  ADD CONSTRAINT `movies-makers_ibfk_1` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`),
-  ADD CONSTRAINT `movies-makers_ibfk_2` FOREIGN KEY (`id_person`) REFERENCES `persons` (`id_person`);
+  ADD CONSTRAINT `movies-makers_ibfk_2` FOREIGN KEY (`id_person`) REFERENCES `persons` (`id_person`) ON DELETE CASCADE,
+  ADD CONSTRAINT `movies-makers_ibfk_1` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `movies-shortlists`
 --
 ALTER TABLE `movies-shortlists`
-  ADD CONSTRAINT `movies-shortlists_ibfk_1` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`),
-  ADD CONSTRAINT `movies-shortlists_ibfk_2` FOREIGN KEY (`id_shortlist`) REFERENCES `shortlists` (`id_shortlist`);
+  ADD CONSTRAINT `movies-shortlists_ibfk_2` FOREIGN KEY (`id_shortlist`) REFERENCES `shortlists` (`id_shortlist`) ON DELETE CASCADE,
+  ADD CONSTRAINT `movies-shortlists_ibfk_1` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`) ON DELETE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

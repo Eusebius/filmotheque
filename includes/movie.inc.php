@@ -405,6 +405,18 @@ class Medium {
     $subs = $this->subs;
     return $subs;
   }
+
+  // Deletes the medium and all associated information from the base
+  public function delete() {
+    $conn = db_ensure_connected();
+    $delMedium=$conn->prepare('delete from `media` where `id_medium`=?');
+    if (!$delMedium->execute(array($this->id_medium))) {
+      td($delMedium->errorInfo());
+      if ($_SESSION['debug']) {
+	die();
+      }
+    }
+  }
   
   // Update all fields but does not sets a movie object
   public function updateAll() {

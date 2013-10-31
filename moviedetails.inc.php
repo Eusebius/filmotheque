@@ -183,6 +183,9 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     echo '<td bgcolor="'.$colour[$quality].'"><a href="?page=updatemedium&id_medium=' . $medium->getID() . '">'
       . 'Mettre à jour le support'
       . '</a></td>';
+    echo '<td bgcolor="'.$colour[$quality].'"><a href="dodeletemedium.php?id_medium=' . $medium->getID() . '">'
+      . '<font color="red">Supprimer le support</font>'
+      . '</a></td>';
     //echo '<td>' . $quality . '</td>';
     echo "</tr>\n";
   }
