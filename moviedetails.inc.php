@@ -50,7 +50,13 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   $originalTitle = $movie->getOriginalTitle();
   if ($originalTitle != '') {
     echo '<tr><td colspan="2" align="center"><em>'
-      . $movie->getOriginalTitle() . '</em></td></tr>' . "\n";
+      . $movie->getOriginalTitle() . '</em>';
+    $imdb = $movie->getIMDbID();
+    if ($imdb != '') {
+      echo '<br /><a href="http://www.imdb.com/title/'
+	. $imdb . '/">Le film sur IMDb</a>';
+    }
+    echo '</td></tr>' . "\n";
   }
 
   echo '<tr><td>Année&nbsp;:</td><td>' . $movie->getYear() . '</td></tr>' . "\n" ;
