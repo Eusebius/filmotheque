@@ -3,3 +3,4 @@ covers/*
 backup-tmp
 test.php
 info.php
+*#
