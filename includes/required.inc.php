@@ -19,7 +19,9 @@
  */
 
 $basepath = dirname(__FILE__);
-$basepath = substr($basepath, 0, strpos($basepath, '/includes'));
+$basepath = substr($basepath, 0, 
+		   (strpos($basepath, '/includes') ? strpos($basepath, '/includes') 
+		    : strpos($basepath, '\includes')));
 ini_set('include_path', $basepath . ':' . ini_get('include_path'));
 
 require_once('movie.inc.php');
@@ -30,7 +32,6 @@ require_once('config.inc.php');
 require_once('db.inc.php');
 
 $_SESSION['basepath'] = $basepath;
-
 
 $_SESSION['debug'] = true;
 
@@ -63,8 +64,7 @@ function fatal($string) {
 }
 
 function check_chmod() {
-  $f = fopen($_SESSION['basepath'] . '/covers/test', 'w');
-  if (!$f) {
+  if (!is_writable($_SESSION['basepath'] . '/covers')) {
     echo '<center><strong><font color="red">Erreur de configuration&nbsp;: le répertoire "covers" doit être accessible en écriture.</font></strong></center>';
   }
   else {
