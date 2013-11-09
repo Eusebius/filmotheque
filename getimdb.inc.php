@@ -30,8 +30,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     gotoMainPage();
   }
 
-  $_SESSION['movie'] = new Movie($id_movie);
-  $movie = $_SESSION['movie'];
+  $movie = new Movie($id_movie);
 
   $conn = db_ensure_connected();
 

@@ -31,10 +31,7 @@ if (isset($_POST['id_movie']) && $_POST['id_movie'] != '' && isset($_POST['imdb_
     gotoMainPage();
   }
 
-  if (!isset($_SESSION['movie'])) {
-    $_SESSION['movie'] = new Movie($id_movie);
-  }
-  $movie = $_SESSION['movie'];
+  $movie = new Movie($id_movie);
   $imdb_id = $_POST['imdb_id']; // TODO sanitize input
 
   $xml = new DomDocument();
