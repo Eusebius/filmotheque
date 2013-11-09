@@ -33,7 +33,7 @@ require_once('db.inc.php');
 
 $_SESSION['basepath'] = $basepath;
 
-$_SESSION['debug'] = true;
+$_SESSION['debug'] = false;
 
 if (!$_SESSION['debug']) {
   ini_set('display_errors', 'Off'); //It should be the webmaster's responsibility, though - errors may arise above this line
