@@ -32,6 +32,10 @@ require_once('includes/required.inc.php');
   <body>
 <?php
 
+  if ($_SESSION['debug']) {
+    echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
+  }
+
   check_chmod();
 
   if (isset($_GET['page']) && $_GET['page'] == 'moviedetails') {

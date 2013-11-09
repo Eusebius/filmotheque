@@ -117,7 +117,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     echo '<a href="?page=getimdb&id_movie=' . $id_movie . '">Lier à une fiche IMDb</a>';
     echo "<br /><br />\n";
   }
-  echo '<a href="dodeletemovie.php?id_movie=' . $id_movie . '"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
+  echo '<a href="dodeletemovie.php?id_movie=' . $id_movie . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ' . $movie->getTitle() . ' ?\')"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
 
   // Fetching corresponding media
   $movie->retrieveMedia();
@@ -184,7 +184,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     echo '<td bgcolor="'.$colour[$quality].'"><a href="?page=updatemedium&id_medium=' . $medium->getID() . '">'
       . 'Mettre à jour le support'
       . '</a></td>';
-    echo '<td bgcolor="'.$colour[$quality].'"><a href="dodeletemedium.php?id_medium=' . $medium->getID() . '">'
+    echo '<td bgcolor="'.$colour[$quality].'"><a href="dodeletemedium.php?id_medium=' . $medium->getID() . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ce support ?\')">'
       . '<font color="red">Supprimer le support</font>'
       . '</a></td>';
     //echo '<td>' . $quality . '</td>';
