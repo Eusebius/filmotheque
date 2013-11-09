@@ -35,6 +35,14 @@ $_SESSION['basepath'] = $basepath;
 
 $_SESSION['debug'] = false;
 
+if (!$_SESSION['debug']) {
+  ini_set('display_errors', 'Off'); //It should be the webmaster's responsibility, though - errors may arise above this line
+}
+else {
+  ini_set('display_errors', 'On');
+  ini_set('error_reporting', E_ALL);
+}
+
 function gotoMainPage() {
   header('Location:.');
   die();
@@ -66,9 +74,6 @@ function fatal($string) {
 function check_chmod() {
   if (!is_writable($_SESSION['basepath'] . '/covers')) {
     echo '<center><strong><font color="red">Erreur de configuration&nbsp;: le répertoire "covers" doit être accessible en écriture.</font></strong></center>';
-  }
-  else {
-    fclose($f);
   }
 }
 
