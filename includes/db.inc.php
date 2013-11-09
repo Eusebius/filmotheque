@@ -32,8 +32,13 @@ function db_ensure_connected() {
 				    array(PDO::ATTR_PERSISTENT => true));
     } 
     catch (PDOException $e) {
-      print "Erreur !: " . $e->getMessage() . "<br/>";
-      die();
+      if ($_SESSION['debug']) {
+            print "Erreur !: " . $e->getMessage() . "<br/>";
+	    die();
+      }
+      else {
+	die('<center><font color="red"><strong>Une erreur de connexion à la base de données est survenue.</strong></font></center>');
+      }
     }
   }
   $pdoconn->query("SET NAMES utf8");   
