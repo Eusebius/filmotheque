@@ -77,6 +77,17 @@ function check_chmod() {
   }
 }
 
+// Checks whether the parameter is a string corresponding to an int.
+// Returns either the int, or false
+function isIntString($string) {
+  if((string)(int)$string == $string) {
+    return (int)$string;
+  }
+  else {
+    return false;
+  }
+}
+
 // The parameter must not have a starting "?"
 function makeHiddenParameters($paramString) {
   $couples = explode('&', $paramString);

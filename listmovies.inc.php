@@ -58,24 +58,14 @@ else {
 }
 
 $conn = db_ensure_connected();
-$listMovies = $conn->prepare('select movies.id_movie, title, year, originaltitle, imdb_id, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie order by ' . $sortby . ' ' . $order);
-$getCategoriesByMovie = $conn->prepare('select id_movie, category from `movies-categories` where id_movie = ?');
-$getShortlistsByMovie = $conn->prepare('select id_movie, listname from `movies-shortlists` natural join shortlists where id_movie = ?');
-
-$listMovies->execute();
-$movieArray = $listMovies->fetchall(PDO::FETCH_ASSOC);
-$nMovies = $listMovies->rowCount();
 
 $getAllShortlists = $conn->prepare('select id_shortlist, listname from `shortlists` order by listname asc');
 $getAllShortlists->execute();
 $listArray = $getAllShortlists->fetchall(PDO::FETCH_ASSOC);
+
 ?>
 
 <h2>Liste des films</h2>
-<p><em><?php echo $nMovies ?>&nbsp;films distincts</em></p>
-
-<p><a href="?page=addmovie">Ajouter un nouveau film</a></p>
-
 <table>
   <tr>
     <td>
@@ -90,16 +80,22 @@ $listArray = $getAllShortlists->fetchall(PDO::FETCH_ASSOC);
       }
       */
 
+      $shortlistFilter=array();
+
       makeHiddenParameters($sortParameters);
       foreach ($listArray as $list) {
-	$listn = 'list' . $list['id_shortlist'];
-	echo '<input type="checkbox" name="' . $listn . '" value="1"';
-	if (isset($_GET[$listn]) && $_GET[$listn] == '1') {
-	  echo ' checked="checked"';
-	  $filterParameters .= $listn . '=1&';
+	$id = isIntString($list['id_shortlist']);
+	if ($id != false) {
+	  $listn = 'list' . $id;
+	  echo '<input type="checkbox" name="' . $listn . '" value="1"';
+	  if (isset($_GET[$listn]) && $_GET[$listn] == '1') {
+	    echo ' checked="checked"';
+	    $filterParameters .= $listn . '=1&';
+	    array_push($shortlistFilter, $id);
+	  }
+	  echo ' />&nbsp;';
+	  echo $list['listname'] . "<br />\n";
 	}
-        echo ' />&nbsp;';
-	echo $list['listname'] . "<br />\n";
       }
       ?>
       <input type="submit" value="Filtrer"/>
@@ -107,6 +103,35 @@ $listArray = $getAllShortlists->fetchall(PDO::FETCH_ASSOC);
     </td>
   </tr>
 </table>
+
+<?php
+
+$shortlistJoin='';
+$n = count($shortlistFilter);
+if ($n > 0) {
+  $shortlistJoin = "join `movies-shortlists` on movies.id_movie=`movies-shortlists`.id_movie join shortlists on `movies-shortlists`.id_shortlist=shortlists.id_shortlist where shortlists.id_shortlist = '" . $shortlistFilter[0] . "'";
+  for ($i = 1; $i < $n; $i++) {
+    $shortlistJoin .= " or shortlists.id_shortlist = '" . $shortlistFilter[$i] . "'";
+  }
+}
+
+$listMovies = $conn->prepare('select movies.id_movie, title, year, originaltitle, imdb_id, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie ' . $shortlistJoin . ' order by ' . $sortby . ' ' . $order);
+$getCategoriesByMovie = $conn->prepare('select id_movie, category from `movies-categories` where id_movie = ?');
+$getShortlistsByMovie = $conn->prepare('select id_movie, listname from `movies-shortlists` natural join shortlists where id_movie = ?');
+
+$listMovies->execute();
+//echo $listMovies->queryString . '<br>';
+//print_r($listMovies->errorInfo());
+$movieArray = $listMovies->fetchall(PDO::FETCH_ASSOC);
+$nMovies = $listMovies->rowCount();
+?>
+
+<p><em><?php echo $nMovies ?>&nbsp;films distincts</em></p>
+
+<p>
+<a href="?<?php echo $sortParameters; ?>">Réinitialiser les filtres</a><br />
+<a href="?page=addmovie">Ajouter un nouveau film</a>
+</p>
 
 <table border="1">
 <tr>
