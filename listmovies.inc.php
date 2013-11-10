@@ -19,36 +19,36 @@
  */
 require_once('includes/required.inc.php');
 
+// Remember GET parameters
+$sortParameters='';
+$filterParameters='';
+
 if (isset($_GET['sort'])) {
   if ($_GET['sort'] == 'year') {
     $sortby = 'year';
+    $sortParameters='sort=year&';
   }
-  /*
-  else if ($_GET['sort'] == 'category') {
-    $sortby = 'category';
-  }
-  */
   else if ($_GET['sort'] == 'rating') {
     $sortby = 'rating';
+    $sortParameters='sort=rating&';
   }
-  /*
-  else if ($_GET['sort'] == 'listname') {
-    $sortby = 'listname';
-  }
-  */
   else if ($_GET['sort'] == 'lastseen') {
     $sortby = 'lastseen';
+    $sortParameters='sort=lastseen&';
   }
   else {
     $sortby = 'title';
+    $sortParameters='sort=title&';
   }
   
   if (isset($_GET['order'])) {
     if ($_GET['order'] == 'desc') {
       $order = 'desc';
+      $sortParameters .= 'order=desc&';
     }
     else {
       $order = 'asc';
+      $sortParameters .= 'order=asc&';
     }
   }
 }
@@ -65,6 +65,10 @@ $getShortlistsByMovie = $conn->prepare('select id_movie, listname from `movies-s
 $listMovies->execute();
 $movieArray = $listMovies->fetchall(PDO::FETCH_ASSOC);
 $nMovies = $listMovies->rowCount();
+
+$getAllShortlists = $conn->prepare('select id_shortlist, listname from `shortlists` order by listname asc');
+$getAllShortlists->execute();
+$listArray = $getAllShortlists->fetchall(PDO::FETCH_ASSOC);
 ?>
 
 <h2>Liste des films</h2>
@@ -72,14 +76,46 @@ $nMovies = $listMovies->rowCount();
 
 <p><a href="?page=addmovie">Ajouter un nouveau film</a></p>
 
+<table>
+  <tr>
+    <td>
+      Afficher uniquement les shortlists suivantes&nbsp;:<br />
+      <form action="" method="GET">
+      <?php 
+
+      /*
+      echo '<input type="hidden" name="filterbyshortlist" value="1" />';
+      if (isset($_GET['filterbyshortlist']) && ($_GET['filterbyshortlist'] == '1')) {
+	$filterParameters = "filterbyshortlist=1&";
+      }
+      */
+
+      makeHiddenParameters($sortParameters);
+      foreach ($listArray as $list) {
+	$listn = 'list' . $list['id_shortlist'];
+	echo '<input type="checkbox" name="' . $listn . '" value="1"';
+	if (isset($_GET[$listn]) && $_GET[$listn] == '1') {
+	  echo ' checked="checked"';
+	  $filterParameters .= $listn . '=1&';
+	}
+        echo ' />&nbsp;';
+	echo $list['listname'] . "<br />\n";
+      }
+      ?>
+      <input type="submit" value="Filtrer"/>
+      </form>
+    </td>
+  </tr>
+</table>
+
 <table border="1">
 <tr>
-<th>Titre&nbsp;<a href="index.php?sort=title&order=asc">⇧</a><a href="index.php?sort=title&order=desc">⇩</a></th>
-<th>Année&nbsp;<a href="index.php?sort=year&order=asc">⇧</a><a href="index.php?sort=year&order=desc">⇩</a></th>
+<th>Titre&nbsp;<a href="index.php?<?php echo $filterParameters; ?>sort=title&order=asc">⇧</a><a href="index.php?<?php echo $filterParameters; ?>sort=title&order=desc">⇩</a></th>
+<th>Année&nbsp;<a href="index.php?<?php echo $filterParameters; ?>sort=year&order=asc">⇧</a><a href="index.php?<?php echo $filterParameters; ?>sort=year&order=desc">⇩</a></th>
 <th>Catégories</th>
-<th>Note&nbsp;<a href="index.php?sort=rating&order=asc">⇧</a><a href="index.php?sort=rating&order=desc">⇩</a></th>
+<th>Note&nbsp;<a href="index.php?<?php echo $filterParameters; ?>sort=rating&order=asc">⇧</a><a href="index.php?<?php echo $filterParameters; ?>sort=rating&order=desc">⇩</a></th>
 <th>Shortlists</th>
-<th>Vu le&nbsp;<a href="index.php?sort=lastseen&order=asc">⇧</a><a href="index.php?sort=lastseen&order=desc">⇩</a></th>
+<th>Vu le&nbsp;<a href="index.php?<?php echo $filterParameters; ?>sort=lastseen&order=asc">⇧</a><a href="index.php?<?php echo $filterParameters; ?>sort=lastseen&order=desc">⇩</a></th>
 </tr>
 
 <?php

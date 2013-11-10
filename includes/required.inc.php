@@ -77,4 +77,16 @@ function check_chmod() {
   }
 }
 
+// The parameter must not have a starting "?"
+function makeHiddenParameters($paramString) {
+  $couples = explode('&', $paramString);
+  foreach ($couples as $couple) {
+    $couple = explode('=', $couple);
+    if (count($couple) == 2) {
+      echo '<input type="hidden" name="' . $couple[0] 
+	. '" value="' . $couple[1] . '" />' . "\n";
+    }
+  }
+}
+
 ?>
