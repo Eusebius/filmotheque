@@ -21,7 +21,8 @@ require_once('includes/required.inc.php');
 
 // Remember GET parameters
 $sortParameters='';
-$filterParameters='';
+$listFilterParameters='';
+$catFilterParameters='';
 
 if (isset($_GET['sort'])) {
   if ($_GET['sort'] == 'year') {
@@ -63,6 +64,21 @@ $getAllShortlists = $conn->prepare('select id_shortlist, listname from `shortlis
 $getAllShortlists->execute();
 $listArray = $getAllShortlists->fetchall(PDO::FETCH_ASSOC);
 
+$getAllCats = $conn->prepare('select category from categories order by category asc');
+$getAllCats->execute();
+$catArray = $getAllCats->fetchall(PDO::FETCH_ASSOC);
+
+// Rebuild all filtering parameters, except for the first kind (shortlists) which is done inline
+// Those variables has to be there when we build the first filter form
+foreach ($catArray as $catentry) {
+  $cat = $catentry['category'];
+  $catn = 'cat' . $cat;
+  if (isset($_GET[$catn]) && $_GET[$catn] == '1') {
+    $catFilterParameters .= $catn . '=1&';
+    array_push($catFilter, $cat);
+  }
+}
+
 ?>
 
 <h2>Liste des films</h2>
@@ -73,16 +89,10 @@ $listArray = $getAllShortlists->fetchall(PDO::FETCH_ASSOC);
       <form action="" method="GET">
       <?php 
 
-      /*
-      echo '<input type="hidden" name="filterbyshortlist" value="1" />';
-      if (isset($_GET['filterbyshortlist']) && ($_GET['filterbyshortlist'] == '1')) {
-	$filterParameters = "filterbyshortlist=1&";
-      }
-      */
-
       $shortlistFilter=array();
 
       makeHiddenParameters($sortParameters);
+      makeHiddenParameters($catFilterParameters);
       foreach ($listArray as $list) {
 	$id = isIntString($list['id_shortlist']);
 	if ($id != false) {
@@ -90,12 +100,35 @@ $listArray = $getAllShortlists->fetchall(PDO::FETCH_ASSOC);
 	  echo '<input type="checkbox" name="' . $listn . '" value="1"';
 	  if (isset($_GET[$listn]) && $_GET[$listn] == '1') {
 	    echo ' checked="checked"';
-	    $filterParameters .= $listn . '=1&';
+	    $listFilterParameters .= $listn . '=1&';
 	    array_push($shortlistFilter, $id);
 	  }
 	  echo ' />&nbsp;';
 	  echo $list['listname'] . "<br />\n";
 	}
+      }
+      ?>
+      <input type="submit" value="Filtrer"/>
+      </form>
+    </td>
+    <td>
+      Afficher uniquement les catégories suivantes&nbsp;:<br />
+      <form action="" method="GET">
+      <?php 
+
+      $catFilter=array();
+
+      makeHiddenParameters($sortParameters);
+      makeHiddenParameters($listFilterParameters);
+      foreach ($catArray as $catentry) {
+	$cat = $catentry['category'];
+	$catn = 'cat' . $cat;
+	echo '<input type="checkbox" name="' . $catn . '" value="1"';
+	if (isset($_GET[$catn]) && $_GET[$catn] == '1') {
+	  echo ' checked="checked"';
+	}
+	echo ' />&nbsp;';
+	echo $cat . "<br />\n";
       }
       ?>
       <input type="submit" value="Filtrer"/>
@@ -129,18 +162,18 @@ $nMovies = $listMovies->rowCount();
 <p><em><?php echo $nMovies ?>&nbsp;films distincts</em></p>
 
 <p>
-<a href="?<?php echo $sortParameters; ?>">Réinitialiser les filtres</a><br />
+<a href="?<?php echo $sortParameters; ?>">Réinitialiser tous les filtres</a><br />
 <a href="?page=addmovie">Ajouter un nouveau film</a>
 </p>
 
 <table border="1">
 <tr>
-<th>Titre&nbsp;<a href="index.php?<?php echo $filterParameters; ?>sort=title&order=asc">⇧</a><a href="index.php?<?php echo $filterParameters; ?>sort=title&order=desc">⇩</a></th>
-<th>Année&nbsp;<a href="index.php?<?php echo $filterParameters; ?>sort=year&order=asc">⇧</a><a href="index.php?<?php echo $filterParameters; ?>sort=year&order=desc">⇩</a></th>
+<th>Titre&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=title&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=title&order=desc">⇩</a></th>
+<th>Année&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=year&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=year&order=desc">⇩</a></th>
 <th>Catégories</th>
-<th>Note&nbsp;<a href="index.php?<?php echo $filterParameters; ?>sort=rating&order=asc">⇧</a><a href="index.php?<?php echo $filterParameters; ?>sort=rating&order=desc">⇩</a></th>
+<th>Note&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=rating&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=rating&order=desc">⇩</a></th>
 <th>Shortlists</th>
-<th>Vu le&nbsp;<a href="index.php?<?php echo $filterParameters; ?>sort=lastseen&order=asc">⇧</a><a href="index.php?<?php echo $filterParameters; ?>sort=lastseen&order=desc">⇩</a></th>
+<th>Vu le&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=lastseen&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=lastseen&order=desc">⇩</a></th>
 </tr>
 
 <?php
