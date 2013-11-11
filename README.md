@@ -11,7 +11,7 @@ Disclaimer: This is a pre-alpha version. Do not expect it to work properly. This
 
 **Warning for commercial users**
 
-This application connects to "My Movie API", an interface to the IMDb website, in order to link a movie entry in Filmothèque to a movie entry at IMDb. Unlike Filmothèque, the use of My Movie API is restricted to personal purposes. If you plan to use Filmothèque for commercial purpose, you ought to deactivate the use of the API.
+This application connects to "My Movie API", an interface to the IMDb website, in order to link a movie entry in Filmothèque to a movie entry at IMDb. Unlike Filmothèque, the use of My Movie API is restricted to personal purposes. If you plan make a commercial use of Filmothèque, you ought to deactivate the use of the API.
 
 #Database configuration
 
