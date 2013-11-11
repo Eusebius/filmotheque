@@ -48,20 +48,20 @@ function gotoMainPage() {
   die();
 }
 
-function td($array) {
+function debug($array) {
   if ($_SESSION['debug']) {
     echo "<pre>\n";
     print_r($array);
     echo "\n</pre>\n";
   }
 }
-
+/*
 function debug($string) {
   if ($_SESSION['debug']) {
     echo $string;
   }
 }
-
+*/
 function fatal($string) {
   if ($_SESSION['debug']) {
     die($string);
