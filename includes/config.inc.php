@@ -27,7 +27,7 @@ $_SESSION['config']['db_user'] = 'films';
 $_SESSION['config']['db_password'] = 'films';
 $_SESSION['config']['db_prefix'] = '';
 
-$_SESSION['config']['version'] = "0.2.1";
+$_SESSION['config']['version'] = "0.2.2";
 
 $colour['Full HD'] = "#64FF64";
 $colour['Blu-Ray'] = "#55D955";
