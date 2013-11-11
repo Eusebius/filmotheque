@@ -70,12 +70,14 @@ $catArray = $getAllCats->fetchall(PDO::FETCH_ASSOC);
 
 // Rebuild all filtering parameters, except for the first kind (shortlists) which is done inline
 // Those variables has to be there when we build the first filter form
+$catFilter=array();
 foreach ($catArray as $catentry) {
   $cat = $catentry['category'];
   $catn = 'cat' . $cat;
   if (isset($_GET[$catn]) && $_GET[$catn] == '1') {
     $catFilterParameters .= $catn . '=1&';
     array_push($catFilter, $cat);
+    debug($cat);
   }
 }
 
@@ -116,7 +118,6 @@ foreach ($catArray as $catentry) {
       <form action="" method="GET">
       <?php 
 
-      $catFilter=array();
 
       makeHiddenParameters($sortParameters);
       makeHiddenParameters($listFilterParameters);
@@ -139,22 +140,36 @@ foreach ($catArray as $catentry) {
 
 <?php
 
-$shortlistJoin='';
+$shortlistWhere='(1=1';
 $n = count($shortlistFilter);
 if ($n > 0) {
-  $shortlistJoin = "join `movies-shortlists` on movies.id_movie=`movies-shortlists`.id_movie join shortlists on `movies-shortlists`.id_shortlist=shortlists.id_shortlist where shortlists.id_shortlist = '" . $shortlistFilter[0] . "'";
+  $shortlistWhere .= " and (shortlists.id_shortlist = '" . $shortlistFilter[0] . "'";
   for ($i = 1; $i < $n; $i++) {
-    $shortlistJoin .= " or shortlists.id_shortlist = '" . $shortlistFilter[$i] . "'";
+    $shortlistWhere .= " or shortlists.id_shortlist = '" . $shortlistFilter[$i] . "'";
   }
+  $shortlistWhere .= ')';
 }
+$shortlistWhere .= ')';
 
-$listMovies = $conn->prepare('select movies.id_movie, title, year, originaltitle, imdb_id, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie ' . $shortlistJoin . ' order by ' . $sortby . ' ' . $order);
+$catWhere='(1=1';
+$n = count($catFilter);
+if ($n > 0) {
+  $catWhere .= " and (`movies-categories`.category = '" . $catFilter[0] . "'";
+  for ($i = 1; $i < $n; $i++) {
+    $catWhere .= " or `movies-categories`.category = '" . $catFilter[$i] . "'";
+  }
+  $catWhere .= ')';
+}
+$catWhere .= ')';
+
+
+$listMovies = $conn->prepare('select movies.id_movie, title, year, originaltitle, imdb_id, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie left outer join `movies-shortlists` on movies.id_movie=`movies-shortlists`.id_movie left outer join shortlists on `movies-shortlists`.id_shortlist=shortlists.id_shortlist left outer join `movies-categories` on movies.id_movie=`movies-categories`.id_movie where ' . $shortlistWhere . ' and ' . $catWhere . ' group by movies.id_movie order by ' . $sortby . ' ' . $order);
 $getCategoriesByMovie = $conn->prepare('select id_movie, category from `movies-categories` where id_movie = ?');
 $getShortlistsByMovie = $conn->prepare('select id_movie, listname from `movies-shortlists` natural join shortlists where id_movie = ?');
 
 $listMovies->execute();
-//echo $listMovies->queryString . '<br>';
-//print_r($listMovies->errorInfo());
+debug($listMovies->queryString);
+debug($listMovies->errorInfo());
 $movieArray = $listMovies->fetchall(PDO::FETCH_ASSOC);
 $nMovies = $listMovies->rowCount();
 ?>
