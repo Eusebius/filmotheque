@@ -35,8 +35,8 @@ if (isset($_POST['id_movie']) && $_POST['id_movie'] != '' && isset($_POST['imdb_
   $imdb_id = $_POST['imdb_id']; // TODO sanitize input
 
   $xml = new DomDocument();
-  $xml->load('http://mymovieapi.com/?id='. $imdb_id .'&type=xml&limit=1&release=simple');
-  $item = $xml->getElementsByTagName('imdbdocument')->item(0);
+  $xml->load('http://myapifilms.com/imdb?idIMDB='. $imdb_id .'&format=XML');
+  $item = $xml->getElementsByTagName('movie')->item(0);
   $originaltitle = $item->getElementsByTagName('title')->item(0)->nodeValue;
   $year = $item->getElementsByTagName('year')->item(0)->nodeValue;
 
@@ -46,9 +46,9 @@ if (isset($_POST['id_movie']) && $_POST['id_movie'] != '' && isset($_POST['imdb_
   $movie->setFieldAndWait("year", $year);
   $movie->writeAll();
 
-  $cover = $item->getElementsByTagName('poster')->item(0);
+  $cover = $item->getElementsByTagName('urlPoster')->item(0);
   if ($cover != null) {
-    $cover = $cover->getElementsByTagName('cover')->item(0)->nodeValue;
+    $cover = $cover->nodeValue;
     $coverdest = 'covers/' . $movie->getID() . '.jpg';
     if (!file_exists($coverdest)) {
       copy($cover, $coverdest);
