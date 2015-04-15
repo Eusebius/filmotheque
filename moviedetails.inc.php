@@ -111,6 +111,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
   echo '<tr><td>Vu le&nbsp;:</td><td>';
   echo $movie->getFormattedLastseen();
+  echo '&nbsp;' . '<a href="doseentoday.php?id_movie=' . $id_movie . '">Vu aujourd\'hui&nbsp;!</a>';
   echo '</td></tr>' . "\n" ;
   echo '</table>' . "\n";
  
