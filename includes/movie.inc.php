@@ -100,6 +100,24 @@ class Movie {
     $this->updateShortlists();
   }
 
+  public function setLastSeen($lastseen) {
+      $this->lastseen = ($lastseen != null ? $this->unformatDate($lastseen) : null);
+
+      $conn = db_ensure_connected();
+      $conn->beginTransaction();
+      
+      if ($this->rating != null && $this->rating != '') {
+          $setLastSeen = $conn->prepare('update experience set lastseen=? where id_movie=?');
+          $setLastSeen->execute(array($this->lastseen, $this->id_movie));
+      } else {
+          $setLastSeen = $conn->prepare('insert into experience (lastseen, id_movie) values(?, ?)');
+          $setLastSeen->execute(array($this->lastseen, $this->id_movie));
+      }
+
+      $conn->commit();
+      
+  }
+
   public function writeAll() {
     $conn = db_ensure_connected();
 
