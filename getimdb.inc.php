@@ -40,24 +40,26 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   $imdb_id = '';
   if (isset($_GET['imdb_id']) && $_GET['imdb_id'] != '') {
     $imdb_id = $_GET['imdb_id'];
-    $xml->load('http://mymovieapi.com/?id='. $imdb_id .'&type=xml&limit=1&release=simple');
-    $item = $xml->getElementsByTagName('imdbdocument')->item(0);    
+    $xml->load('http://myapifilms.com/imdb?idIMDB='. $imdb_id .'&format=XML');
+    $item = $xml->getElementsByTagName('movie')->item(0);    
   }
   else {
-    $xml->load('http://mymovieapi.com/?q='. $movie->getTitle() .'&type=xml&limit=1');
-    $item = $xml->getElementsByTagName('item')->item(0);
+    $xml->load('http://myapifilms.com/title?title='. $movie->getTitle() .'&format=XML&limit=1');
+    $item = $xml->getElementsByTagName('movie')->item(0);
   }
   
   //print_r($xml);
 
+  //debug$xml->saveXML());
+
   if ($item != null) {
     $originaltitle = $item->getElementsByTagName('title')->item(0)->nodeValue;
     if ($imdb_id == '') {
-      $imdb_id = $item->getElementsByTagName('imdb_id')->item(0)->nodeValue;
+      $imdb_id = $item->getElementsByTagName('idIMDB')->item(0)->nodeValue;
     }
-    $cover = $item->getElementsByTagName('poster')->item(0);
-    if ($cover != null) {
-      $cover = $cover->getElementsByTagName('cover')->item(0)->nodeValue;
+    $cover = $item->getElementsByTagName('urlPoster')->item(0);
+      if ($cover != null) {
+      $cover = $cover->nodeValue;
     }
     $year = $item->getElementsByTagName('year')->item(0)->nodeValue;
 
@@ -86,7 +88,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
       <td>
 <?php
     $genres = $item->getElementsByTagName('genres')->item(0);
-    $genres = $genres->getElementsByTagName('item');
+    $genres = $genres->getElementsByTagName('genre');
     foreach ($genres as $genre) {
       echo $genre->nodeValue . ' ';
     }
