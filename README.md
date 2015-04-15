@@ -7,7 +7,7 @@ A personal, web-based movie collection manager.
 
 **Version 0.2.3**
 
-Disclaimer: This is a pre-alpha version. Do not expect it to work properly. This is code under development.
+Disclaimer: This is a pre-alpha version. Do not expect it to work properly. This is code under development. 
 
 **Warning for commercial users**
 
