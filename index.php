@@ -26,7 +26,7 @@ require_once('includes/required.inc.php');
   <head>
     <title>Filmothèque</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" href="css/movies.css"/>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
   </head>
   
   <body>

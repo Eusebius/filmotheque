@@ -1,0 +1,45 @@
+body{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    /* width : 1000px ; */
+    margin-right : auto ;
+    margin-left : 50px ;
+}
+table {
+    /* border:1px solid gray; */
+    border-collapse: collapse;
+    /* empty-cells:hide;*/
+}
+
+td, th {
+    /* border:1px solid gray;*/
+    padding:2px;
+}
+
+a:link {
+    color: #0066CC;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #ff9900;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #0066CC;
+    text-decoration: underline;
+}
+h1 {
+    font-size: 20pt;
+    font-family: "Century Gothic", Arial, sans-serif;
+    font-variant: normal;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 15pt;
+    font-family: "Century Gothic", Arial, sans-serif;
+    font-weight: bold;
+    font-style: normal;
+    color:gray;
+}
