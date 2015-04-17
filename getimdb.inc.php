@@ -80,6 +80,10 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
       <td><?php echo $originaltitle; ?></td>
     </tr>
     <tr>
+      <td>Identifiant IMDb&nbsp;:</td>
+      <td><a href="http://www.imdb.com/title/<?php echo $imdb_id; ?>/"><?php echo $imdb_id; ?></a></td>
+    </tr>
+    <tr>
       <td>Année&nbsp;:</td>
       <td><?php echo $year; ?></td>
     </tr>
