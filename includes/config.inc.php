@@ -35,6 +35,7 @@ $colour['DVD'] = "#B7D2FF";
 $colour['DivX moyen'] = "#FFFF64";
 $colour['DivX médiocre'] = "#FFC264";
 $colour['undefined'] = "#FFFFFF";
+$colour['0'] = "#DDDDDD";
 
 $rank['Full HD'] = 5;
 $rank['Blu-Ray'] = 4;

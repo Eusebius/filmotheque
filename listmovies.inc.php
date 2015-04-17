@@ -166,6 +166,7 @@ $catWhere .= ')';
 $listMovies = $conn->prepare('select movies.id_movie, title, year, originaltitle, imdb_id, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie left outer join `movies-shortlists` on movies.id_movie=`movies-shortlists`.id_movie left outer join shortlists on `movies-shortlists`.id_shortlist=shortlists.id_shortlist left outer join `movies-categories` on movies.id_movie=`movies-categories`.id_movie where ' . $shortlistWhere . ' and ' . $catWhere . ' group by movies.id_movie order by ' . $sortby . ' ' . $order);
 $getCategoriesByMovie = $conn->prepare('select id_movie, category from `movies-categories` where id_movie = ?');
 $getShortlistsByMovie = $conn->prepare('select id_movie, listname from `movies-shortlists` natural join shortlists where id_movie = ?');
+$getBestQuality = $conn->prepare('select quality from `media` natural join `media-quality` natural join `quality` where id_movie = ? order by minwidth desc');
 
 $listMovies->execute();
 debug($listMovies->queryString);
@@ -196,13 +197,21 @@ $nMovies = $listMovies->rowCount();
 foreach($movieArray as $movie) {
 
   echo "<tr>\n";
-  echo '<td><a href="?page=moviedetails&id_movie=' . $movie['id_movie'] . '">'
+
+    //TODO get best available quality
+    $getBestQuality->execute(array($movie['id_movie']));
+    $quality = $getBestQuality->fetch(PDO::FETCH_ASSOC);
+    if ($quality) {
+        $quality = $quality['quality'];
+    }
+
+  echo '<td bgcolor="'.$colour[$quality].'"><a href="?page=moviedetails&id_movie=' . $movie['id_movie'] . '">'
     .  $movie['title']
     . "</a></td>\n";
-  echo '<td align="center">'
+  echo '<td align="center" bgcolor="'.$colour[$quality].'">'
     .  $movie['year']
     . "</td>\n";
-  echo '<td>';
+  echo '<td bgcolor="'.$colour[$quality].'">';
   $getCategoriesByMovie->execute(array($movie['id_movie']));
   $categoryArray = $getCategoriesByMovie->fetchall(PDO::FETCH_ASSOC);
   $ncat = count($categoryArray);
@@ -213,10 +222,10 @@ foreach($movieArray as $movie) {
     echo ', ' . $categoryArray[$i]['category'];
   }
   echo "</td>\n";
-  echo '<td align="center">'
+  echo '<td align="center" bgcolor="'.$colour[$quality].'">'
     .  $movie['rating']
     . "</td>\n";
-  echo '<td>';
+  echo '<td bgcolor="'.$colour[$quality].'">';
   $getShortlistsByMovie->execute(array($movie['id_movie']));
   $ShortlistArray = $getShortlistsByMovie->fetchall(PDO::FETCH_ASSOC);
   $nsl = count($ShortlistArray);
@@ -227,14 +236,14 @@ foreach($movieArray as $movie) {
     echo ', ' . $ShortlistArray[$i]['listname'];
   }
   echo "</td>\n";
-  echo '<td align="center">';
+  echo '<td align="center" bgcolor="'.$colour[$quality].'">';
   if($movie['lastseen'] != '') {
     $date = DateTime::createFromFormat('Y-m-d', $movie['lastseen']);
     echo $date->format('d/m/Y');
   }
   echo "</td>\n";
   if($movie['imdb_id'] == '') {
-    echo '<td align="center">';
+    echo '<td align="center" bgcolor="'.$colour[$quality].'">';
     echo '<a href="?page=getimdb&id_movie=' . $movie['id_movie'] . '">Lier à une fiche IMDb</a>';
     echo "</td>\n";
   }
