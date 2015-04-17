@@ -27,7 +27,7 @@ $_SESSION['config']['db_user'] = 'films';
 $_SESSION['config']['db_password'] = 'films';
 $_SESSION['config']['db_prefix'] = '';
 
-$_SESSION['config']['version'] = "0.2.3";
+$_SESSION['config']['version'] = "0.2.4";
 
 $colour['Full HD'] = "#64FF64";
 $colour['Blu-Ray'] = "#55D955";
@@ -35,6 +35,7 @@ $colour['DVD'] = "#B7D2FF";
 $colour['DivX moyen'] = "#FFFF64";
 $colour['DivX médiocre'] = "#FFC264";
 $colour['undefined'] = "#FFFFFF";
+$colour['0'] = "#DDDDDD";
 
 $rank['Full HD'] = 5;
 $rank['Blu-Ray'] = 4;
