@@ -1,4 +1,12 @@
 <?php
+/**
+ * dodeletemovie.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.4
+ * 
+ * This is the script taking care of the deletion of a movie.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)
@@ -41,13 +49,6 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 else {
   // Return to home page if no medium ID is provided
     gotoMainPage();
-}
-
-function POSTValueOrNull($POSTindex) {
-  if (isset($_POST[$POSTindex]) && $_POST[$POSTindex] != '') {
-    return $_POST[$POSTindex];
-  }
-  else return null;
 }
 
 ?>

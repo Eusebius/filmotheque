@@ -1,4 +1,13 @@
 <?php
+/**
+ * includes/suggestPersons.inc.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.4
+ * 
+ * This is a test script aiming to provide suggestions for people to an AJAX
+ * script.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)

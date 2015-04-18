@@ -1,11 +1,12 @@
 <?php
 /**
- * docreatemedium.php
+ * doabandonimdb.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.2.4
+ * @since 0.2.5
  * 
- * This is the script taking care of the creation of a medium.
+ * This is the script acknowledging that a movie cannot be linked to an IMDb 
+ * file.
  */
 /*
     Filmothèque
@@ -29,21 +30,27 @@
 require_once('includes/required.inc.php');
 
 
-if (isset($_POST['id_movie']) && $_POST['id_movie'] != '') {
+if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
-  if((string)(int)$_POST['id_movie'] == $_POST['id_movie']) {
-    $id_medium = (int)$_POST['id_movie'];
+  if((string)(int)$_GET['id_movie'] == $_GET['id_movie']) {
+    $id_movie = (int)$_GET['id_movie'];
   }
   else {
   // Return to home page if movie ID is not a number
     gotoMainPage();
   }
 
-  $medium = new Medium(null);
-  $medium->setValues(POSTValueOrNull('type'), POSTValueOrNull('height'), POSTValueOrNull('width'), POSTValueOrNull('comment'), POSTValueOrNull('shelfmark'), POSTValueOrNull('audio'), POSTValueOrNull('subs'), POSTValueOrNull('id_movie'));
+  if (!isset($_SESSION['movie'])) {
+    $_SESSION['movie'] = new Movie($id_movie);
+  }
+  $movie = $_SESSION['movie'];
+  
+  if ($movie->getIMDbID() == null) {
+      $movie->setFieldAndWait('imdb_id', 'nil');
+      $movie->writeAll();
+  }
 
-  //$medium->dump();
-  header('Location:./?page=moviedetails&id_movie=' . $medium->getMovieID());
+  header('Location:./?page=moviedetails&id_movie=' . $id_movie);
 }
 
 else {

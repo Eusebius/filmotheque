@@ -1,3 +1,11 @@
+/**
+ * includes/test.js
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.4
+ * 
+ * This is a test JavaScript file providing AJAX capabilities to forms.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)

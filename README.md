@@ -5,7 +5,7 @@ Author: Eusebius (eusebius@eusebius.fr)
 
 A personal, web-based movie collection manager.
 
-**Version 0.2.4**
+**Version 0.2.5**
 
 Disclaimer: This is a pre-alpha version. Do not expect it to work properly. This is code under development. 
 

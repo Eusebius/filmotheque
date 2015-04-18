@@ -1,4 +1,13 @@
 <?php
+/**
+ * doseentoday.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.4
+ * 
+ * This is the script taking care of the "seen today" feature, updating the 
+ * lastseen property of a movie.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)

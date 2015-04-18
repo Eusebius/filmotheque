@@ -1,4 +1,12 @@
 <?php
+/**
+ * dolinkimdb.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.4
+ * 
+ * This is the script taking care of the linking to an imdb movie entry.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)
@@ -60,13 +68,6 @@ if (isset($_POST['id_movie']) && $_POST['id_movie'] != '' && isset($_POST['imdb_
 else {
   // Return to home page if either movie ID or imdb ID is not provided
     gotoMainPage();
-}
-
-function POSTValueOrNull($POSTindex) {
-  if (isset($_POST[$POSTindex]) && $_POST[$POSTindex] != '') {
-    return $_POST[$POSTindex];
-  }
-  else return null;
 }
 
 ?>

@@ -1,4 +1,12 @@
 <?php
+/**
+ * doupdatemedium.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.4
+ * 
+ * This is the script taking care of the update of a medium.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)
@@ -44,13 +52,6 @@ if (isset($_POST['id_medium']) && $_POST['id_medium'] != '') {
 else {
   // Return to home page if no movie ID is provided
     gotoMainPage();
-}
-
-function POSTValueOrNull($POSTindex) {
-  if (isset($_POST[$POSTindex]) && $_POST[$POSTindex] != '') {
-    return $_POST[$POSTindex];
-  }
-  else return null;
 }
 
 ?>

@@ -1,4 +1,12 @@
 <?php
+/**
+ * includes/db.inc.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.4
+ * 
+ * This is a library of database management functions.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)
@@ -20,6 +28,19 @@
 
 require_once('includes/config.inc.php');
 
+/**
+ * Provides a valid connection to the database, either by retrieving an existing
+ * one in session or by opening a new one (and registering it in session for 
+ * future use).
+ * 
+ * In case of errors, dies with an error message (unspecific if not in debug
+ * mode).
+ * 
+ * @return \PDO A valid PDO connection object.
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.4
+ */
 function db_ensure_connected() {
   if ((!isset($_SESSION['dbconn'])) or ($_SESSION['dbconn'] == null)) {
     try {
@@ -45,6 +66,15 @@ function db_ensure_connected() {
   return $pdoconn;
 }
 
+/**
+ * Closes the connection to the database, provided all resultsets are nullified
+ * beforehand.
+ * 
+ * @param \PDO $pdoconn The connection to close
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.4
+ */
 function db_disconnect($pdoconn) {
   $pdoconn = null;
 }

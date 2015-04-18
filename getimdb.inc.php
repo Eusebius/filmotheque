@@ -1,4 +1,12 @@
 <?php
+/**
+ * getimdb.inc.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.4
+ * 
+ * This is the content for the page proposing a match on imdb for a movie.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)
@@ -141,6 +149,9 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   </table>
 <?php
   }
+
+    echo '<p><a href="?page=moviedetails&id_movie=' . $movie->getID() 
+            . '">Retour à la page du film</a></p>';
 }
 else {
   // Return to home page if no movie is specified
