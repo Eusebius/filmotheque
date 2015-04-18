@@ -3,7 +3,7 @@
  * covers/index.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @version 0.2.4
+ * @since 0.2.4
  * 
  * This is a redirection to the main page, to avoid the listing of available 
  * cover pictures.

@@ -3,7 +3,7 @@
  * includes/config.inc.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @version 0.2.4
+ * @since 0.2.4
  * 
  * This is the main configuration file of the application. All customization for
  * a particular installation should go here.
@@ -27,8 +27,16 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/*/**
+ * Configuration array
+ * *DON'T TOUCH THIS*
+ */
 $_SESSION['config']=array();
 
+/**
+ * Database connection configuration
+ * *UPDATE THIS* to suit your needs
+ */
 $_SESSION['config']['db_type'] = 'mysql';
 $_SESSION['config']['db_server'] = 'localhost';
 $_SESSION['config']['db_db'] = 'films';
@@ -36,8 +44,17 @@ $_SESSION['config']['db_user'] = 'films';
 $_SESSION['config']['db_password'] = 'films';
 $_SESSION['config']['db_prefix'] = '';
 
+/*/**
+ * Current software version
+ * *DON'T TOUCH THIS*
+ */
 $_SESSION['config']['version'] = "0.2.4";
 
+/**
+ *  Assigned background colours for each medium quality
+ * Modify the colours as you wish, but the array keys should match the entries
+ * of the `quality` table in the database. It is not advised to modify them.
+ */
 $colour['Full HD'] = "#64FF64";
 $colour['Blu-Ray'] = "#55D955";
 $colour['DVD'] = "#B7D2FF";
@@ -46,6 +63,10 @@ $colour['DivX médiocre'] = "#FFC264";
 $colour['undefined'] = "#FFFFFF";
 $colour['0'] = "#DDDDDD";
 
+/**
+ * Ranking of the medium qualities.
+ * Again, it is not advised to modify this.
+ */
 $rank['Full HD'] = 5;
 $rank['Blu-Ray'] = 4;
 $rank['DVD'] = 3;
@@ -53,7 +74,9 @@ $rank['DivX moyen'] = 2;
 $rank['DivX médiocre'] = 1;
 $rank['undefined'] = 0;
 
-
+/**
+ * This is just the developers' garbage. Ignore it.
+ */
 /*
   print_r($_SESSION['config']);
   echo '<br />';

@@ -2,7 +2,7 @@
  * includes/test.js
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @version 0.2.4
+ * @since 0.2.4
  * 
  * This is a test JavaScript file providing AJAX capabilities to forms.
  */

@@ -3,7 +3,7 @@
  * doseentoday.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @version 0.2.4
+ * @since 0.2.4
  * 
  * This is the script taking care of the "seen today" feature, updating the 
  * lastseen property of a movie.

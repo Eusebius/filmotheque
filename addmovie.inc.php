@@ -3,7 +3,7 @@
  * addmovie.inc.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @version 0.2.4
+ * @since 0.2.4
  * 
  * This is the content for the movie creation page.
  */

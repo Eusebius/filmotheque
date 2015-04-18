@@ -3,7 +3,7 @@
  * importcsv.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @version 0.2.4
+ * @since 0.2.4
  * 
  * This is a custom script used to populate an empty database from a CSV file.
  * It was tailored to a particular CSV format and may not suit your needs.

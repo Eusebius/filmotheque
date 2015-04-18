@@ -3,7 +3,7 @@
  * doupdatemedium.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @version 0.2.4
+ * @since 0.2.4
  * 
  * This is the script taking care of the update of a medium.
  */
@@ -52,13 +52,6 @@ if (isset($_POST['id_medium']) && $_POST['id_medium'] != '') {
 else {
   // Return to home page if no movie ID is provided
     gotoMainPage();
-}
-
-function POSTValueOrNull($POSTindex) {
-  if (isset($_POST[$POSTindex]) && $_POST[$POSTindex] != '') {
-    return $_POST[$POSTindex];
-  }
-  else return null;
 }
 
 ?>

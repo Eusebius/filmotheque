@@ -3,7 +3,7 @@
  * includes/suggestPersons.inc.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @version 0.2.4
+ * @since 0.2.4
  * 
  * This is a test script aiming to provide suggestions for people to an AJAX
  * script.
