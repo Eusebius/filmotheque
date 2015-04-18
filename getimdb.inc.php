@@ -149,6 +149,9 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   </table>
 <?php
   }
+
+    echo '<p><a href="?page=moviedetails&id_movie=' . $movie->getID() 
+            . '">Retour à la page du film</a></p>';
 }
 else {
   // Return to home page if no movie is specified

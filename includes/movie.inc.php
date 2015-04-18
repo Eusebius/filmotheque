@@ -317,7 +317,10 @@ class Movie {
             $this->id_movie = $conn->lastInsertId();
         } else {
             $updateMovies = $conn->prepare('update movies set title=?, year=?, imdb_id=?, originaltitle=? where id_movie=?');
-            $updateMovies->execute(array($this->title, ($this->year != '' ? $this->year : null), ($this->imdb_id != '' ? $this->imdb_id : null), ($this->originaltitle != '' ? $this->originaltitle : null), $this->id_movie));
+            $result = $updateMovies->execute(array($this->title, ($this->year != '' ? $this->year : null), ($this->imdb_id != '' ? $this->imdb_id : null), ($this->originaltitle != '' ? $this->originaltitle : null), $this->id_movie));
+            if (!$result) {
+                fatal($updateMovies->errorInfo());
+            }
         }
 
         $deleteMakers = $conn->prepare('delete from `movies-makers` where id_movie = ?');
