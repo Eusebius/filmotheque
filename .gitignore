@@ -6,3 +6,5 @@ info.php
 *#
 nbproject
 doc
+.htpasswd
+.htaccess
