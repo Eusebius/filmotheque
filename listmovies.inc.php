@@ -1,4 +1,12 @@
 <?php
+/**
+ * listmovies.inc.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @version 0.2.4
+ * 
+ * This is the content for the page listing movies present in the database.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)

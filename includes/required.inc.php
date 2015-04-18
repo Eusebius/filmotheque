@@ -1,4 +1,13 @@
 <?php
+/**
+ * includes/required.inc.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @version 0.2.4
+ * 
+ * This is a file included in all pages and scripts of the application. It 
+ * positions session info, global functions and various configuration data.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)

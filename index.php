@@ -1,4 +1,14 @@
 <?php
+/**
+ * index.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @version 0.2.4
+ * 
+ * This is the main file to be served by the web server. It contains the
+ * skeleton of any HTML rendering, and loads PHP content based on a GET 
+ * parameter.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)

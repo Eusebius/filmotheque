@@ -1,4 +1,12 @@
 <?php
+/**
+ * doupdatemovie.php
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @version 0.2.4
+ * 
+ * This is the script taking care of the update of a movie.
+ */
 /*
     Filmothèque
     Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)

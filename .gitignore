@@ -4,3 +4,5 @@ backup-tmp
 test.php
 info.php
 *#
+nbproject
+doc
