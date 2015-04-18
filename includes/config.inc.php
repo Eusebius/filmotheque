@@ -48,7 +48,7 @@ $_SESSION['config']['db_prefix'] = '';
  * Current software version
  * *DON'T TOUCH THIS*
  */
-$_SESSION['config']['version'] = "0.2.4";
+$_SESSION['config']['version'] = "0.2.5";
 
 /**
  *  Assigned background colours for each medium quality
