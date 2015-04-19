@@ -711,8 +711,11 @@ class Movie {
      * @since 0.2.4
      */
     public function getMedia() {
-        $media = $this->media;
-        return $media;
+        $r = array();
+        foreach ($this->media as $medium) {
+            array_push($r, $medium);
+        }
+        return $r;
     }
 
 }
@@ -918,8 +921,11 @@ class Medium {
      * @since 0.2.4
      */
     public function getAudio() {
-        $audio = $this->audio;
-        return $audio;
+        $r = array();
+        foreach ($this->audio as $lang) {
+            array_push($r, $lang);
+        }
+        return $r;
     }
 
     /**
@@ -929,8 +935,11 @@ class Medium {
      * @since 0.2.4
      */
     public function getSubs() {
-        $subs = $this->subs;
-        return $subs;
+        $r = array();
+        foreach ($this->subs as $lang) {
+            array_push($r, $lang);
+        }
+        return $r;
     }
 
     /**
