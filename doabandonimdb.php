@@ -40,10 +40,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     gotoMainPage();
   }
 
-  if (!isset($_SESSION['movie'])) {
-    $_SESSION['movie'] = new Movie($id_movie);
-  }
-  $movie = $_SESSION['movie'];
+  $movie = getMovieInSession($id_movie);
   
   if ($movie->getIMDbID() == null) {
       $movie->setFieldAndWait('imdb_id', 'nil');

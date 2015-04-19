@@ -38,6 +38,8 @@ if (isset($_GET['id_medium']) && $_GET['id_medium'] != '') {
     gotoMainPage();
   }
 
+  // Is it really necessary?
+  // Can we not reuse the object in session if it is here?
   unset($_SESSION['medium']);
 
   $medium = new Medium($id_medium);

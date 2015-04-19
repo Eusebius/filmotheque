@@ -38,12 +38,10 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     gotoMainPage();
   }
 
+  //Is it really necessary?
   unset($_SESSION['movie']);
-
-  if (!isset($_SESSION['movie'])) {
-    $_SESSION['movie'] = new Movie($id_movie);
-  }
-  $movie = $_SESSION['movie'];
+  
+  $movie = getMovieInSession($id_movie);
 
   ?>
 <h3>Mise à jour du film numéro <?php echo $id_movie; ?></h3>

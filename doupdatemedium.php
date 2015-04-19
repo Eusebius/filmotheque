@@ -38,11 +38,8 @@ if (isset($_POST['id_medium']) && $_POST['id_medium'] != '') {
   // Return to home page if movie ID is not a number
     gotoMainPage();
   }
-
-  if (!isset($_SESSION['medium'])) {
-    $_SESSION['medium'] = new Medium($id_medium);
-  }
-  $medium = $_SESSION['medium'];
+  
+  $medium = getMediumInSession($id_medium);
 
   $medium->setValues(POSTValueOrNull('type'), POSTValueOrNull('height'), POSTValueOrNull('width'), POSTValueOrNull('comment'), POSTValueOrNull('shelfmark'), POSTValueOrNull('audio'), POSTValueOrNull('subs'));
 
