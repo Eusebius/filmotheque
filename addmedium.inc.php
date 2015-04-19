@@ -37,13 +37,8 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   // Return to home page if movie ID is not a number
     gotoMainPage();
   }
-
-  //unset($_SESSION['movie']);
-
-  if (!isset($_SESSION['movie'])) {
-    $_SESSION['movie'] = new Movie($id_movie);
-  }
-  $movie = $_SESSION['movie'];
+  
+  $movie = getMovieInSession($id_movie);
 
   ?>
 <h3>Création d'un support pour le film numéro <?php echo $id_movie; //' ?></h3>

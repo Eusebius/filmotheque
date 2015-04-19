@@ -159,4 +159,36 @@ function POSTValueOrNull($POSTindex) {
         return null;
 }
 
+/**
+ * Check that the proper movie is present as an object in session (either reuse
+ * the existing one or load the proper one). Does not refresh the movie object
+ * if it refers to the right movie.
+ * @param \int $id_movie The unique identifier of the movie.
+ * @return \Movie The movie object.
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.6
+ */
+function getMovieInSession($id_movie) {
+  if (!isset($_SESSION['movie']) || $_SESSION['movie']->getID() != $id_movie) {
+    $_SESSION['movie'] = new Movie($id_movie);
+  }
+  return $_SESSION['movie'];
+}
+
+/**
+ * Check that the proper medium is present as an object in session (either reuse
+ * the existing one or load the proper one). Does not refresh the medium object
+ * if it refers to the right medium.
+ * @param \int $id_medium The unique identifier of the medium.
+ * @return \Medium The medium object.
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.2.6
+ */
+function getMediumInSession($id_medium) {
+  if (!isset($_SESSION['medium']) || $_SESSION['medium']->getID() != $id_medium) {
+    $_SESSION['medium'] = new Medium($id_medium);
+  }
+  return $_SESSION['medium'];
+}
+
 ?>

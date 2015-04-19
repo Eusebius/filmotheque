@@ -39,11 +39,7 @@ if (isset($_POST['id_movie']) && $_POST['id_movie'] != '') {
     gotoMainPage();
   }
 
-  if (!isset($_SESSION['movie'])) {
-    $_SESSION['movie'] = new Movie($id_movie);
-  }
-  $movie = $_SESSION['movie'];
-
+  $movie = getMovieInSession($id_movie);
   $movie->setValues(POSTValueOrNull('title'), POSTValueOrNull('year'), POSTValueOrNull('makers'), POSTValueOrNull('actors'), POSTValueOrNull('categories'), POSTValueOrNull('shortlists'), POSTValueOrNull('rating'), POSTValueOrNull('lastseen'));
 
   header('Location:./?page=moviedetails&id_movie=' . $id_movie);

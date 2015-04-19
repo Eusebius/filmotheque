@@ -40,11 +40,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     gotoMainPage();
   }
 
-  if (!isset($_SESSION['movie'])) {
-    $_SESSION['movie'] = new Movie($id_movie);
-  }
-  $movie = $_SESSION['movie'];
-
+  $movie = getMovieInSession($id_movie);
   $movie->setLastSeen(date('d/m/Y'));
 
   header('Location:./?page=moviedetails&id_movie=' . $id_movie);

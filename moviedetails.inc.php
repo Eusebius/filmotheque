@@ -38,9 +38,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
         gotoMainPage();
     }
 
-    $_SESSION['movie'] = new Movie($id_movie);
-    $movie = $_SESSION['movie'];
-
+    $movie = getMovieInSession($id_movie);
     $conn = db_ensure_connected();
 
     echo '<h2>Détails d\'un film</h2>' . "\n";
