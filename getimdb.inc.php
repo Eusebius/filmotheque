@@ -100,8 +100,8 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
       <td>
 <?php
     $genres = $item->getElementsByTagName('genres')->item(0);
-    $genres = $genres->getElementsByTagName('genre');
-    foreach ($genres as $genre) {
+    $genreElements = $genreElements->getElementsByTagName('genre');
+    foreach ($genreElements as $genre) {
       echo $genre->nodeValue . ' ';
     }
 ?>
@@ -157,5 +157,3 @@ else {
   // Return to home page if no movie is specified
   gotoMainPage();
 }
-
-?>

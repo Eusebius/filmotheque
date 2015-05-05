@@ -52,5 +52,3 @@ else {
   // Return to home page if no medium ID is provided
     gotoMainPage();
 }
-
-?>

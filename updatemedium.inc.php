@@ -89,12 +89,12 @@ if (isset($_GET['id_medium']) && $_GET['id_medium'] != '') {
     $nextArray = $next->fetchall(PDO::FETCH_ASSOC);
     $nextShelfmark = $nextArray[0]['next'];
   ?>
-  <tr><td>Cote&nbsp;:</td><td><input type="text" name="shelfmark" value="<?php echo $medium->getShelfmark(); ?>"/></td><td>(première cote disponible&nbsp;: <?php echo $nextShelfmark; ?>)</td></tr></tr>
+  <tr><td>Cote&nbsp;:</td><td><input type="text" name="shelfmark" value="<?php echo $medium->getShelfmark(); ?>"/></td><td>(première cote disponible&nbsp;: <?php echo $nextShelfmark; ?>)</td></tr>
   <tr><td>Pistes audio&nbsp;:</td><td>
   <select name="audio[]" multiple>
   <?php
-  $conn = db_ensure_connected();
-  $languages = $conn->prepare('select distinct language from `languages`');
+  $conn2 = db_ensure_connected();
+  $languages = $conn2->prepare('select distinct language from `languages`');
   $languages->execute();
   $languageArray = $languages->fetchall(PDO::FETCH_ASSOC);
   foreach ($languageArray as $lang) {
@@ -133,5 +133,3 @@ else {
   // Return to home page if no medium is specified
   gotoMainPage();
 }
-
-?>

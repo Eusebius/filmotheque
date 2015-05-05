@@ -72,14 +72,14 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   <tr><td>Acteur(s)&nbsp;:</td><td>
   <select name="actors[]" multiple>
   <?php
-  $conn = db_ensure_connected();
-  $selectedActors = $conn->prepare('select `id_person`, `name` from `persons` natural join `movies-actors` natural join `movies` WHERE id_movie=? order by name');
+  $conn2 = db_ensure_connected();
+  $selectedActors = $conn2->prepare('select `id_person`, `name` from `persons` natural join `movies-actors` natural join `movies` WHERE id_movie=? order by name');
   $selectedActors->execute(array($id_movie));
   $selectedActorsArray = $selectedActors->fetchall(PDO::FETCH_ASSOC);
   foreach ($selectedActorsArray as $actor) {
     echo '<option value="' . $actor['id_person'] . '" selected>' . $actor['name'] . '</option>' . "\n";
   }
-  $otherActors = $conn->prepare('SELECT id_person, name FROM `persons` WHERE id_person NOT IN (SELECT `id_person` FROM `persons` NATURAL JOIN `movies-actors` NATURAL JOIN `movies` WHERE id_movie =?) order by name');
+  $otherActors = $conn2->prepare('SELECT id_person, name FROM `persons` WHERE id_person NOT IN (SELECT `id_person` FROM `persons` NATURAL JOIN `movies-actors` NATURAL JOIN `movies` WHERE id_movie =?) order by name');
   $otherActors->execute(array($id_movie));
   $otherActorsArray = $otherActors->fetchall(PDO::FETCH_ASSOC);
   foreach ($otherActorsArray as $actor) {
@@ -140,5 +140,3 @@ else {
   // Return to home page if no movie is specified
   gotoMainPage();
 }
-
-?>

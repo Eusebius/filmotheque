@@ -67,8 +67,8 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   <tr><td>Commentaires&nbsp;:</td><td><input type="text" name="comment" /></td></tr>
   <?php
 
-    $conn = db_ensure_connected();
-    $next = $conn->prepare('SELECT shelfmark+1 next FROM `media` m WHERE not exists (select shelfmark from media where media.shelfmark = m.shelfmark+1) and m.shelfmark is not null order by next limit 1');
+    $conn2 = db_ensure_connected();
+    $next = $conn2->prepare('SELECT shelfmark+1 next FROM `media` m WHERE not exists (select shelfmark from media where media.shelfmark = m.shelfmark+1) and m.shelfmark is not null order by next limit 1');
     $next->execute();
     if ($next->rowCount() == 0) {
       fatal('Impossible de trouver la prochaine cote disponible');
@@ -116,5 +116,3 @@ else {
   // Return to home page if no movie is specified
   gotoMainPage();
 }
-
-?>

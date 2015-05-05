@@ -43,5 +43,3 @@ else {
   // Return to home page if no movie title is provided
     gotoMainPage();
 }
-
-?>

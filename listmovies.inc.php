@@ -149,10 +149,10 @@ foreach ($catArray as $catentry) {
 <?php
 
 $shortlistWhere='(1=1';
-$n = count($shortlistFilter);
-if ($n > 0) {
+$nShortlists = count($shortlistFilter);
+if ($nShortlists > 0) {
   $shortlistWhere .= " and (shortlists.id_shortlist = '" . $shortlistFilter[0] . "'";
-  for ($i = 1; $i < $n; $i++) {
+  for ($i = 1; $i < $nShortlists; $i++) {
     $shortlistWhere .= " or shortlists.id_shortlist = '" . $shortlistFilter[$i] . "'";
   }
   $shortlistWhere .= ')';
@@ -160,10 +160,10 @@ if ($n > 0) {
 $shortlistWhere .= ')';
 
 $catWhere='(1=1';
-$n = count($catFilter);
-if ($n > 0) {
+$nCats = count($catFilter);
+if ($nCats > 0) {
   $catWhere .= " and (`movies-categories`.category = '" . $catFilter[0] . "'";
-  for ($i = 1; $i < $n; $i++) {
+  for ($i = 1; $i < $nCats; $i++) {
     $catWhere .= " or `movies-categories`.category = '" . $catFilter[$i] . "'";
   }
   $catWhere .= ')';

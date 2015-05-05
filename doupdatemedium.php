@@ -50,5 +50,3 @@ else {
   // Return to home page if no movie ID is provided
     gotoMainPage();
 }
-
-?>

@@ -181,5 +181,3 @@ echo '<input type="submit" value="Confirm" /></form>' . "\n";
 
 fclose($entrieswithcomments);
 fclose($csvfile);
-
-?>

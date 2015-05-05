@@ -69,5 +69,3 @@ else {
   // Return to home page if either movie ID or imdb ID is not provided
     gotoMainPage();
 }
-
-?>

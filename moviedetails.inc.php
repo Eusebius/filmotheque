@@ -218,4 +218,3 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     // Return to home page if no movie is specified
     gotoMainPage();
 }
-?>
