@@ -29,8 +29,8 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-$basepath = dirname(__FILE__);
-$basepath = substr($basepath, 0, (strpos($basepath, '/includes') ? strpos($basepath, '/includes') : strpos($basepath, '\includes')));
+$currentDirName = dirname(__FILE__);
+$basepath = substr($currentDirName, 0, (strpos($currentDirName, '/includes') ? strpos($currentDirName, '/includes') : strpos($currentDirName, '\includes')));
 ini_set('include_path', $basepath . ':' . ini_get('include_path'));
 
 require_once('Movie.php');
@@ -120,11 +120,12 @@ function check_chmod() {
  * @since 0.2.4
  */
 function isIntString($string) {
-    if ((string) (int) $string == $string) {
-        return (int) $string;
+    if ((string) (int) $string == $string) { //TODO rewrite that, as "0123abc" coerces to an int.
+        $result = (int) $string;
     } else {
-        return false;
+        $result = false;
     }
+    return $result;
 }
 
 /**
@@ -155,9 +156,11 @@ function makeHiddenParameters($paramString) {
  */
 function POSTValueOrNull($POSTindex) {
     if (isset($_POST[$POSTindex]) && $_POST[$POSTindex] != '') {
-        return $_POST[$POSTindex];
-    } else
-        return null;
+        $result = $_POST[$POSTindex];
+    } else {
+        $result = null;
+    }
+    return $result;
 }
 
 /**
@@ -170,10 +173,10 @@ function POSTValueOrNull($POSTindex) {
  * @since 0.2.6
  */
 function getMovieInSession($id_movie) {
-  if (!isset($_SESSION['movie']) || $_SESSION['movie']->getID() != $id_movie) {
-    $_SESSION['movie'] = new Movie($id_movie);
-  }
-  return $_SESSION['movie'];
+    if (!isset($_SESSION['movie']) || $_SESSION['movie']->getID() != $id_movie) {
+        $_SESSION['movie'] = new Movie($id_movie);
+    }
+    return $_SESSION['movie'];
 }
 
 /**
@@ -186,10 +189,8 @@ function getMovieInSession($id_movie) {
  * @since 0.2.6
  */
 function getMediumInSession($id_medium) {
-  if (!isset($_SESSION['medium']) || $_SESSION['medium']->getID() != $id_medium) {
-    $_SESSION['medium'] = new Medium($id_medium);
-  }
-  return $_SESSION['medium'];
+    if (!isset($_SESSION['medium']) || $_SESSION['medium']->getID() != $id_medium) {
+        $_SESSION['medium'] = new Medium($id_medium);
+    }
+    return $_SESSION['medium'];
 }
-
-?>
