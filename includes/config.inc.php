@@ -81,4 +81,3 @@ $rank['undefined'] = 0;
   print_r($_SESSION['config']);
   echo '<br />';
 */
-?>

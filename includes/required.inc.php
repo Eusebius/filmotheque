@@ -33,7 +33,8 @@ $basepath = dirname(__FILE__);
 $basepath = substr($basepath, 0, (strpos($basepath, '/includes') ? strpos($basepath, '/includes') : strpos($basepath, '\includes')));
 ini_set('include_path', $basepath . ':' . ini_get('include_path'));
 
-require_once('movie.inc.php');
+require_once('Movie.php');
+require_once('Medium.php');
 
 session_start();
 

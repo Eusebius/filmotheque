@@ -78,5 +78,3 @@ function db_ensure_connected() {
 function db_disconnect($pdoconn) {
   $pdoconn = null;
 }
-
-?>
