@@ -4,7 +4,7 @@
  * includes/Medium.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.2.5
+ * @since 0.2.6
  * 
  * This is the file defining the Medium class.
  */
