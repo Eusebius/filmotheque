@@ -35,6 +35,11 @@
 $_SESSION['config']=array();
 
 /**
+ * Are we in debug mode?
+ */
+$_SESSION['debug'] = false;
+
+/**
  * Database connection configuration
  * *UPDATE THIS* to suit your needs
  */
