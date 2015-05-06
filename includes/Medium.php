@@ -7,6 +7,7 @@
  * @since 0.2.6
  * 
  * This is the file defining the Medium class.
+ * This file is not to be included directly, use declarations.inc.php instead.
  */
 /*
   Filmothèque
@@ -37,7 +38,7 @@
  * @since 0.2.6
  */
 class Medium {
-    
+
     /**
      * @var \Movie Reference to the corresponding movie object.
      * @author Eusebius <eusebius@eusebius.fr>
@@ -256,7 +257,7 @@ class Medium {
      * @since 0.2.4
      */
     public function delete() {
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
         $delMedium = $conn->prepare('delete from `media` where `id_medium`=?');
         if (!$delMedium->execute(array($this->mediumID))) {
             // What on Earth is this td function, 
@@ -275,19 +276,23 @@ class Medium {
      * @since 0.2.4
      */
     public function updateAll() {
-        $conn = db_ensure_connected();
-        $getMedium = $conn->prepare('select media.id_medium, id_movie, type, height, width, comment, shelfmark, quality from media, `media-quality` where media.id_medium = ? and media.id_medium=`media-quality`.id_medium');
+        $conn = Util::getDbConnection();
+        $getMedium = $conn->prepare('select media.id_medium, id_movie, type, '
+                . 'height, width, comment, shelfmark, quality from media, '
+                . '`media-quality` where media.id_medium = ? and '
+                . 'media.id_medium=`media-quality`.id_medium');
 
         $getMedium->execute(array($this->mediumID));
         $nMedia = $getMedium->rowCount();
         if ($nMedia == 0) {
-            fatal(
-                    'Erreur inattendue : aucun support ne correspond à l\'ID ' . $this->mediumID . '.<br /><br />'
+            Util::fatal(
+                    'Erreur inattendue : aucun support ne correspond à l\'ID '
+                    . $this->mediumID . '.<br /><br />'
                     . '<a href=".">Retour à la page principale</a>'
             );
         }
         if ($nMedia > 1) {
-            fatal(
+            Util::fatal(
                     "Erreur inattendue : plusieurs supports correspondent à l'ID"
                     . "{$this->mediumID}.<br /><br />"
                     . '<a href=".">Retour à la page principale</a>'
@@ -314,7 +319,7 @@ class Medium {
      */
     public function updateAudio() {
         $this->audio = array();
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
         $getAudio = $conn->prepare('select language from `media-audio` where id_medium = ?');
         $getAudio->execute(array($this->mediumID));
         $audioArray = $getAudio->fetchall(PDO::FETCH_ASSOC);
@@ -331,8 +336,9 @@ class Medium {
      */
     public function updateSubs() {
         $this->subs = array();
-        $conn = db_ensure_connected();
-        $getSubs = $conn->prepare('select language from `media-subs` where id_medium = ?');
+        $conn = Util::getDbConnection();
+        $getSubs = $conn->prepare('select language from `media-subs` where '
+                . 'id_medium = ?');
         $getSubs->execute(array($this->mediumID));
         $subArray = $getSubs->fetchall(PDO::FETCH_ASSOC);
         foreach ($subArray as $sub) {
@@ -422,19 +428,26 @@ class Medium {
      * @since 0.2.4
      */
     public function writeAll() {
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
 
         $conn->beginTransaction();
 
-        $checkMedium = $conn->prepare('select id_medium from media where id_medium = ?');
+        $checkMedium = $conn->prepare('select id_medium from media where '
+                . 'id_medium = ?');
         $checkMedium->execute(array($this->mediumID));
         if ($checkMedium->rowCount() == 0) {
-            $insertMedium = $conn->prepare('insert into media (id_movie, type) values (?, ?)');
+            $insertMedium = $conn->prepare('insert into media (id_movie, type) '
+                    . 'values (?, ?)');
             $insertMedium->execute(array($this->movieID, $this->type));
             $this->mediumID = $conn->lastInsertId();
         }
-        $updateMovies = $conn->prepare('update media set type=?, height=?, width=?, comment=?, shelfmark=? where id_medium=?');
-        $updateMovies->execute(array($this->type, ($this->height != '' ? $this->height : null), ($this->width != '' ? $this->width : null), $this->comment, ($this->shelfmark != '' ? $this->shelfmark : null), $this->mediumID));
+        $updateMovies = $conn->prepare('update media set type=?, height=?, '
+                . 'width=?, comment=?, shelfmark=? where id_medium=?');
+        $updateMovies->execute(array($this->type,
+            ($this->height != '' ? $this->height : null),
+            ($this->width != '' ? $this->width : null), $this->comment,
+            ($this->shelfmark != '' ? $this->shelfmark : null),
+            $this->mediumID));
 
         $deleteAudio = $conn->prepare('delete from `media-audio` where id_medium = ?');
         $deleteAudio->execute(array($this->mediumID));
@@ -466,4 +479,5 @@ class Medium {
             echo "</pre>\n";
         }
     }
+
 }

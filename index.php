@@ -27,7 +27,8 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-require_once('includes/required.inc.php');
+require_once('includes/declarations.inc.php');
+require_once('includes/initialization.inc.php');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -45,7 +46,7 @@ require_once('includes/required.inc.php');
             echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
         }
 
-        check_chmod();
+        Util::checkChmod();
 
         if (isset($_GET['page']) && $_GET['page'] == 'moviedetails') {
             include('pages/moviedetails.inc.php');

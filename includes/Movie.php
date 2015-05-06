@@ -1,12 +1,13 @@
 <?php
 
 /**
- * includes/movie.inc.php
+ * includes/Moviephp
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4
  * 
  * This is the file defining the Movie class.
+ * This file is not to be included directly, use declarations.inc.php instead.
  */
 /*
   Filmothèque
@@ -184,10 +185,11 @@ class Movie {
      */
     public function delete() {
         if ($this->movieID != null) {
-            $conn = db_ensure_connected();
+            $conn = Util::getDbConnection();
             $delMovie = $conn->prepare('delete from `movies` where `id_movie`=?');
             if (!$delMovie->execute(array($this->movieID))) {
                 //What on Earth is this td function?
+                //Why do we die silently in debug mode?
                 td($delMovie->errorInfo());
                 if ($_SESSION['debug']) {
                     die();
@@ -281,7 +283,7 @@ class Movie {
     public function setLastSeen($lastseen) {
         $this->lastseen = ($lastseen != null ? $this->unformatDate($lastseen) : null);
 
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
         $conn->beginTransaction();
 
         if ($this->rating != null && $this->rating != '') {
@@ -304,7 +306,7 @@ class Movie {
      * @since 0.2.4
      */
     public function writeAll() {
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
 
         $conn->beginTransaction();
 
@@ -319,7 +321,7 @@ class Movie {
             $updateMovies = $conn->prepare('update movies set title=?, year=?, imdb_id=?, originaltitle=? where id_movie=?');
             $result = $updateMovies->execute(array($this->title, ($this->year != '' ? $this->year : null), ($this->imdbID != '' ? $this->imdbID : null), ($this->originaltitle != '' ? $this->originaltitle : null), $this->movieID));
             if (!$result) {
-                fatal($updateMovies->errorInfo());
+                Util::fatal($updateMovies->errorInfo());
             }
         }
 
@@ -562,7 +564,7 @@ class Movie {
     public function updateMakers() {
         $this->makers = array();
         $this->makersID = array();
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
         $getMakers = $conn->prepare('select id_person, name from `movies-makers` natural join persons where id_movie = ?');
         $getMakers->execute(array($this->movieID));
         $makerArray = $getMakers->fetchall(PDO::FETCH_ASSOC);
@@ -582,7 +584,7 @@ class Movie {
     public function updateActors() {
         $this->actors = array();
         $this->actorsID = array();
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
         $getActors = $conn->prepare('select id_person, name from `movies-actors` natural join persons where id_movie = ?');
         $getActors->execute(array($this->movieID));
         $actorArray = $getActors->fetchall(PDO::FETCH_ASSOC);
@@ -601,7 +603,7 @@ class Movie {
      */
     public function updateCategories() {
         $this->categories = array();
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
         $getCategories = $conn->prepare('select category from `movies-categories` where id_movie = ?');
         $getCategories->execute(array($this->movieID));
         $categoryArray = $getCategories->fetchall(PDO::FETCH_ASSOC);
@@ -620,7 +622,7 @@ class Movie {
     public function updateShortlists() {
         $this->shortlists = array();
         $this->shortlistsID = array();
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
         $getShortlists = $conn->prepare('select id_shortlist, listname from `movies-shortlists` natural join shortlists where id_movie = ?');
         $getShortlists->execute(array($this->movieID));
         $shortlistArray = $getShortlists->fetchall(PDO::FETCH_ASSOC);
@@ -642,19 +644,19 @@ class Movie {
      * @since 0.2.4
      */
     public function updateAll($withPeople = true, $withCategories = true, $withShortlists = true) {
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
         $getMovie = $conn->prepare('select movies.id_movie id_movie, title, year, imdb_id, originaltitle, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie where movies.id_movie = ?');
 
         $getMovie->execute(array($this->movieID));
         $nMovies = $getMovie->rowCount();
         if ($nMovies == 0) {
-            fatal(
+            Util::fatal(
                     "Erreur inattendue : aucun film ne correspond à l'ID {$this->movieID}.<br /><br />"
                     . '<a href=".">Retour à la page principale</a>'
             );
         }
         if ($nMovies > 1) {
-            fatal(
+            Util::fatal(
                     "Erreur inattendue : plusieurs films correspondent à l'ID"
                     . "{$this->movieID}.<br /><br />"
                     . '<a href=".">Retour à la page principale</a>'
@@ -691,7 +693,7 @@ class Movie {
     public function retrieveMedia() {
         $this->media = Array();
 
-        $conn = db_ensure_connected();
+        $conn = Util::getDbConnection();
         $getMedia = $conn->prepare('select distinct id_medium from media where id_movie = ?');
 
         $getMedia->execute(array($this->movieID));

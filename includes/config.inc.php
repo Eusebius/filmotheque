@@ -7,6 +7,7 @@
  * 
  * This is the main configuration file of the application. All customization for
  * a particular installation should go here.
+ * This file is not to be included directly, use declarations.inc.php instead.
  */
 /*
     Filmothèque

@@ -45,7 +45,7 @@ generateOptions($prefix);
 function generateOptions($prefix) {
   $length = strlen($prefix);
   $MAX_RETURN = 10;
-  $conn = db_ensure_connected();
+  $conn = Util::getDbConnection();
   $getPersons = $conn->prepare('(SELECT id_person, name, 1 AS query FROM persons WHERE left( lower( name ) , ? ) = ? ORDER BY name LIMIT 10)'
 			       . ' UNION '
 			       . '(SELECT id_person, name, 2 FROM persons WHERE locate(?, lower( name ) ) <> 0 AND id_person NOT IN '

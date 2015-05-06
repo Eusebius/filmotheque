@@ -26,7 +26,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/required.inc.php');
+require_once('includes/declarations.inc.php'); require_once('includes/initialization.inc.php');
 
 if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
@@ -35,13 +35,13 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   }
   else {
   // Return to home page if movie ID is not a number
-    gotoMainPage();
+    Util::gotoMainPage();
   }
 
   //Is it really necessary?
   unset($_SESSION['movie']);
   
-  $movie = getMovieInSession($id_movie);
+  $movie = Util::getMovieInSession($id_movie);
 
   ?>
 <h3>Mise à jour du film numéro <?php echo $id_movie; ?></h3>
@@ -53,7 +53,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   <tr><td>Réalisateur(s)&nbsp;:</td><td>
   <select name="makers[]" multiple>
   <?php
-  $conn = db_ensure_connected();
+  $conn = Util::getDbConnection();
   $selectedMakers = $conn->prepare('select `id_person`, `name` from `persons` natural join `movies-makers` natural join `movies` WHERE id_movie=? order by name');
   $selectedMakers->execute(array($id_movie));
   $selectedMakersArray = $selectedMakers->fetchall(PDO::FETCH_ASSOC);
@@ -72,7 +72,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   <tr><td>Acteur(s)&nbsp;:</td><td>
   <select name="actors[]" multiple>
   <?php
-  $conn2 = db_ensure_connected();
+  $conn2 = Util::getDbConnection();
   $selectedActors = $conn2->prepare('select `id_person`, `name` from `persons` natural join `movies-actors` natural join `movies` WHERE id_movie=? order by name');
   $selectedActors->execute(array($id_movie));
   $selectedActorsArray = $selectedActors->fetchall(PDO::FETCH_ASSOC);
@@ -138,5 +138,5 @@ $cats->execute();
 }
 else {
   // Return to home page if no movie is specified
-  gotoMainPage();
+  Util::gotoMainPage();
 }

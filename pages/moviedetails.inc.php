@@ -27,7 +27,8 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/required.inc.php');
+require_once('includes/declarations.inc.php');
+require_once('includes/initialization.inc.php');
 
 if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
@@ -35,11 +36,11 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
         $id_movie = (int) $_GET['id_movie'];
     } else {
         // Return to home page if movie ID is not a number
-        gotoMainPage();
+        Util::gotoMainPage();
     }
 
-    $movie = getMovieInSession($id_movie);
-    $conn = db_ensure_connected();
+    $movie = Util::getMovieInSession($id_movie);
+    $conn = Util::getDbConnection();
 
     echo '<h2>Détails d\'un film</h2>' . "\n";
 
@@ -216,5 +217,5 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     . '<a href=".">Retour à la page principale</a>';
 } else {
     // Return to home page if no movie is specified
-    gotoMainPage();
+    Util::gotoMainPage();
 }

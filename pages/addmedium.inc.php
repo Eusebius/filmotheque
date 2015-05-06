@@ -26,7 +26,8 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/required.inc.php');
+require_once('includes/declarations.inc.php');
+require_once('includes/initialization.inc.php');
 
 if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
@@ -35,10 +36,10 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   }
   else {
   // Return to home page if movie ID is not a number
-    gotoMainPage();
+    Util::gotoMainPage();
   }
   
-  $movie = getMovieInSession($id_movie);
+  $movie = Util::getMovieInSession($id_movie);
 
   ?>
 <h3>Création d'un support pour le film numéro <?php echo $id_movie; //' ?></h3>
@@ -49,7 +50,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   <tr><td>Type&nbsp;:</td><td>
   <select name="type">
   <?php
-  $conn = db_ensure_connected();
+  $conn = Util::getDbConnection();
   $types = $conn->prepare('select distinct type from `media`');
   $types->execute();
   $typeArray = $types->fetchall(PDO::FETCH_ASSOC);
@@ -67,11 +68,11 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   <tr><td>Commentaires&nbsp;:</td><td><input type="text" name="comment" /></td></tr>
   <?php
 
-    $conn2 = db_ensure_connected();
+    $conn2 = Util::getDbConnection();
     $next = $conn2->prepare('SELECT shelfmark+1 next FROM `media` m WHERE not exists (select shelfmark from media where media.shelfmark = m.shelfmark+1) and m.shelfmark is not null order by next limit 1');
     $next->execute();
     if ($next->rowCount() == 0) {
-      fatal('Impossible de trouver la prochaine cote disponible');
+      Util::fatal('Impossible de trouver la prochaine cote disponible');
     }
     $nextArray = $next->fetchall(PDO::FETCH_ASSOC);
     $nextShelfmark = $nextArray[0]['next'];
@@ -114,5 +115,5 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 }
 else {
   // Return to home page if no movie is specified
-  gotoMainPage();
+  Util::gotoMainPage();
 }

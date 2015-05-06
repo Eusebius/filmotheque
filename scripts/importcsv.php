@@ -27,7 +27,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/required.inc.php');
+require_once('includes/declarations.inc.php'); require_once('includes/initialization.inc.php');
 
 $csvfilename = 'films.csv';
 /* 
@@ -51,7 +51,7 @@ $csvfilename = 'films.csv';
    [16] - Lastseen
  */
 
-$pdoconn = db_ensure_connected();
+$pdoconn = Util::getDbConnection();
 
 $csvfile = fopen($csvfilename, 'r');
 $entrieswithcomments = fopen('entrieswithcomments.csv', 'w');
