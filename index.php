@@ -48,19 +48,19 @@ require_once('includes/required.inc.php');
         check_chmod();
 
         if (isset($_GET['page']) && $_GET['page'] == 'moviedetails') {
-            include('moviedetails.inc.php');
+            include('pages/moviedetails.inc.php');
         } else if (isset($_GET['page']) && $_GET['page'] == 'updatemovie') {
-            include('updatemovie.inc.php');
+            include('pages/updatemovie.inc.php');
         } else if (isset($_GET['page']) && $_GET['page'] == 'updatemedium') {
-            include('updatemedium.inc.php');
+            include('pages/updatemedium.inc.php');
         } else if (isset($_GET['page']) && $_GET['page'] == 'addmedium') {
-            include('addmedium.inc.php');
+            include('pages/addmedium.inc.php');
         } else if (isset($_GET['page']) && $_GET['page'] == 'addmovie') {
-            include('addmovie.inc.php');
+            include('pages/addmovie.inc.php');
         } else if (isset($_GET['page']) && $_GET['page'] == 'getimdb') {
-            include('getimdb.inc.php');
+            include('pages/getimdb.inc.php');
         } else {
-            include('listmovies.inc.php');
+            include('pages/listmovies.inc.php');
         }
         ?>
 

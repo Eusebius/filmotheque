@@ -26,6 +26,8 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+//TODO manage exceptions when there is no Internet connectivity
+
 require_once('includes/required.inc.php');
 
 if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
