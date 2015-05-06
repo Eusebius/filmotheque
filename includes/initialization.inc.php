@@ -31,8 +31,6 @@
 session_start();
 require_once('config.inc.php');
 
-$_SESSION['debug'] = true;
-
 if (!isset($_SESSION['basepath'])) {
     $currentDirName = dirname(__FILE__);
     $basepath = Util::stripPathFromDirs($currentDirName);
