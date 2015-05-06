@@ -27,8 +27,8 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/declarations.inc.php');
-require_once('includes/initialization.inc.php');
+require_once('../includes/declarations.inc.php');
+require_once('../includes/initialization.inc.php');
 
 
 if (isset($_POST['id_medium']) && $_POST['id_medium'] != '') {
@@ -50,7 +50,7 @@ if (isset($_POST['id_medium']) && $_POST['id_medium'] != '') {
             Util::getPOSTValueOrNull('audio'), 
             Util::getPOSTValueOrNull('subs'));
 
-    header('Location:./?page=moviedetails&id_movie=' . $medium->getMovieID());
+    header('Location:../?page=moviedetails&id_movie=' . $medium->getMovieID());
 } else {
     // Return to home page if no movie ID is provided
     Util::gotoMainPage();

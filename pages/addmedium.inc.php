@@ -43,7 +43,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
   ?>
 <h3>Création d'un support pour le film numéro <?php echo $id_movie; //' ?></h3>
-<form action="docreatemedium.php" method="POST">
+<form action="scripts/docreatemedium.php" method="POST">
   <input type="hidden" name="id_movie" value="<?php echo $id_movie; ?>" />
   <table>
   <tr><td>Titre du film&nbsp;:</td><td><?php echo $movie->getTitle(); ?></td></tr>

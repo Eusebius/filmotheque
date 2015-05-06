@@ -123,7 +123,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
     echo '<tr><td>Vu le&nbsp;:</td><td>';
     echo $movie->getFormattedLastseen();
-    echo '&nbsp;' . '<a href="doseentoday.php?id_movie=' . $id_movie . '">Vu aujourd\'hui&nbsp;!</a>';
+    echo '&nbsp;' . '<a href="scripts/doseentoday.php?id_movie=' . $id_movie . '">Vu aujourd\'hui&nbsp;!</a>';
     echo '</td></tr>' . "\n";
     echo '</table>' . "\n";
 
@@ -134,10 +134,10 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     echo "<br /><br />\n";
     if ($movie->getIMDbID() == '') {
         echo '<p><a href="?page=getimdb&id_movie=' . $id_movie . '">Lier à une fiche IMDb</a></p>';
-        echo '<p><a href="doabandonimdb.php?id_movie=' . $id_movie . '">Le film n\'a pas de correspondance dans IMDb</a></p>';
+        echo '<p><a href="scripts/doabandonimdb.php?id_movie=' . $id_movie . '">Le film n\'a pas de correspondance dans IMDb</a></p>';
         echo "<br /><br />\n";
     }
-    echo '<a href="dodeletemovie.php?id_movie=' . $id_movie . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ' . $movie->getTitle() . ' ?\')"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
+    echo '<a href="scripts/dodeletemovie.php?id_movie=' . $id_movie . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ' . $movie->getTitle() . ' ?\')"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
 
     // Fetching corresponding media
     $movie->retrieveMedia();
@@ -204,7 +204,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
         echo '<td bgcolor="' . $colour[$quality] . '"><a href="?page=updatemedium&id_medium=' . $medium->getID() . '">'
         . 'Mettre à jour le support'
         . '</a></td>';
-        echo '<td bgcolor="' . $colour[$quality] . '"><a href="dodeletemedium.php?id_medium=' . $medium->getID() . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ce support ?\')">'
+        echo '<td bgcolor="' . $colour[$quality] . '"><a href="scripts/dodeletemedium.php?id_medium=' . $medium->getID() . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ce support ?\')">'
         . '<font color="red">Supprimer le support</font>'
         . '</a></td>';
         //echo '<td>' . $quality . '</td>';

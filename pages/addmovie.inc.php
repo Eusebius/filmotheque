@@ -30,7 +30,7 @@ require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
 ?>
 <h3>Création d'un nouveau film</h3><?php //'  ?>
-<form action="docreatemovie.php" method="POST">
+<form action="scripts/docreatemovie.php" method="POST">
     <input type="hidden" name="id_movie" value="<?php echo $id_movie; ?>" />
     <table>
         <tr><td>Titre&nbsp;:</td><td><input type="text" name="title" /></td></tr>

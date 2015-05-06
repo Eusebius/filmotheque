@@ -1,12 +1,12 @@
 <?php
 
 /**
- * dodeletemovie.php
+ * doupdatemovie.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4
  * 
- * This is the script taking care of the deletion of a movie.
+ * This is the script taking care of the update of a movie.
  */
 /*
   Filmothèque
@@ -27,25 +27,23 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/declarations.inc.php');
-require_once('includes/initialization.inc.php');
+require_once('../includes/declarations.inc.php');
+require_once('../includes/initialization.inc.php');
 
-if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
+if (isset($_POST['id_movie']) && $_POST['id_movie'] != '') {
 
-    if ((string) (int) $_GET['id_movie'] == $_GET['id_movie']) {
-        $id_movie = (int) $_GET['id_movie'];
+    if ((string) (int) $_POST['id_movie'] == $_POST['id_movie']) {
+        $id_movie = (int) $_POST['id_movie'];
     } else {
-        // Return to home page if medium ID is not a number
+        // Return to home page if movie ID is not a number
         Util::gotoMainPage();
     }
 
-    if (!isset($_SESSION['movie']) || $_SESSION['movie']->getID() != $id_movie) {
-        $_SESSION['movie'] = new Movie($id_movie);
-    }
-    $_SESSION['movie']->delete();
+    $movie = Util::getMovieInSession($id_movie);
+    $movie->setValues(Util::getPOSTValueOrNull('title'), Util::getPOSTValueOrNull('year'), Util::getPOSTValueOrNull('makers'), Util::getPOSTValueOrNull('actors'), Util::getPOSTValueOrNull('categories'), Util::getPOSTValueOrNull('shortlists'), Util::getPOSTValueOrNull('rating'), Util::getPOSTValueOrNull('lastseen'));
 
-    Util::gotoMainPage();
+    header('Location:../?page=moviedetails&id_movie=' . $id_movie);
 } else {
-    // Return to home page if no medium ID is provided
+    // Return to home page if no movie ID is provided
     Util::gotoMainPage();
 }

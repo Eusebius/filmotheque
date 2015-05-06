@@ -42,7 +42,7 @@ class Util {
      * @since 0.2.4
      */
     static function gotoMainPage() {
-        header('Location:.');
+        header('Location:http://' . $_SESSION['baseuri']);
         die();
     }
 
@@ -101,7 +101,7 @@ class Util {
     /**
      * Check whether the parameter is a string corresponding to an int.
      * @param \string $string The string to check.
-     * @return The corresponding integer, or `false`.
+     * @return \int The corresponding integer, or `false`.
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
@@ -137,7 +137,7 @@ class Util {
      * For a given index, returns the corresponding POST parameter if it is 
      * valid, or `null` otherwise.
      * @param \string $POSTindex The index of the parameter.
-     * @return Either the value of the parameter, or `null`.
+     * @return \string Either the value of the parameter, or `null`.
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
@@ -235,6 +235,38 @@ class Util {
         //TODO do we really disconnect here, or did we modify a copy of the
         //reference?
         $pdoconn = null;
+    }
+
+    /**
+     * Strip a path (URI or local) from any suffix starting with one of the 
+     * folders of the application.
+     * 
+     * @param \string $path The original path.
+     * 
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.2.6
+     */
+    public static function stripPathFromDirs($path) {
+        $withoutIncludes = Util::stripPathFromDir($path, '/includes');
+        $withoutCovers = Util::stripPathFromDir($withoutIncludes, '/covers');
+        $withoutScripts = Util::stripPathFromDir($withoutCovers, '/scripts');
+        $withoutPages = Util::stripPathFromDir($withoutScripts, '/pages');
+        $withoutParams = Util::stripPathFromDir($withoutPages, '/?');
+        return $withoutParams;
+    }
+    
+    /**
+     * Strip an string from a suffix starting with a given prefix.
+     * 
+     * @param \string $path The original string.
+     * @dir \string $dir The prefix to look for.
+     * 
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.2.6
+     */
+    private static function stripPathFromDir($path, $dir) {
+        return substr($path, 0, 
+                (strpos($path, $dir) ? strpos($path, $dir) : strlen($path)));
     }
 
 }

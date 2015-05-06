@@ -108,7 +108,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
             </tr>
             <tr>
                 <td colspan="2" align="center">
-                    <form action="dolinkimdb.php" method="POST">
+                    <form action="scripts/dolinkimdb.php" method="POST">
                         <input type="hidden" name="id_movie" value="<?php echo $movie->getID(); ?>" />
                         <input type="hidden" name="imdb_id" value="<?php echo $imdb_id; ?>" />
                         <input type="submit" value="Utiliser cette fiche" />

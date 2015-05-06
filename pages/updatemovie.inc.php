@@ -45,7 +45,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
   ?>
 <h3>Mise à jour du film numéro <?php echo $id_movie; ?></h3>
-<form action="doupdatemovie.php" method="POST">
+<form action="scripts/doupdatemovie.php" method="POST">
   <input type="hidden" name="id_movie" value="<?php echo $id_movie; ?>" />
   <table>
   <tr><td>Titre&nbsp;:</td><td><input type="text" name="title" value="<?php echo $movie->getTitle(); ?>" /></td></tr>

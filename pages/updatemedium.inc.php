@@ -55,7 +55,7 @@ if (isset($_GET['id_medium']) && $_GET['id_medium'] != '') {
 
   ?>
 <h3>Mise à jour du support numéro <?php echo $id_medium; ?></h3>
-<form action="doupdatemedium.php" method="POST">
+<form action="scripts/doupdatemedium.php" method="POST">
   <input type="hidden" name="id_medium" value="<?php echo $id_medium; ?>" />
   <table>
   <tr><td>Titre du film&nbsp;:</td><td><?php echo $movie->getTitle(); ?></td></tr>

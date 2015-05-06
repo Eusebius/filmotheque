@@ -1,12 +1,12 @@
 <?php
 
 /**
- * docreatemovie.php
+ * dodeletemedium.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4
  * 
- * This is the script taking care of the creation of a movie.
+ * This is the script taking care of the deletion of a medium.
  */
 /*
   Filmothèque
@@ -27,25 +27,27 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/declarations.inc.php');
-require_once('includes/initialization.inc.php');
+require_once('../includes/declarations.inc.php');
+require_once('../includes/initialization.inc.php');
 
-if (isset($_POST['title']) && $_POST['title'] != '') {
+if (isset($_GET['id_medium']) && $_GET['id_medium'] != '') {
 
-    $movie = new Movie(null);
-    $movie->setValues(Util::getPOSTValueOrNull('title'), 
-            Util::getPOSTValueOrNull('year'), 
-            Util::getPOSTValueOrNull('makers'), 
-            Util::getPOSTValueOrNull('actors'), 
-            Util::getPOSTValueOrNull('categories'), 
-            Util::getPOSTValueOrNull('shortlists'), 
-            Util::getPOSTValueOrNull('rating'), 
-            Util::getPOSTValueOrNull('lastseen'));
+    if ((string) (int) $_GET['id_medium'] == $_GET['id_medium']) {
+        $id_medium = (int) $_GET['id_medium'];
+    } else {
+        // Return to home page if medium ID is not a number
+        Util::gotoMainPage();
+    }
 
-    //$movie->dump();die();
-    $_SESSION['movie'] = $movie;
-    header('Location:./?page=moviedetails&id_movie=' . $movie->getID());
+    if (!isset($_SESSION['medium']) || $_SESSION['medium']->getID() != $id_medium) {
+        $_SESSION['medium'] = new Medium($id_medium);
+    }
+    $_SESSION['medium']->delete();
+
+    $movieID = $_SESSION['medium']->getMovieID();
+
+    header('Location:../?page=moviedetails&id_movie=' . $movieID);
 } else {
-    // Return to home page if no movie title is provided
+    // Return to home page if no medium ID is provided
     Util::gotoMainPage();
 }

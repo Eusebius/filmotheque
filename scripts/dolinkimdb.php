@@ -27,8 +27,8 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/declarations.inc.php');
-require_once('includes/initialization.inc.php');
+require_once('../includes/declarations.inc.php');
+require_once('../includes/initialization.inc.php');
 
 
 if (isset($_POST['id_movie']) && $_POST['id_movie'] != '' 
@@ -64,7 +64,7 @@ if (isset($_POST['id_movie']) && $_POST['id_movie'] != ''
             copy($cover, $coverdest);
         }
     }
-    header('Location:./?page=moviedetails&id_movie=' . $id_movie);
+    header('Location:../?page=moviedetails&id_movie=' . $id_movie);
 } else {
     // Return to home page if either movie ID or imdb ID is not provided
     Util::gotoMainPage();

@@ -1,12 +1,12 @@
 <?php
 
 /**
- * dodeletemedium.php
+ * dodeletemovie.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4
  * 
- * This is the script taking care of the deletion of a medium.
+ * This is the script taking care of the deletion of a movie.
  */
 /*
   Filmothèque
@@ -27,26 +27,24 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/declarations.inc.php');
-require_once('includes/initialization.inc.php');
+require_once('../includes/declarations.inc.php');
+require_once('../includes/initialization.inc.php');
 
-if (isset($_GET['id_medium']) && $_GET['id_medium'] != '') {
+if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
-    if ((string) (int) $_GET['id_medium'] == $_GET['id_medium']) {
-        $id_medium = (int) $_GET['id_medium'];
+    if ((string) (int) $_GET['id_movie'] == $_GET['id_movie']) {
+        $id_movie = (int) $_GET['id_movie'];
     } else {
         // Return to home page if medium ID is not a number
         Util::gotoMainPage();
     }
 
-    if (!isset($_SESSION['medium']) || $_SESSION['medium']->getID() != $id_medium) {
-        $_SESSION['medium'] = new Medium($id_medium);
+    if (!isset($_SESSION['movie']) || $_SESSION['movie']->getID() != $id_movie) {
+        $_SESSION['movie'] = new Movie($id_movie);
     }
-    $_SESSION['medium']->delete();
+    $_SESSION['movie']->delete();
 
-    $movieID = $_SESSION['medium']->getMovieID();
-
-    header('Location:./?page=moviedetails&id_movie=' . $movieID);
+    Util::gotoMainPage();
 } else {
     // Return to home page if no medium ID is provided
     Util::gotoMainPage();

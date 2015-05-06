@@ -35,9 +35,15 @@ $_SESSION['debug'] = true;
 
 if (!isset($_SESSION['basepath'])) {
     $currentDirName = dirname(__FILE__);
-    $basepath = substr($currentDirName, 0, (strpos($currentDirName, '/includes') ? strpos($currentDirName, '/includes') : strpos($currentDirName, '\includes')));
+    $basepath = Util::stripPathFromDirs($currentDirName);
     ini_set('include_path', $basepath . ':' . ini_get('include_path'));
     $_SESSION['basepath'] = $basepath;
+}
+
+unset($_SESSION['baseuri']);
+if (!isset($_SESSION['baseuri'])) {
+    $completeURI = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $_SESSION['baseuri'] = Util::stripPathFromDirs($completeURI);
 }
 
 if (!$_SESSION['debug']) {
