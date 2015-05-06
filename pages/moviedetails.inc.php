@@ -10,7 +10,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,8 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/required.inc.php');
+require_once('includes/declarations.inc.php');
+require_once('includes/initialization.inc.php');
 
 if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
@@ -35,11 +36,11 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
         $id_movie = (int) $_GET['id_movie'];
     } else {
         // Return to home page if movie ID is not a number
-        gotoMainPage();
+        Util::gotoMainPage();
     }
 
-    $movie = getMovieInSession($id_movie);
-    $conn = db_ensure_connected();
+    $movie = Util::getMovieInSession($id_movie);
+    $conn = Util::getDbConnection();
 
     echo '<h2>Détails d\'un film</h2>' . "\n";
 
@@ -122,7 +123,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
     echo '<tr><td>Vu le&nbsp;:</td><td>';
     echo $movie->getFormattedLastseen();
-    echo '&nbsp;' . '<a href="doseentoday.php?id_movie=' . $id_movie . '">Vu aujourd\'hui&nbsp;!</a>';
+    echo '&nbsp;' . '<a href="scripts/doseentoday.php?id_movie=' . $id_movie . '">Vu aujourd\'hui&nbsp;!</a>';
     echo '</td></tr>' . "\n";
     echo '</table>' . "\n";
 
@@ -133,10 +134,10 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     echo "<br /><br />\n";
     if ($movie->getIMDbID() == '') {
         echo '<p><a href="?page=getimdb&id_movie=' . $id_movie . '">Lier à une fiche IMDb</a></p>';
-        echo '<p><a href="doabandonimdb.php?id_movie=' . $id_movie . '">Le film n\'a pas de correspondance dans IMDb</a></p>';
+        echo '<p><a href="scripts/doabandonimdb.php?id_movie=' . $id_movie . '">Le film n\'a pas de correspondance dans IMDb</a></p>';
         echo "<br /><br />\n";
     }
-    echo '<a href="dodeletemovie.php?id_movie=' . $id_movie . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ' . $movie->getTitle() . ' ?\')"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
+    echo '<a href="scripts/dodeletemovie.php?id_movie=' . $id_movie . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ' . $movie->getTitle() . ' ?\')"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
 
     // Fetching corresponding media
     $movie->retrieveMedia();
@@ -203,7 +204,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
         echo '<td bgcolor="' . $colour[$quality] . '"><a href="?page=updatemedium&id_medium=' . $medium->getID() . '">'
         . 'Mettre à jour le support'
         . '</a></td>';
-        echo '<td bgcolor="' . $colour[$quality] . '"><a href="dodeletemedium.php?id_medium=' . $medium->getID() . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ce support ?\')">'
+        echo '<td bgcolor="' . $colour[$quality] . '"><a href="scripts/dodeletemedium.php?id_medium=' . $medium->getID() . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ce support ?\')">'
         . '<font color="red">Supprimer le support</font>'
         . '</a></td>';
         //echo '<td>' . $quality . '</td>';
@@ -216,6 +217,5 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     . '<a href=".">Retour à la page principale</a>';
 } else {
     // Return to home page if no movie is specified
-    gotoMainPage();
+    Util::gotoMainPage();
 }
-?>

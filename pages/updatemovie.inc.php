@@ -9,7 +9,7 @@
  */
 /*
     Filmothèque
-    Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)
+    Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/required.inc.php');
+require_once('includes/declarations.inc.php'); require_once('includes/initialization.inc.php');
 
 if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
@@ -35,17 +35,17 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   }
   else {
   // Return to home page if movie ID is not a number
-    gotoMainPage();
+    Util::gotoMainPage();
   }
 
   //Is it really necessary?
   unset($_SESSION['movie']);
   
-  $movie = getMovieInSession($id_movie);
+  $movie = Util::getMovieInSession($id_movie);
 
   ?>
 <h3>Mise à jour du film numéro <?php echo $id_movie; ?></h3>
-<form action="doupdatemovie.php" method="POST">
+<form action="scripts/doupdatemovie.php" method="POST">
   <input type="hidden" name="id_movie" value="<?php echo $id_movie; ?>" />
   <table>
   <tr><td>Titre&nbsp;:</td><td><input type="text" name="title" value="<?php echo $movie->getTitle(); ?>" /></td></tr>
@@ -53,7 +53,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   <tr><td>Réalisateur(s)&nbsp;:</td><td>
   <select name="makers[]" multiple>
   <?php
-  $conn = db_ensure_connected();
+  $conn = Util::getDbConnection();
   $selectedMakers = $conn->prepare('select `id_person`, `name` from `persons` natural join `movies-makers` natural join `movies` WHERE id_movie=? order by name');
   $selectedMakers->execute(array($id_movie));
   $selectedMakersArray = $selectedMakers->fetchall(PDO::FETCH_ASSOC);
@@ -72,14 +72,14 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
   <tr><td>Acteur(s)&nbsp;:</td><td>
   <select name="actors[]" multiple>
   <?php
-  $conn = db_ensure_connected();
-  $selectedActors = $conn->prepare('select `id_person`, `name` from `persons` natural join `movies-actors` natural join `movies` WHERE id_movie=? order by name');
+  $conn2 = Util::getDbConnection();
+  $selectedActors = $conn2->prepare('select `id_person`, `name` from `persons` natural join `movies-actors` natural join `movies` WHERE id_movie=? order by name');
   $selectedActors->execute(array($id_movie));
   $selectedActorsArray = $selectedActors->fetchall(PDO::FETCH_ASSOC);
   foreach ($selectedActorsArray as $actor) {
     echo '<option value="' . $actor['id_person'] . '" selected>' . $actor['name'] . '</option>' . "\n";
   }
-  $otherActors = $conn->prepare('SELECT id_person, name FROM `persons` WHERE id_person NOT IN (SELECT `id_person` FROM `persons` NATURAL JOIN `movies-actors` NATURAL JOIN `movies` WHERE id_movie =?) order by name');
+  $otherActors = $conn2->prepare('SELECT id_person, name FROM `persons` WHERE id_person NOT IN (SELECT `id_person` FROM `persons` NATURAL JOIN `movies-actors` NATURAL JOIN `movies` WHERE id_movie =?) order by name');
   $otherActors->execute(array($id_movie));
   $otherActorsArray = $otherActors->fetchall(PDO::FETCH_ASSOC);
   foreach ($otherActorsArray as $actor) {
@@ -138,7 +138,5 @@ $cats->execute();
 }
 else {
   // Return to home page if no movie is specified
-  gotoMainPage();
+  Util::gotoMainPage();
 }
-
-?>

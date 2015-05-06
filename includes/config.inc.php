@@ -7,10 +7,11 @@
  * 
  * This is the main configuration file of the application. All customization for
  * a particular installation should go here.
+ * This file is not to be included directly, use declarations.inc.php instead.
  */
 /*
     Filmothèque
-    Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)
+    Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,7 +28,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/*/**
+/**
  * Configuration array
  * *DON'T TOUCH THIS*
  */
@@ -48,7 +49,7 @@ $_SESSION['config']['db_prefix'] = '';
  * Current software version
  * *DON'T TOUCH THIS*
  */
-$_SESSION['config']['version'] = "0.2.5";
+$_SESSION['config']['version'] = "0.2.6";
 
 /**
  *  Assigned background colours for each medium quality
@@ -81,4 +82,3 @@ $rank['undefined'] = 0;
   print_r($_SESSION['config']);
   echo '<br />';
 */
-?>

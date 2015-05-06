@@ -10,7 +10,7 @@
  */
 /*
     Filmothèque
-    Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)
+    Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,25 +35,23 @@ header('Content-Type: text/xml;charset=utf-8');
 echo(utf8_encode("<?xml version='1.0' encoding='UTF-8' ?><options>"));
 
 if (isset($_GET['prefix'])) {
-    $prefix = utf8_decode($_GET['prefix']);
+    $getPrefix = utf8_decode($_GET['prefix']);
 } else {
-    $prefix = "";
+    $getPrefix = "";
 }
-$prefix = strtolower($prefix);
+$prefix = strtolower($getPrefix);
 generateOptions($prefix);
 
 function generateOptions($prefix) {
   $length = strlen($prefix);
   $MAX_RETURN = 10;
-  $i = 0;
-  $conn = db_ensure_connected();
-  //$getPersons = $conn->prepare('select id_person, name from persons where left(lower(name), ?) = ? or locate(?, lower(name)) <> 0 order by name limit ' . $MAX_RETURN);
+  $conn = Util::getDbConnection();
   $getPersons = $conn->prepare('(SELECT id_person, name, 1 AS query FROM persons WHERE left( lower( name ) , ? ) = ? ORDER BY name LIMIT 10)'
 			       . ' UNION '
 			       . '(SELECT id_person, name, 2 FROM persons WHERE locate(?, lower( name ) ) <> 0 AND id_person NOT IN '
 			       . '(SELECT id_person FROM persons WHERE left( lower( name ) , ? ) = ?)'
-			       . 'ORDER BY name LIMIT 10)'
-			       . 'ORDER BY query LIMIT 10');
+			       . 'ORDER BY name LIMIT '. $MAX_RETURN . ')'
+			       . 'ORDER BY query LIMIT '. $MAX_RETURN);
   $getPersons->execute(array($length, $prefix, $prefix, $length, $prefix));
   //$getPersons->execute(array($length, $prefix, $prefix));
   $persons = $getPersons->fetchall(PDO::FETCH_ASSOC);
@@ -73,5 +71,3 @@ function generateOptions($prefix) {
 
 
 echo("</options>");
-
-?>

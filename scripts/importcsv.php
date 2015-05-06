@@ -10,7 +10,7 @@
  */
 /*
     Filmothèque
-    Copyright (C) 2012-2013 Eusebius (eusebius@eusebius.fr)
+    Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/required.inc.php');
+require_once('includes/declarations.inc.php'); require_once('includes/initialization.inc.php');
 
 $csvfilename = 'films.csv';
 /* 
@@ -51,7 +51,7 @@ $csvfilename = 'films.csv';
    [16] - Lastseen
  */
 
-$pdoconn = db_ensure_connected();
+$pdoconn = Util::getDbConnection();
 
 $csvfile = fopen($csvfilename, 'r');
 $entrieswithcomments = fopen('entrieswithcomments.csv', 'w');
@@ -181,5 +181,3 @@ echo '<input type="submit" value="Confirm" /></form>' . "\n";
 
 fclose($entrieswithcomments);
 fclose($csvfile);
-
-?>
