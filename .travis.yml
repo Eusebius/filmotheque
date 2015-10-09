@@ -1,24 +1,24 @@
 language: php
 php:
-  - 5.5
+#  - 5.5
   - 5.4
-  - hhvm
-  - nightly
- #env:
- # - DB=mysql
- # - DB=postgres
- #services:
- # - mysql #started on localhost, "root:" and "travis:" users available
- #before-install:
- # - mysql -e "create database IF NOT EXISTS test;" -uroot
- #install: php ./script-install.php
- #before-script:
- # - sh -c "if [ '$DB' = 'mysql' ]; then ... fi"
- # - phpenv config-add myconfig.ini
- # - echo 'date.timezone = "Europe/Paris"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
- ## myconfig.ini:
- #     extension = "mongo.so"
- #     date.timezone = "Europe/Paris"
- #     default_socket_timeout = 120
- #       some other configuration directives...
- #script: phpunit test.php
+#  - hhvm
+#  - nightly
+#env:
+# - DB=mysql
+# - DB=postgres
+#services:
+# - mysql #started on localhost, "root:" and "travis:" users available
+#before-install:
+# - mysql -e "create database IF NOT EXISTS test;" -uroot
+#install: php ./script-install.php
+#before-script:
+# - sh -c "if [ '$DB' = 'mysql' ]; then ... fi"
+# - phpenv config-add myconfig.ini
+# - echo 'date.timezone = "Europe/Paris"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+## myconfig.ini:
+#     extension = "mongo.so"
+#     date.timezone = "Europe/Paris"
+#     default_socket_timeout = 120
+#       some other configuration directives...
+script: phpunit test.php
