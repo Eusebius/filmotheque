@@ -36,7 +36,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     if ((string) (int) $_GET['id_movie'] == $_GET['id_movie']) {
         $id_movie = (int) $_GET['id_movie'];
     } else {
-        // Return to home page if movie ID is not a number
+        // Return to home page if movie ID is not a numberVu 
         Util::gotoMainPage();
     }
 
@@ -109,37 +109,46 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
     echo '<tr><td colspan="2">&nbsp;</td></tr>' . "\n";
 
-    echo '<tr><td>Note sur 5&nbsp;:</td><td>' . $movie->getRating() . '</td></tr>' . "\n";
-
-    echo '<tr><td>Shortlists&nbsp;:</td><td>';
-    $shortlistArray = $movie->getShortlists();
-    $nLists = count($shortlistArray);
-    if ($nLists > 0) {
-        echo $shortlistArray[0];
+    if (hasPermission('rating')) {
+        echo '<tr><td>Note sur 5&nbsp;:</td><td>' . $movie->getRating() . '</td></tr>' . "\n";
     }
-    for ($i = 1; $i < $nLists; $i++) {
-        echo ', ' . $shortlistArray[$i];
+
+    if (hasPermission('shortlists')) {
+        echo '<tr><td>Shortlists&nbsp;:</td><td>';
+        $shortlistArray = $movie->getShortlists();
+        $nLists = count($shortlistArray);
+        if ($nLists > 0) {
+            echo $shortlistArray[0];
+        }
+        for ($i = 1; $i < $nLists; $i++) {
+            echo ', ' . $shortlistArray[$i];
+        }
+        echo "</td></tr>\n";
     }
-    echo "</td></tr>\n";
+    if (hasPermission('lastseen')) {
+        echo '<tr><td>Vu le&nbsp;:</td><td>';
+        echo $movie->getFormattedLastseen();
+        if (hasPermission('w')) {
+            echo '&nbsp;' . '<a href="scripts/doseentoday.php?id_movie=' . $id_movie . '">Vu aujourd\'hui&nbsp;!</a>';
+        }
+        echo '</td></tr>' . "\n";
+        echo '</table>' . "\n";
 
-    echo '<tr><td>Vu le&nbsp;:</td><td>';
-    echo $movie->getFormattedLastseen();
-    echo '&nbsp;' . '<a href="scripts/doseentoday.php?id_movie=' . $id_movie . '">Vu aujourd\'hui&nbsp;!</a>';
-    echo '</td></tr>' . "\n";
-    echo '</table>' . "\n";
-
-    echo '</td></tr></table>';
+        echo '</td></tr>\n';
+    }
+    echo '</table>';
 
     echo "<br /><br />\n";
-    echo '<a href="?page=updatemovie&id_movie=' . $id_movie . '">Mettre à jour la fiche du film</a>';
-    echo "<br /><br />\n";
-    if ($movie->getIMDbID() == '') {
-        echo '<p><a href="?page=getimdb&id_movie=' . $id_movie . '">Lier à une fiche IMDb</a></p>';
-        echo '<p><a href="scripts/doabandonimdb.php?id_movie=' . $id_movie . '">Le film n\'a pas de correspondance dans IMDb</a></p>';
+    if (hasPermission('w')) {
+        echo '<a href="?page=updatemovie&id_movie=' . $id_movie . '">Mettre à jour la fiche du film</a>';
         echo "<br /><br />\n";
+        if ($movie->getIMDbID() == '') {
+            echo '<p><a href="?page=getimdb&id_movie=' . $id_movie . '">Lier à une fiche IMDb</a></p>';
+            echo '<p><a href="scripts/doabandonimdb.php?id_movie=' . $id_movie . '">Le film n\'a pas de correspondance dans IMDb</a></p>';
+            echo "<br /><br />\n";
+        }
+        echo '<a href="scripts/dodeletemovie.php?id_movie=' . $id_movie . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ' . $movie->getTitle() . ' ?\')"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
     }
-    echo '<a href="scripts/dodeletemovie.php?id_movie=' . $id_movie . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ' . $movie->getTitle() . ' ?\')"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
-
     // Fetching corresponding media
     $movie->retrieveMedia();
     $mediaArray = $movie->getMedia();
@@ -149,8 +158,10 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     // TODO à faire rentrer dans la classe Medium
     $getMediaBorrowers = $conn->prepare('select * from `media-borrowers` natural join borrowers where id_medium = ? and backdate is null');
 
-    echo '<p><a href="?page=addmedium&id_movie='
-    . $id_movie . '">Ajouter un nouveau support</a></p>';
+    if (hasPermission('w')) {
+        echo '<p><a href="?page=addmedium&id_movie='
+        . $id_movie . '">Ajouter un nouveau support</a></p>';
+    }
 
     echo '<table border="1">'
     . '<tr><th align="center">Cote</th>'
@@ -202,12 +213,14 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
             echo $date->format('d/m/Y');
         }
         echo '</td>';
-        echo '<td bgcolor="' . $colour[$quality] . '"><a href="?page=updatemedium&id_medium=' . $medium->getID() . '">'
-        . 'Mettre à jour le support'
-        . '</a></td>';
-        echo '<td bgcolor="' . $colour[$quality] . '"><a href="scripts/dodeletemedium.php?id_medium=' . $medium->getID() . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ce support ?\')">'
-        . '<font color="red">Supprimer le support</font>'
-        . '</a></td>';
+        if (hasPermission('w')) {
+            echo '<td bgcolor="' . $colour[$quality] . '"><a href="?page=updatemedium&id_medium=' . $medium->getID() . '">'
+            . 'Mettre à jour le support'
+            . '</a></td>';
+            echo '<td bgcolor="' . $colour[$quality] . '"><a href="scripts/dodeletemedium.php?id_medium=' . $medium->getID() . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ce support ?\')">'
+            . '<font color="red">Supprimer le support</font>'
+            . '</a></td>';
+        }
         //echo '<td>' . $quality . '</td>';
         echo "</tr>\n";
     }
