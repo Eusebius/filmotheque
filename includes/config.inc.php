@@ -54,7 +54,7 @@ $_SESSION['config']['db_prefix'] = '';
 /**
  * Hard-coded authentication source.
  * Usable permissions are: r (read basic info), w (write everything), shortlists
- * (see them), marks (see them), lastseen (see this info).
+ * (see them), rating (see them), lastseen (see this info).
  * *UPDATE THIS* to design your user base.
  */
 // TODO keeping this in a file and in session sucks, of course. It should be 
@@ -65,8 +65,8 @@ $_SESSION['users'] = array(
     array('login' => 'ro', 'password' => 'ro', 'roles' => array('ro'))
 );
 $_SESSION['roles'] = array(
-    'admin' => array('r', 'w', 'shortlists', 'marks', 'lastseen'),
-    'rw' => array('r', 'w', 'shortlists', 'marks', 'lastseen'),
+    'admin' => array('r', 'w', 'shortlists', 'rating', 'lastseen'),
+    'rw' => array('r', 'w', 'shortlists', 'rating', 'lastseen'),
     'ro' => array('r')
 );
 
