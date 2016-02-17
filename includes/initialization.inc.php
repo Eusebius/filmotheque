@@ -27,7 +27,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 session_start();
 require_once('config.inc.php');
 
@@ -44,9 +43,17 @@ if (!isset($_SESSION['baseuri'])) {
     $_SESSION['baseuri'] = Util::stripPathFromDirs($completeURI);
 }
 
+unset($_SESSION['loginURL']);
+$_SESSION['loginURL'] =  'http://' . $_SESSION['baseuri'] . 'login.php';
+
+unset($_SESSION['homeURL']);
+$_SESSION['homeURL'] =  'http://' . $_SESSION['baseuri'] . 'index.php';
+
 if (!$_SESSION['debug']) {
     ini_set('display_errors', 'Off'); //It should be the webmaster's responsibility, though - errors may arise above this line
 } else {
     ini_set('display_errors', 'On');
     ini_set('error_reporting', E_ALL);
 }
+
+require_once('auth.inc.php');

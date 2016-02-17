@@ -251,8 +251,12 @@ class Util {
         $withoutCovers = Util::stripPathFromDir($withoutIncludes, '/covers');
         $withoutScripts = Util::stripPathFromDir($withoutCovers, '/scripts');
         $withoutPages = Util::stripPathFromDir($withoutScripts, '/pages');
-        $withoutParams = Util::stripPathFromDir($withoutPages, '/?');
-        return $withoutParams;
+        $withoutParams1 = Util::stripPathFromDir($withoutPages, '?');
+        $withoutIndex = Util::stripPathFromDir($withoutParams1, 'index.php');
+        if (substr($withoutIndex, -1) !== '/') {
+            $withoutIndex .='/';
+        }
+        return $withoutIndex;
     }
     
     /**

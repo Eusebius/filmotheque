@@ -28,6 +28,7 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+ensureRole('rw');
 ?>
 <h3>Création d'un nouveau film</h3><?php //'  ?>
 <form action="scripts/docreatemovie.php" method="POST">

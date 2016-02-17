@@ -50,6 +50,19 @@ $_SESSION['config']['db_user'] = 'films';
 $_SESSION['config']['db_password'] = 'films';
 $_SESSION['config']['db_prefix'] = '';
 
+/**
+ * Hard-coded authentication source.
+ * Usable roles are: admin, rw, ro
+ * *UPDATE THIS* to design your user base
+ */
+// TODO keeping this in a file and in session sucks, of course. It should be 
+// moved to the database ASAP, with proper password hashing.
+$_SESSION['users'] = array(
+    array('login'=>'admin', 'password'=>'admin', 'roles'=>array('admin', 'rw', 'ro')),
+    array('login'=>'rw', 'password'=>'rw', 'roles'=>array('rw', 'ro')),
+    array('login'=>'ro', 'password'=>'ro', 'roles'=>array('ro'))
+    );
+
 /*/**
  * Current software version
  * *DON'T TOUCH THIS*

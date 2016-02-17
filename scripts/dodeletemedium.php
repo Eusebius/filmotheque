@@ -29,6 +29,7 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
+ensureRole('rw');
 
 if (isset($_GET['id_medium']) && $_GET['id_medium'] != '') {
 
