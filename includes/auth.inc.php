@@ -1,4 +1,5 @@
 <?php
+
 /**
  * auth.inc.php
  * 
@@ -42,8 +43,22 @@ function ensureAuthenticated() {
  * to the application home page.
  * @param \string $role The role to check.
  */
-function ensureRole($role) {
-    if (!hasRole($role)) {
+/*
+  function ensureRole($role) {
+  if (!hasRole($role)) {
+  header('Location: ' . $_SESSION['homeURL']);
+  exit();
+  }
+  }
+ */
+
+/**
+ * If the authenticated user (if any) doesn't have a given permission, 
+ * redirect her to the application home page.
+ * @param \string $perm The permission to check.
+ */
+function ensurePermission($perm) {
+    if (!hasPermission($perm)) {
         header('Location: ' . $_SESSION['homeURL']);
         exit();
     }
@@ -54,11 +69,33 @@ function ensureRole($role) {
  * @param \string $role The role to check.
  * @return boolean True if the user has the role, false otherwise.
  */
-function hasRole($role) {
+/*
+  function hasRole($role) {
+  if (isset($_SESSION['auth']['roles'])) {
+  $roles = $_SESSION['auth']['roles'];
+  if (in_array($role, $roles, true)) {
+  return true;
+  }
+  }
+  return false;
+  }
+ */
+
+/**
+ * Check whether the authenticated user, if it exists, has a given permission.
+ * @param \string $perm The permission to check.
+ * @return boolean True if the user has the permission, false otherwise.
+ */
+function hasPermission($perm) {
     if (isset($_SESSION['auth']['roles'])) {
         $roles = $_SESSION['auth']['roles'];
-        if (in_array($role, $roles, true)) {
-            return true;
+        foreach ($roles as $role) {
+            if (isset($_SESSION['roles'][$role])) {
+                $permissions = $_SESSION['roles'][$role];
+                if (in_array($perm, $permissions, true)) {
+                    return true;
+                }
+            }
         }
     }
     return false;
@@ -69,9 +106,7 @@ function hasRole($role) {
  * @return boolean True if a user is authenticated, false otherwise.
  */
 function isAuthenticated() {
-    if (isset($_SESSION['auth']) 
-            && isset($_SESSION['auth']['login']) 
-            && $_SESSION['auth']['login'] !== '') {
+    if (isset($_SESSION['auth']) && isset($_SESSION['auth']['login']) && $_SESSION['auth']['login'] !== '') {
         return true;
     } else {
         return false;

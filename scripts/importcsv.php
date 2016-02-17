@@ -29,7 +29,7 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
-ensureRole('admin');
+ensurePermission('w');
 
 $csvfilename = 'films.csv';
 /* 
