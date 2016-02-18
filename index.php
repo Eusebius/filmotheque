@@ -29,6 +29,7 @@
  */
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+Auth::ensureAuthenticated();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -45,6 +46,10 @@ require_once('includes/initialization.inc.php');
         if ($_SESSION['debug']) {
             echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
         }
+        
+        ?>
+        <div class="disconnect"><a href="scripts/disconnect.php">Se déconnecter</a></div>
+        <?php
 
         Util::checkChmod();
 

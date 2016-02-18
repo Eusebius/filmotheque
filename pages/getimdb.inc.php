@@ -30,6 +30,7 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+Auth::ensurePermission('w');
 
 if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
@@ -50,17 +51,24 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     $imdb_id = '';
     if (isset($_GET['imdb_id']) && $_GET['imdb_id'] != '') {
         $imdb_id = $_GET['imdb_id'];
-        $xml->load('http://myapifilms.com/imdb?idIMDB=' . $imdb_id . '&format=XML');
+        $xml->load('http://myapifilms.com/imdb/idIMDB?idIMDB=' . $imdb_id . '&format=xml&token=' . $apiToken);
         $item = $xml->getElementsByTagName('movie')->item(0);
     } else {
-        $xml->load('http://myapifilms.com/title?title=' . $movie->getTitle() . '&format=XML&limit=1');
+        $query = 'http://myapifilms.com/imdb/idIMDB?title=' . $movie->getTitle() . '&format=xml&limit=1&token=' . $apiToken;
+        //Util::debug($query);
+        $xml->load($query);
         $item = $xml->getElementsByTagName('movie')->item(0);
     }
 
-    //print_r($xml);
-    //debug$xml->saveXML());
+    //Util::debug($xml);
+    //Util::debug($xml->saveXML());
 
     if ($item != null) {
+        if (!isset($_SESSION['imdbdata'])) {
+            $_SESSION['imdbdata']=array();
+        }
+        $_SESSION['imdbdata'][$id_movie]=$xml->saveXML();
+        //die($_SESSION['imdbdata'][$id_movie]);
         $originaltitle = $item->getElementsByTagName('title')->item(0)->nodeValue;
         if ($imdb_id == '') {
             $imdb_id = $item->getElementsByTagName('idIMDB')->item(0)->nodeValue;

@@ -31,3 +31,4 @@
 require_once('Medium.php');
 require_once('Movie.php');
 require_once('Util.php');
+require_once('Auth.php');

@@ -45,6 +45,17 @@ class Util {
         header('Location:http://' . $_SESSION['baseuri']);
         die();
     }
+    
+    /**
+     * Redirects the visitor to the login page of the application and 
+     * stops the current script.
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.2.7
+     */
+    static function gotoLoginPage() {
+        header('Location:http://' . $_SESSION['baseuri'] . 'login.php');
+        die();
+    }
 
     /**
      * If in debug mode, make a debug print of the variable. Otherwise, do
@@ -165,6 +176,16 @@ class Util {
         }
         return $_SESSION['movie'];
     }
+    
+    /**
+     * Forget about the movie in session. To be called after an update on the
+     * movie object, to ensure that it is fetched from the database again.
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.2.7
+     */
+    static function resetMovieInSession() {
+        unset($_SESSION['movie']);
+    }
 
     /**
      * Check that the proper medium is present as an object in session (either reuse
@@ -251,8 +272,12 @@ class Util {
         $withoutCovers = Util::stripPathFromDir($withoutIncludes, '/covers');
         $withoutScripts = Util::stripPathFromDir($withoutCovers, '/scripts');
         $withoutPages = Util::stripPathFromDir($withoutScripts, '/pages');
-        $withoutParams = Util::stripPathFromDir($withoutPages, '/?');
-        return $withoutParams;
+        $withoutParams1 = Util::stripPathFromDir($withoutPages, '?');
+        $withoutIndex = Util::stripPathFromDir($withoutParams1, 'index.php');
+        if (substr($withoutIndex, -1) !== '/') {
+            $withoutIndex .='/';
+        }
+        return $withoutIndex;
     }
     
     /**

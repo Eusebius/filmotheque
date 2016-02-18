@@ -1,16 +1,15 @@
 <?php
-
 /**
- * dodeletemovie.php
+ * logon.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.2.4
+ * @since 0.2.7
  * 
- * This is the script taking care of the deletion of a movie.
+ * This is the authentication script of the application.
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2016 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,27 +25,30 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
-Auth::ensurePermission('w');
 
-if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
-
-    if ((string) (int) $_GET['id_movie'] == $_GET['id_movie']) {
-        $id_movie = (int) $_GET['id_movie'];
-    } else {
-        // Return to home page if medium ID is not a number
-        Util::gotoMainPage();
-    }
-
-    if (!isset($_SESSION['movie']) || $_SESSION['movie']->getID() != $id_movie) {
-        $_SESSION['movie'] = new Movie($id_movie);
-    }
-    $_SESSION['movie']->delete();
-
-    Util::gotoMainPage();
+// If credentials are incomplete, return to login page
+if (!isset($_POST['login']) || ($_POST['login'] === '')
+    || !isset($_POST['login']) || ($_POST['password'] === '')) {
+    Util::gotoLoginPage();
 } else {
-    // Return to home page if no medium ID is provided
-    Util::gotoMainPage();
+    $login = $_POST['login'];
+    $password = $_POST['password'];
+    foreach($_SESSION['users'] as $user) {
+        if ($user['login'] === $login && $user['password'] === $password) {
+            $_SESSION['auth'] = $user;
+            if (isset($_SESSION['nextPage'])) {
+                header('Location: ' . $_SESSION['nextPage']);
+                exit();
+            } else {
+                Util::gotoMainPage();
+            }
+        }
+    }
+    //Authentication has failed
+    //TODO include an error message
+    Util::gotoLoginPage();
 }
+
+?>

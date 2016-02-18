@@ -1,16 +1,16 @@
 <?php
-
 /**
- * dodeletemovie.php
+ * disconnect.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.2.4
+ * @since 0.2.7
  * 
- * This is the script taking care of the deletion of a movie.
+ * This script disconnects any authenticated user and returns them to the 
+ * login form.
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2016 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,24 +29,5 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
-Auth::ensurePermission('w');
-
-if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
-
-    if ((string) (int) $_GET['id_movie'] == $_GET['id_movie']) {
-        $id_movie = (int) $_GET['id_movie'];
-    } else {
-        // Return to home page if medium ID is not a number
-        Util::gotoMainPage();
-    }
-
-    if (!isset($_SESSION['movie']) || $_SESSION['movie']->getID() != $id_movie) {
-        $_SESSION['movie'] = new Movie($id_movie);
-    }
-    $_SESSION['movie']->delete();
-
-    Util::gotoMainPage();
-} else {
-    // Return to home page if no medium ID is provided
-    Util::gotoMainPage();
-}
+Auth::disconnect();
+?>

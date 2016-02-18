@@ -1,4 +1,5 @@
 <?php
+
 /**
  * includes/config.inc.php
  * 
@@ -10,29 +11,29 @@
  * This file is not to be included directly, use declarations.inc.php instead.
  */
 /*
-    Filmothèque
-    Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Filmothèque
+  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+  You should have received a copy of the GNU General Public License along
+  with this program; if not, write to the Free Software Foundation, Inc.,
+  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 /**
  * Configuration array
  * *DON'T TOUCH THIS*
  */
-$_SESSION['config']=array();
+$_SESSION['config'] = array();
 
 /**
  * Are we in debug mode?
@@ -50,11 +51,31 @@ $_SESSION['config']['db_user'] = 'films';
 $_SESSION['config']['db_password'] = 'films';
 $_SESSION['config']['db_prefix'] = '';
 
-/*/**
+/**
+ * Hard-coded authentication source.
+ * Usable permissions are: r (read basic info), w (write everything), shortlists
+ * (see them), rating (see them), lastseen (see this info).
+ * *UPDATE THIS* to design your user base.
+ */
+// TODO keeping this in a file and in session sucks, of course. It should be 
+// moved to the database ASAP, with proper password hashing.
+// TODO permission for seeing borrowed items
+$_SESSION['users'] = array(
+    array('login' => 'admin', 'password' => 'admin', 'roles' => array('admin', 'rw', 'ro')),
+    array('login' => 'rw', 'password' => 'rw', 'roles' => array('rw', 'ro')),
+    array('login' => 'ro', 'password' => 'ro', 'roles' => array('ro'))
+);
+$_SESSION['roles'] = array(
+    'admin' => array('r', 'w', 'shortlists', 'rating', 'lastseen'),
+    'rw' => array('r', 'w', 'shortlists', 'rating', 'lastseen'),
+    'ro' => array('r')
+);
+
+/* /**
  * Current software version
  * *DON'T TOUCH THIS*
  */
-$_SESSION['config']['version'] = "0.2.6";
+$_SESSION['config']['version'] = "0.2.7";
 
 /**
  *  Assigned background colours for each medium quality
@@ -87,3 +108,8 @@ $rank['undefined'] = 0;
   print_r($_SESSION['config']);
   echo '<br />';
 */
+
+/**
+ * MyAPIFilms token used by the application
+ */
+$apiToken = '05ecaa22-39b5-4b69-8975-b75d82485ac2';
