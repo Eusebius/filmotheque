@@ -90,7 +90,7 @@ foreach ($catArray as $catentry) {
 <h2>Liste des films</h2>
 <table>
     <tr>
-        <?php if (Auth::hasPermission('shotlists')) { ?>
+        <?php if (Auth::hasPermission('shortlists')) { ?>
             <td>
                 Afficher uniquement les shortlists suivantes&nbsp;:<br />
                 <form action="" method="GET">
