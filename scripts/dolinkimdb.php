@@ -32,8 +32,7 @@ require_once('../includes/initialization.inc.php');
 Auth::ensurePermission('w');
 
 
-if (isset($_POST['id_movie']) && $_POST['id_movie'] != '' 
-        && isset($_POST['imdb_id']) && $_POST['imdb_id'] != '') {
+if (isset($_POST['id_movie']) && $_POST['id_movie'] != '' && isset($_POST['imdb_id']) && $_POST['imdb_id'] != '') {
 
     if ((string) (int) $_POST['id_movie'] == $_POST['id_movie']) {
         $id_movie = (int) $_POST['id_movie'];
@@ -45,22 +44,29 @@ if (isset($_POST['id_movie']) && $_POST['id_movie'] != ''
     $movie = new Movie($id_movie);
     $imdb_id = $_POST['imdb_id']; // TODO sanitize input
 
-    $xml = new DomDocument();
-    $xml->load('http://myapifilms.com/imdb?idIMDB=' . $imdb_id . '&format=XML');
+    if (!isset($_SESSION['imdbdata'][$id_movie])) {
+
+        $xml = new DomDocument();
+        $xml->load('http://myapifilms.com/imdb?idIMDB=' . $imdb_id . '&format=XML');
+    } else {
+        $xml = new DomDocument();
+        $xml->loadXML($_SESSION['imdbdata'][$id_movie]);
+    }
     $item = $xml->getElementsByTagName('movie')->item(0);
     $originaltitle = $item->getElementsByTagName('title')->item(0)->nodeValue;
     $year = $item->getElementsByTagName('year')->item(0)->nodeValue;
-
-
+    
     $movie->setFieldAndWait("imdb_id", $imdb_id);
     $movie->setFieldAndWait("originaltitle", $originaltitle);
     $movie->setFieldAndWait("year", $year);
     $movie->writeAll();
+    
+    Util::resetMovieInSession();
 
     $cover = $item->getElementsByTagName('urlPoster')->item(0);
     if ($cover != null) {
         $cover = $cover->nodeValue;
-        $coverdest = 'covers/' . $movie->getID() . '.jpg';
+        $coverdest = $_SESSION['basepath'] . 'covers/' . $movie->getID() . '.jpg';
         if (!file_exists($coverdest)) {
             copy($cover, $coverdest);
         }

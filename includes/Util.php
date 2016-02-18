@@ -165,6 +165,16 @@ class Util {
         }
         return $_SESSION['movie'];
     }
+    
+    /**
+     * Forget about the movie in session. To be called after an update on the
+     * movie object, to ensure that it is fetched from the database again.
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.2.7
+     */
+    static function resetMovieInSession() {
+        unset($_SESSION['movie']);
+    }
 
     /**
      * Check that the proper medium is present as an object in session (either reuse

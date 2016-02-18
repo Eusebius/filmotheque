@@ -108,3 +108,8 @@ $rank['undefined'] = 0;
   print_r($_SESSION['config']);
   echo '<br />';
 */
+
+/**
+ * MyAPIFilms token used by the application
+ */
+$apiToken = '05ecaa22-39b5-4b69-8975-b75d82485ac2';
