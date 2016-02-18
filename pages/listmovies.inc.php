@@ -27,7 +27,7 @@
  */
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
-ensurePermission('r');
+Auth::ensurePermission('r');
 
 // Remember GET parameters
 $sortParameters = '';
@@ -38,10 +38,10 @@ if (isset($_GET['sort'])) {
     if ($_GET['sort'] == 'year') {
         $sortby = 'year';
         $sortParameters = 'sort=year&';
-    } else if ($_GET['sort'] == 'rating' && hasPermission('rating')) {
+    } else if ($_GET['sort'] == 'rating' && Auth::hasPermission('rating')) {
         $sortby = 'rating';
         $sortParameters = 'sort=rating&';
-    } else if ($_GET['sort'] == 'lastseen' && hasPermission('lastseen')) {
+    } else if ($_GET['sort'] == 'lastseen' && Auth::hasPermission('lastseen')) {
         $sortby = 'lastseen';
         $sortParameters = 'sort=lastseen&';
     } else {
@@ -90,7 +90,7 @@ foreach ($catArray as $catentry) {
 <h2>Liste des films</h2>
 <table>
     <tr>
-        <?php if (hasPermission('shotlists')) { ?>
+        <?php if (Auth::hasPermission('shotlists')) { ?>
             <td>
                 Afficher uniquement les shortlists suivantes&nbsp;:<br />
                 <form action="" method="GET">
@@ -185,7 +185,7 @@ $nMovies = $listMovies->rowCount();
 
 <p>
     <a href="?<?php echo $sortParameters; ?>">Réinitialiser tous les filtres</a><br />
-    <?php if (hasPermission('w')) { ?>
+    <?php if (Auth::hasPermission('w')) { ?>
         <a href="?page=addmovie">Ajouter un nouveau film</a>
     <?php } ?>
 </p>
@@ -195,13 +195,13 @@ $nMovies = $listMovies->rowCount();
         <th>Titre&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=title&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=title&order=desc">⇩</a></th>
         <th>Année&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=year&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=year&order=desc">⇩</a></th>
         <th>Catégories</th>
-        <?php if (hasPermission('rating')) { ?>
+        <?php if (Auth::hasPermission('rating')) { ?>
             <th>Note&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=rating&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=rating&order=desc">⇩</a></th>
         <?php } ?>
-        <?php if (hasPermission('shortlists')) { ?>
+        <?php if (Auth::hasPermission('shortlists')) { ?>
             <th>Shortlists</th>
         <?php } ?>
-        <?php if (hasPermission('lastseen')) { ?>
+        <?php if (Auth::hasPermission('lastseen')) { ?>
             <th>Vu le&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=lastseen&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters; ?>sort=lastseen&order=desc">⇩</a></th>
         <?php } ?>
     </tr>
@@ -235,12 +235,12 @@ $nMovies = $listMovies->rowCount();
             echo ', ' . $categoryArray[$i]['category'];
         }
         echo "</td>\n";
-        if (hasPermission('rating')) {
+        if (Auth::hasPermission('rating')) {
             echo '<td align="center" bgcolor="' . $colour[$quality] . '">'
             . $movie['rating']
             . "</td>\n";
         }
-        if (hasPermission('shortlists')) {
+        if (Auth::hasPermission('shortlists')) {
             echo '<td bgcolor="' . $colour[$quality] . '">';
             $getShortlistsByMovie->execute(array($movie['id_movie']));
             $ShortlistArray = $getShortlistsByMovie->fetchall(PDO::FETCH_ASSOC);
@@ -253,7 +253,7 @@ $nMovies = $listMovies->rowCount();
             }
             echo "</td>\n";
         }
-        if (hasPermission('lastseen')) {
+        if (Auth::hasPermission('lastseen')) {
             echo '<td align="center" bgcolor="' . $colour[$quality] . '">';
             if ($movie['lastseen'] != '') {
                 $date = DateTime::createFromFormat('Y-m-d', $movie['lastseen']);
@@ -261,7 +261,7 @@ $nMovies = $listMovies->rowCount();
             }
             echo "</td>\n";
         }
-        if (hasPermission('w')) {
+        if (Auth::hasPermission('w')) {
             if ($movie['imdb_id'] == '') {
                 echo '<td align="center" bgcolor="' . $colour[$quality] . '">';
                 echo '<a href="?page=getimdb&id_movie=' . $movie['id_movie'] . '">Lier à une fiche IMDb</a>';

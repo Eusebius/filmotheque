@@ -29,5 +29,5 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
-disconnect();
+Auth::disconnect();
 ?>

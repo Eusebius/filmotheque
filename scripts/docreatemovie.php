@@ -29,7 +29,7 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
-ensurePermission('w');
+Auth::ensurePermission('w');
 
 if (isset($_POST['title']) && $_POST['title'] != '') {
 
