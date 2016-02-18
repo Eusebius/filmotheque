@@ -285,7 +285,7 @@ class Medium {
         $getMedium->execute(array($this->mediumID));
         $nMedia = $getMedium->rowCount();
         if ($nMedia == 0) {
-            Util::fatal(
+            Util::fatal('<br />' . $getMedium->queryString . '<br />' .
                     'Erreur inattendue : aucun support ne correspond à l\'ID '
                     . $this->mediumID . '.<br /><br />'
                     . '<a href=".">Retour à la page principale</a>'

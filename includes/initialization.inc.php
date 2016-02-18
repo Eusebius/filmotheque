@@ -30,6 +30,15 @@
 session_start();
 require_once('config.inc.php');
 
+if (!isset($_SESSION['http'])) {
+    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+        // SSL connection
+        $_SESSION['http'] = 'https';
+    } else {
+        $_SESSION['http'] = 'http';
+    }
+}
+
 if (!isset($_SESSION['basepath'])) {
     $currentDirName = dirname(__FILE__);
     $basepath = Util::stripPathFromDirs($currentDirName);
@@ -44,10 +53,10 @@ if (!isset($_SESSION['baseuri'])) {
 }
 
 unset($_SESSION['loginURL']);
-$_SESSION['loginURL'] =  'http://' . $_SESSION['baseuri'] . 'login.php';
+$_SESSION['loginURL'] = $_SESSION['http'] . '://' . $_SESSION['baseuri'] . 'login.php';
 
 unset($_SESSION['homeURL']);
-$_SESSION['homeURL'] =  'http://' . $_SESSION['baseuri'] . 'index.php';
+$_SESSION['homeURL'] = $_SESSION['http'] . '://' . $_SESSION['baseuri'] . 'index.php';
 
 if (!$_SESSION['debug']) {
     ini_set('display_errors', 'Off'); //It should be the webmaster's responsibility, though - errors may arise above this line

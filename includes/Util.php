@@ -42,7 +42,7 @@ class Util {
      * @since 0.2.4
      */
     static function gotoMainPage() {
-        header('Location:http://' . $_SESSION['baseuri']);
+        header('Location:' . $_SESSION['http'] . '://' . $_SESSION['baseuri']);
         die();
     }
     
@@ -53,7 +53,7 @@ class Util {
      * @since 0.2.7
      */
     static function gotoLoginPage() {
-        header('Location:http://' . $_SESSION['baseuri'] . 'login.php');
+        header('Location:' . $_SESSION['http'] . '://' . $_SESSION['baseuri'] . 'login.php');
         die();
     }
 
