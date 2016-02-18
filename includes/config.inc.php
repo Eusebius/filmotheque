@@ -75,7 +75,7 @@ $_SESSION['roles'] = array(
  * Current software version
  * *DON'T TOUCH THIS*
  */
-$_SESSION['config']['version'] = "0.2.6";
+$_SESSION['config']['version'] = "0.2.7";
 
 /**
  *  Assigned background colours for each medium quality
