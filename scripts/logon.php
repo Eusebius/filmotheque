@@ -31,7 +31,7 @@ require_once('../includes/initialization.inc.php');
 // If credentials are incomplete, return to login page
 if (!isset($_POST['login']) || ($_POST['login'] === '')
     || !isset($_POST['login']) || ($_POST['password'] === '')) {
-    header('Location: http://' . $_SESSION['baseuri'] . '/login.php');
+    Util::gotoLoginPage();
 } else {
     $login = $_POST['login'];
     $password = $_POST['password'];
@@ -42,14 +42,13 @@ if (!isset($_POST['login']) || ($_POST['login'] === '')
                 header('Location: ' . $_SESSION['nextPage']);
                 exit();
             } else {
-                header('Location: http://' . $_SESSION['baseuri'] . '/index.php');
-                exit();
+                Util::gotoMainPage();
             }
         }
     }
     //Authentication has failed
     //TODO include an error message
-    header('Location: http://' . $_SESSION['baseuri'] . '/login.php');
+    Util::gotoLoginPage();
 }
 
 ?>

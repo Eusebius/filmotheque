@@ -44,8 +44,7 @@ class Auth {
     static function ensureAuthenticated() {
         if (!self::isAuthenticated()) {
             $_SESSION['nextPage'] = $_SERVER['SCRIPT_NAME'];
-            header('Location: ' . $_SESSION['loginURL']);
-            exit();
+            Util::gotoLoginPage();
         }
     }
 
@@ -58,8 +57,7 @@ class Auth {
      */
     static function ensureRole($role) {
         if (!self::hasRole($role)) {
-            header('Location: ' . $_SESSION['homeURL']);
-            exit();
+            Util::gotoMainPage();
         }
     }
 
@@ -72,8 +70,7 @@ class Auth {
      */
     static function ensurePermission($perm) {
         if (!self::hasPermission($perm)) {
-            header('Location: ' . $_SESSION['homeURL']);
-            exit();
+            Util::gotoMainPage();
         }
     }
 
@@ -140,8 +137,9 @@ class Auth {
         if (self::isAuthenticated()) {
             unset($_SESSION['auth']);
         }
-        header('Location: http://' . $_SESSION['baseuri'] . '/login.php');
+        Util::gotoLoginPage();
     }
+
 }
 
 ?>

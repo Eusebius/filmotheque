@@ -45,6 +45,17 @@ class Util {
         header('Location:http://' . $_SESSION['baseuri']);
         die();
     }
+    
+    /**
+     * Redirects the visitor to the login page of the application and 
+     * stops the current script.
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.2.7
+     */
+    static function gotoLoginPage() {
+        header('Location:http://' . $_SESSION['baseuri'] . 'login.php');
+        die();
+    }
 
     /**
      * If in debug mode, make a debug print of the variable. Otherwise, do

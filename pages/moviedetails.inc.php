@@ -131,11 +131,11 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
         if (Auth::hasPermission('w')) {
             echo '&nbsp;' . '<a href="scripts/doseentoday.php?id_movie=' . $id_movie . '">Vu aujourd\'hui&nbsp;!</a>';
         }
-        echo '</td></tr>' . "\n";
-        echo '</table>' . "\n";
-
-        echo '</td></tr>' . "\n";
     }
+    echo '</td></tr>' . "\n";
+    echo '</table>' . "\n";
+
+    echo '</td></tr>' . "\n";
     echo '</table>';
 
     echo "<br /><br />\n";
