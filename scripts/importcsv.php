@@ -27,8 +27,8 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('includes/declarations.inc.php');
-require_once('includes/initialization.inc.php');
+require_once('../includes/declarations.inc.php');
+require_once('../includes/initialization.inc.php');
 Auth::ensurePermission('w');
 
 $csvfilename = 'films.csv';
