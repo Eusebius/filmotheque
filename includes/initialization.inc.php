@@ -27,11 +27,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+//Check whether we are in HTTPS or not
+if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+    $secure = true;
+} else {
+    $secure = false;
+}
+//Set cookie parameters accordingly
+$currentCookieParams = session_get_cookie_params(); 
+session_set_cookie_params(
+        $currentCookieParams['lifetime'], 
+        $currentCookieParams['path'], 
+        $currentCookieParams['domain'], 
+        $secure, 
+        true);
+
 session_start();
 require_once('config.inc.php');
 
 if (!isset($_SESSION['http'])) {
-    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+    if ($secure) {
         // SSL connection
         $_SESSION['http'] = 'https';
     } else {
