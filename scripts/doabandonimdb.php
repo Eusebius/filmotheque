@@ -30,7 +30,7 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
-Auth::ensurePermission('w');
+Auth::ensurePermission('write');
 
 if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 

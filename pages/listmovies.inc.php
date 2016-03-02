@@ -27,7 +27,7 @@
  */
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
-Auth::ensurePermission('r');
+Auth::ensurePermission('read');
 
 // Remember GET parameters
 $sortParameters = '';
@@ -185,7 +185,7 @@ $nMovies = $listMovies->rowCount();
 
 <p>
     <a href="?<?php echo $sortParameters; ?>">Réinitialiser tous les filtres</a><br />
-    <?php if (Auth::hasPermission('w')) { ?>
+    <?php if (Auth::hasPermission('write')) { ?>
         <a href="?page=addmovie">Ajouter un nouveau film</a>
     <?php } ?>
 </p>
@@ -261,7 +261,7 @@ $nMovies = $listMovies->rowCount();
             }
             echo "</td>\n";
         }
-        if (Auth::hasPermission('w')) {
+        if (Auth::hasPermission('write')) {
             if ($movie['imdb_id'] == '') {
                 echo '<td align="center" bgcolor="' . $colour[$quality] . '">';
                 echo '<a href="?page=getimdb&id_movie=' . $movie['id_movie'] . '">Lier à une fiche IMDb</a>';
