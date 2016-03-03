@@ -47,7 +47,7 @@ class Util {
         if (isset($_SESSION['baseuri'])) {
             $baseuri = $_SESSION['baseuri'];
         } else {
-            $completeURI = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            $completeURI = $_SERVER['HTTP_HOST'] . Util::getRequestURI();
             $baseuri = Util::stripPathFromDirs($completeURI);
         }
         if (isset($_SESSION['http'])) {
@@ -62,6 +62,22 @@ class Util {
     }
 
     /**
+     * Get and sanitize the request URI from the server environment.
+     * Crashes with a fatal error if sanitization fails.
+     * @return string The request URI, starting with a slash
+     * @since 0.2.8
+     */
+    static function getRequestURI() {
+        //TODO maybe validate against a regexp for a path starting with /
+        $sanitizedURI = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
+        if ($sanitizedURI === false && strpos('.', $sanitizedURI) !== false) {
+            Util::fatal('Unable to validate request URI: ' . filter_input(INPUT_SERVER, 'REQUEST_URI'));
+            exit();
+        }
+        return $sanitizedURI;
+    }
+
+    /**
      * Redirects the visitor to the login page of the application and 
      * stops the current script. Works even in the absence of a working session
      * (i.e. right after disconnection).
@@ -72,7 +88,7 @@ class Util {
         if (isset($_SESSION['baseuri'])) {
             $baseuri = $_SESSION['baseuri'];
         } else {
-            $completeURI = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            $completeURI = $_SERVER['HTTP_HOST'] . Util::getRequestURI();
             $baseuri = Util::stripPathFromDirs($completeURI);
         }
         if (isset($_SESSION['http'])) {
@@ -146,7 +162,7 @@ class Util {
      * @since 0.2.4
      */
     static function isIntString($string) {
-        //TODO rewrite that, as "0123abc" coerces to an int.
+//TODO rewrite that, as "0123abc" coerces to an int.
         if ((string) (int) $string == $string) {
             $result = (int) $string;
         } else {
@@ -274,8 +290,8 @@ class Util {
      * @since 0.2.4
      */
     static function disconnectDB($pdoconn) {
-        //TODO do we really disconnect here, or did we modify a copy of the
-        //reference?
+//TODO do we really disconnect here, or did we modify a copy of the
+//reference?
         $pdoconn = null;
     }
 

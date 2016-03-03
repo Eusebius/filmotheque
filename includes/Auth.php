@@ -102,14 +102,8 @@ class Auth {
      */
     static function ensureAuthenticated() {
         if (!self::isAuthenticated()) {
-            //TODO maybe validate against a regexp for a path starting with /
-            $nextPage = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
-            if ($nextPage !== false && strpos('.', $nextPage) === false) {
-                $_SESSION['nextPage'] = $nextPage;
-                Util::gotoLoginPage();
-            }
-            Util::fatal(__METHOD__ . ' is unable to validate URL: ' . filter_input(INPUT_SERVER, 'SCRIPT_NAME'));
-            exit();
+            $_SESSION['nextPage'] = Util::getRequestURI();
+            Util::gotoLoginPage();
         }
     }
 
@@ -244,5 +238,3 @@ class Auth {
     }
 
 }
-
-?>

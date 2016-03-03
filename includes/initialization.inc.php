@@ -62,7 +62,7 @@ if (!isset($_SESSION['basepath'])) {
 
 unset($_SESSION['baseuri']);
 if (!isset($_SESSION['baseuri'])) {
-    $completeURI = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $completeURI = $_SERVER['HTTP_HOST'] . Util::getRequestURI();
     $_SESSION['baseuri'] = Util::stripPathFromDirs($completeURI);
 }
 
