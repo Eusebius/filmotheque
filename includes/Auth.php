@@ -37,6 +37,39 @@
 class Auth {
 
     /**
+     * Prepares a password for storage in the database.
+     * Hash it with SHA256, encode it in base64, and then hash/salt the result 
+     * with the default options of password_hash.
+     * @param string $password The cleartext password.
+     * @return string The hash to be stored in the database.
+     * @since 0.2.8
+     */
+    static function password_encrypt($password) {
+        //TODO add an encryption layer in the end, with a key known only to PHP.
+        //Avoid truncating the password to 72 chars (by hashing it a first time), 
+        //or on 0x00 (by encoding it in base64)
+        $preparedPassword = base64_encode(hash('sha256', $password, true));
+        $encPassword = password_hash($preparedPassword, PASSWORD_DEFAULT);
+        return $encPassword;
+    }
+
+    /**
+     * Checks that a cleartext password matches with a given hash (as stored in 
+     * the database).
+     * This function is to be used jointly with password_encrypt, and uses the 
+     * same process (SHA256 hashing and base64 encoding of the cleartext 
+     * password before passing it to the standard PHP method).
+     * @param string $clearTextPassword The cleartext password, as provided by the user.
+     * @param string $encPassword The reference hash, as stored in the database.
+     * @return boolean True if the password matches, false otherwise.
+     * @since 0.2.8
+     */
+    static function password_check($clearTextPassword, $encPassword) {
+        $preparedPassword = base64_encode(hash('sha256', $clearTextPassword, true));
+        return password_verify($preparedPassword, $encPassword);
+    }
+
+    /**
      * Authenticate a user with his login and password.
      * @param type $login The login provided by the user.
      * @param type $password The password provided by the user.
@@ -51,7 +84,7 @@ class Auth {
 
         $getUser = $pdo->prepare('select login, password from users where login=?');
         $getUser->execute(array($login));
-        
+
         $nbUsers = $getUser->rowCount();
         if ($nbUsers === 1) {
             $userArray = $getUser->fetchall(PDO::FETCH_ASSOC);
@@ -202,5 +235,7 @@ class Auth {
         }
         Util::gotoLoginPage();
     }
+
 }
+
 ?>
