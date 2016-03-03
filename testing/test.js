@@ -97,7 +97,7 @@ function escapeURI(La) {
 }
 
 var _xmlHttp = null; //l'objet xmlHttpRequest utilisé pour contacter le serveur
-var _adresseRecherche = "scripts/suggestPersons.php" //l'adresse à interroger pour trouver les suggestions
+var _adresseRecherche = "suggestPersons.php" //l'adresse à interroger pour trouver les suggestions
 
 function callSuggestions(valeur) {
     if (_xmlHttp && _xmlHttp.readyState !== 0) {

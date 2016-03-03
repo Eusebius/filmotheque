@@ -29,7 +29,7 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
-Auth::ensurePermission('write');
+Auth::ensurePermission('admin');
 
 //header('Content-Type: text/plain;charset=utf-8');
 
