@@ -1,7 +1,7 @@
 <?php
 
 /**
- * auth.inc.php
+ * Auth.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.7
@@ -71,8 +71,8 @@ class Auth {
 
     /**
      * Authenticate a user with his login and password.
-     * @param type $login The login provided by the user.
-     * @param type $password The password provided by the user.
+     * @param string $login The login provided by the user.
+     * @param string $password The password provided by the user.
      * @return bool true if authentication is successful, false otherwise.
      * @since 0.2.8
      * //TODO wipe passwords from memory

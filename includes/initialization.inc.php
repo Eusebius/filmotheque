@@ -1,7 +1,7 @@
 <?php
 
 /**
- * includes/required.inc.php
+ * includes/initialization.inc.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.6
