@@ -39,6 +39,7 @@ if (!isset($_POST['login']) || ($_POST['login'] === '') || !isset($_POST['login'
     if (Auth::authenticateUser($login, $password)) {
         //Authentication is successful
         $_SESSION['auth'] = $login;
+        session_regenerate_id(false);
         if (isset($_SESSION['nextPage'])) {
             header('Location: ' . $_SESSION['nextPage']);
             exit();

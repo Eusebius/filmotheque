@@ -28,10 +28,9 @@
  */
 
 //Check whether we are in HTTPS or not
+$secure = false;
 if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
     $secure = true;
-} else {
-    $secure = false;
 }
 //Set cookie parameters accordingly
 $currentCookieParams = session_get_cookie_params(); 

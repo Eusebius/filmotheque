@@ -37,23 +37,52 @@ class Util {
 
     /**
      * Redirects the visitor to the main page of the application and 
-     * stops the current script.
+     * stops the current script. Works even in the absence of a working session,
+     * but just because the developer has no brains (loading the main page 
+     * without a valid session should not be possible).
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
     static function gotoMainPage() {
-        header('Location:' . $_SESSION['http'] . '://' . $_SESSION['baseuri']);
+        if (isset($_SESSION['baseuri'])) {
+            $baseuri = $_SESSION['baseuri'];
+        } else {
+            $completeURI = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            $baseuri = Util::stripPathFromDirs($completeURI);
+        }
+        if (isset($_SESSION['http'])) {
+            $http = $_SESSION['http'];
+        } else if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+            $http = 'https';
+        } else {
+            $http = 'http';
+        }
+        header('Location:' . $http . '://' . $baseuri);
         die();
     }
-    
+
     /**
      * Redirects the visitor to the login page of the application and 
-     * stops the current script.
+     * stops the current script. Works even in the absence of a working session
+     * (i.e. right after disconnection).
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.7
      */
     static function gotoLoginPage() {
-        header('Location:' . $_SESSION['http'] . '://' . $_SESSION['baseuri'] . 'login.php');
+        if (isset($_SESSION['baseuri'])) {
+            $baseuri = $_SESSION['baseuri'];
+        } else {
+            $completeURI = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            $baseuri = Util::stripPathFromDirs($completeURI);
+        }
+        if (isset($_SESSION['http'])) {
+            $http = $_SESSION['http'];
+        } else if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+            $http = 'https';
+        } else {
+            $http = 'http';
+        }
+        header('Location:' . $http . '://' . $baseuri . 'login.php');
         die();
     }
 
@@ -176,7 +205,7 @@ class Util {
         }
         return $_SESSION['movie'];
     }
-    
+
     /**
      * Forget about the movie in session. To be called after an update on the
      * movie object, to ensure that it is fetched from the database again.
@@ -217,24 +246,16 @@ class Util {
      * @since 0.2.4
      */
     static function getDbConnection() {
-        if (!isset($_SESSION['config']['db_type'])
-                || !isset($_SESSION['config']['db_server'])
-                || !isset($_SESSION['config']['db_db'])
-                || !isset($_SESSION['config']['db_user'])
-                || !isset($_SESSION['config']['db_password']))
-                {
-                    Util::fatal('Database configuration is not properly set up in '
-                            . 'session.');
+        if (!isset($_SESSION['config']['db_type']) || !isset($_SESSION['config']['db_server']) || !isset($_SESSION['config']['db_db']) || !isset($_SESSION['config']['db_user']) || !isset($_SESSION['config']['db_password'])) {
+            Util::fatal('Database configuration is not properly set up in '
+                    . 'session.');
         }
         if ((!isset($_SESSION['dbconn'])) or ( $_SESSION['dbconn'] == null)) {
             try {
                 $pdoconn = new PDO(
                         $_SESSION['config']['db_type']
                         . ':host=' . $_SESSION['config']['db_server']
-                        . ';dbname=' . $_SESSION['config']['db_db'], 
-                        $_SESSION['config']['db_user'], 
-                        $_SESSION['config']['db_password'], 
-                        array(PDO::ATTR_PERSISTENT => true));
+                        . ';dbname=' . $_SESSION['config']['db_db'], $_SESSION['config']['db_user'], $_SESSION['config']['db_password'], array(PDO::ATTR_PERSISTENT => true));
             } catch (PDOException $e) {
                 Util::fatal($e->getMessage());
             }
@@ -279,7 +300,7 @@ class Util {
         }
         return $withoutIndex;
     }
-    
+
     /**
      * Strip an string from a suffix starting with a given prefix.
      * 
@@ -290,8 +311,7 @@ class Util {
      * @since 0.2.6
      */
     private static function stripPathFromDir($path, $dir) {
-        return substr($path, 0, 
-                (strpos($path, $dir) ? strpos($path, $dir) : strlen($path)));
+        return substr($path, 0, (strpos($path, $dir) ? strpos($path, $dir) : strlen($path)));
     }
 
 }

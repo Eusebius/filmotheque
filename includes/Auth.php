@@ -230,7 +230,9 @@ class Auth {
      */
     static function disconnect() {
         if (self::isAuthenticated()) {
-            unset($_SESSION['auth']);
+            session_unset();
+            session_destroy();
+            session_regenerate_id(true);
         }
         Util::gotoLoginPage();
     }
