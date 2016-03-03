@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Auth.php
+ * includes/Auth.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.7
@@ -44,7 +44,7 @@ class Auth {
      * @return string The hash to be stored in the database.
      * @since 0.2.8
      */
-    static function password_encrypt($password) {
+    static function encryptPassword($password) {
         //TODO add an encryption layer in the end, with a key known only to PHP.
         //Avoid truncating the password to 72 chars (by hashing it a first time), 
         //or on 0x00 (by encoding it in base64)
@@ -64,7 +64,7 @@ class Auth {
      * @return boolean True if the password matches, false otherwise.
      * @since 0.2.8
      */
-    static function password_check($clearTextPassword, $encPassword) {
+    static function checkPassword($clearTextPassword, $encPassword) {
         $preparedPassword = base64_encode(hash('sha256', $clearTextPassword, true));
         return password_verify($preparedPassword, $encPassword);
     }
@@ -88,7 +88,7 @@ class Auth {
         if ($nbUsers === 1) {
             $userArray = $getUser->fetchall(PDO::FETCH_ASSOC);
             $dbpassword = $userArray[0]['password'];
-            if (Auth::password_check($password, $dbpassword)) {
+            if (Auth::checkPassword($password, $dbpassword)) {
                 $result = true;
             }
         }
@@ -102,8 +102,14 @@ class Auth {
      */
     static function ensureAuthenticated() {
         if (!self::isAuthenticated()) {
-            $_SESSION['nextPage'] = $_SERVER['SCRIPT_NAME'];
-            Util::gotoLoginPage();
+            //TODO maybe validate against a regexp for a path starting with /
+            $nextPage = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
+            if ($nextPage !== false && strpos('.', $nextPage) === false) {
+                $_SESSION['nextPage'] = $nextPage;
+                Util::gotoLoginPage();
+            }
+            Util::fatal(__METHOD__ . ' is unable to validate URL: ' . filter_input(INPUT_SERVER, 'SCRIPT_NAME'));
+            exit();
         }
     }
 
