@@ -76,7 +76,6 @@ class Auth {
      * @return bool true if authentication is successful, false otherwise.
      * @since 0.2.8
      * //TODO wipe passwords from memory
-     * //TODO manage hashed passwords
      */
     static function authenticateUser($login, $password) {
         $result = false;
@@ -89,7 +88,7 @@ class Auth {
         if ($nbUsers === 1) {
             $userArray = $getUser->fetchall(PDO::FETCH_ASSOC);
             $dbpassword = $userArray[0]['password'];
-            if ($password === $dbpassword) {
+            if (Auth::password_check($password, $dbpassword)) {
                 $result = true;
             }
         }
