@@ -53,4 +53,3 @@ if ($login === NULL || $login === '' || $password === NULL || ($password === '')
     //TODO include an error message
     Util::gotoLoginPage();
 }
-?>
