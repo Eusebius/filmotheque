@@ -28,10 +28,8 @@
  */
 
 //Check whether we are in HTTPS or not
-$secure = false;
-if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
-    $secure = true;
-}
+$secure = Util::isHTTPS();
+
 //Set cookie parameters accordingly
 $currentCookieParams = session_get_cookie_params(); 
 session_set_cookie_params(
@@ -62,7 +60,7 @@ if (!isset($_SESSION['basepath'])) {
 
 unset($_SESSION['baseuri']);
 if (!isset($_SESSION['baseuri'])) {
-    $completeURI = $_SERVER['HTTP_HOST'] . Util::getRequestURI();
+    $completeURI = Util::getHttpHost() . Util::getRequestURI();
     $_SESSION['baseuri'] = Util::stripPathFromDirs($completeURI);
 }
 

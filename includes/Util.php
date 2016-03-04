@@ -47,18 +47,33 @@ class Util {
         if (isset($_SESSION['baseuri'])) {
             $baseuri = $_SESSION['baseuri'];
         } else {
-            $completeURI = $_SERVER['HTTP_HOST'] . Util::getRequestURI();
+            $completeURI = Util::getHttpHost() . Util::getRequestURI();
             $baseuri = Util::stripPathFromDirs($completeURI);
         }
         if (isset($_SESSION['http'])) {
             $http = $_SESSION['http'];
-        } else if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+        } else if (Util::isHTTPS()) {
             $http = 'https';
         } else {
             $http = 'http';
         }
         header('Location:' . $http . '://' . $baseuri);
         die();
+    }
+    
+    /**
+     * Determines whether the website is served through HTTP or HTTPS.
+     * @return boolean True if HTTPS is used, false otherwise.
+     * @since 0.2.8
+     */
+    static function isHTTPS() {
+        $result = false;
+        //TODO What are the possible values, how can we filter them properly?
+        $https = filter_input(INPUT_SERVER, 'HTTPS', FILTER_SANITIZE_STRING);
+        if (($https !== NULL) && ($https !== 'off')) {
+            $result = true;
+        }
+        return $result;
     }
 
     /**
@@ -78,6 +93,27 @@ class Util {
     }
 
     /**
+     * Get and sanitize the HTTP host provided by the user agent through the 
+     * server environment.
+     * Crashes with a fatal error if sanitization fails.
+     * @return string the HTTP host sent by the user agent, without trailing 
+     * slash
+     * @since 0.2.8
+     */
+    static function getHttpHost() {
+        //TODO write custom callback filter?
+        $filteredHttpHost = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_STRING);
+        //TODO take precautions on existence of the array and its first element
+        $strippedHttpHost = explode('/', $filteredHttpHost)[0];
+        if (filter_var('http://' . $strippedHttpHost, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
+            return $strippedHttpHost;
+        } else {
+            Util::fatal("Impossible to validate HTTP_HOST: $filteredHttpHost ($strippedHttpHost).");
+            exit();
+        }
+    }
+
+    /**
      * Redirects the visitor to the login page of the application and 
      * stops the current script. Works even in the absence of a working session
      * (i.e. right after disconnection).
@@ -88,12 +124,12 @@ class Util {
         if (isset($_SESSION['baseuri'])) {
             $baseuri = $_SESSION['baseuri'];
         } else {
-            $completeURI = $_SERVER['HTTP_HOST'] . Util::getRequestURI();
+            $completeURI = Util::getHttpHost() . Util::getRequestURI();
             $baseuri = Util::stripPathFromDirs($completeURI);
         }
         if (isset($_SESSION['http'])) {
             $http = $_SESSION['http'];
-        } else if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+        } else if (Util::isHTTPS()) {
             $http = 'https';
         } else {
             $http = 'http';
