@@ -31,10 +31,12 @@ require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
 Auth::ensurePermission('write');
 
-if (isset($_POST['title']) && $_POST['title'] != '') {
+$title = Util::getPOSTValueOrNull('title', Util::POST_CHECK_STRING);
+
+if ($title !== NULL && $title !== '') {
 
     $movie = new Movie(null);
-    $movie->setValues(Util::getPOSTValueOrNull('title', Util::POST_CHECK_STRING), 
+    $movie->setValues($title, 
             Util::getPOSTValueOrNull('year', Util::POST_CHECK_INT), 
             Util::getPOSTValueOrNull('makers', Util::POST_CHECK_INT_ARRAY), 
             Util::getPOSTValueOrNull('actors', Util::POST_CHECK_INT_ARRAY), 

@@ -29,12 +29,13 @@
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
 
+$login = Util::getPOSTValueOrNull('login', Util::POST_CHECK_STRING);
+$password= Util::getPOSTValueOrNull('password', Util::POST_CHECK_RAW);
+
 // If credentials are incomplete, return to login page
-if (!isset($_POST['login']) || ($_POST['login'] === '') || !isset($_POST['login']) || ($_POST['password'] === '')) {
+if ($login === NULL || $login === '' || $password === NULL || ($password === '')) {
     Util::gotoLoginPage();
 } else {
-    $login = $_POST['login'];
-    $password = $_POST['password'];
     
     if (Auth::authenticateUser($login, $password)) {
         //Authentication is successful

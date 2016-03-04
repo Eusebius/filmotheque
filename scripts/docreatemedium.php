@@ -31,10 +31,14 @@ require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
 Auth::ensurePermission('write');
 
-if (isset($_POST['id_movie']) && $_POST['id_movie'] != '') {
+//TODO check all instances of == and !=
 
-    if ((string) (int) $_POST['id_movie'] == $_POST['id_movie']) {
-        $id_medium = (int) $_POST['id_movie'];
+$id_movie_string = Util::getPOSTValueOrNull('id_movie', Util::POST_CHECK_INT);
+
+if ($id_movie_string !== NULL && $id_movie_string !== '') {
+
+    if ((string) (int) $id_movie_string == $id_movie_string) { //== is intentional here
+        $id_movie = (int) $id_movie_string;
     } else {
         // Return to home page if movie ID is not a number
         Util::gotoMainPage();
@@ -48,7 +52,7 @@ if (isset($_POST['id_movie']) && $_POST['id_movie'] != '') {
             Util::getPOSTValueOrNull('shelfmark', Util::POST_CHECK_INT), 
             Util::getPOSTValueOrNull('audio', Util::POST_CHECK_STRING_ARRAY), 
             Util::getPOSTValueOrNull('subs', Util::POST_CHECK_STRING_ARRAY), 
-            Util::getPOSTValueOrNull('id_movie', Util::POST_CHECK_INT));
+            $id_movie);
 
     //$medium->dump();
     header('Location:../?page=moviedetails&id_movie=' . $medium->getMovieID());

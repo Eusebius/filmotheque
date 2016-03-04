@@ -41,6 +41,7 @@ class Util {
     const POST_CHECK_INT = 1;
     const POST_CHECK_STRING_ARRAY = 2;
     const POST_CHECK_INT_ARRAY = 3;
+    const POST_CHECK_RAW = 4;
 
     /**
      * Redirects the visitor to the main page of the application and 
@@ -246,6 +247,10 @@ class Util {
     static function getPOSTValueOrNull($POSTindex, $validation) {
         $options = array();
         switch ($validation) {
+            case Util::POST_CHECK_RAW:
+                $filter = FILTER_DEFAULT;
+                $options = FILTER_REQUIRE_SCALAR;
+                break;
             case Util::POST_CHECK_STRING_ARRAY:
                 $filter = FILTER_SANITIZE_STRING;
                 $options = FILTER_REQUIRE_ARRAY;

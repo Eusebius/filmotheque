@@ -28,17 +28,18 @@
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
 
+$hash = Util::getPOSTValueOrNull('hash', Util::POST_CHECK_RAW);
+$password= Util::getPOSTValueOrNull('password', Util::POST_CHECK_RAW);
+
 $testHash = Auth::encryptPassword("test");
 echo "Haché/salé de \"test\"&nbsp: $testHash<br />";
 
-if (isset($_POST['password']) && ($_POST['password'] !== '')) {
-    $password = $_POST['password'];
+if ($password !== NULL && $password !== '') {
     $encPassword = Auth::encryptPassword($password);
     echo "Mot de passe tapé&nbsp;: $password<br />";
     echo "Mot de passe haché/salé&nbsp: $encPassword<br />";
     
-    if (isset($_POST['hash']) && ($_POST['hash'] !== '')) {
-        $hash = $_POST['hash'];
+    if ($hash !== NULL && $hash !== '') {
         if (Auth::checkPassword($password, $hash)) {
             echo "Le mot de passe et le haché fourni correspondent.<br />";
         } else {

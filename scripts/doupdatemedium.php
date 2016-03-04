@@ -31,11 +31,12 @@ require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
 Auth::ensurePermission('write');
 
+$id_medium_string = Util::getPOSTValueOrNull('id_medium', Util::POST_CHECK_INT);
 
-if (isset($_POST['id_medium']) && $_POST['id_medium'] != '') {
+if ($id_medium_string !== NULL && $id_medium_string !== '') {
 
-    if ((string) (int) $_POST['id_medium'] == $_POST['id_medium']) {
-        $id_medium = (int) $_POST['id_medium'];
+    if ((string) (int) $id_medium_string == $id_medium_string) { //== is intended here
+        $id_medium = (int) $id_medium_string;
     } else {
         // Return to home page if movie ID is not a number
         Util::gotoMainPage();
