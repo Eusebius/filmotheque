@@ -1,7 +1,7 @@
 <?php
 
 /**
- * auth.inc.php
+ * includes/Auth.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.7
@@ -37,13 +37,72 @@
 class Auth {
 
     /**
+     * Prepares a password for storage in the database.
+     * Hash it with SHA256, encode it in base64, and then hash/salt the result 
+     * with the default options of password_hash.
+     * @param string $password The cleartext password.
+     * @return string The hash to be stored in the database.
+     * @since 0.2.8
+     */
+    static function encryptPassword($password) {
+        //TODO add an encryption layer in the end, with a key known only to PHP.
+        //Avoid truncating the password to 72 chars (by hashing it a first time), 
+        //or on 0x00 (by encoding it in base64)
+        $preparedPassword = base64_encode(hash('sha256', $password, true));
+        $encPassword = password_hash($preparedPassword, PASSWORD_DEFAULT);
+        return $encPassword;
+    }
+
+    /**
+     * Checks that a cleartext password matches with a given hash (as stored in 
+     * the database).
+     * This function is to be used jointly with password_encrypt, and uses the 
+     * same process (SHA256 hashing and base64 encoding of the cleartext 
+     * password before passing it to the standard PHP method).
+     * @param string $clearTextPassword The cleartext password, as provided by the user.
+     * @param string $encPassword The reference hash, as stored in the database.
+     * @return boolean True if the password matches, false otherwise.
+     * @since 0.2.8
+     */
+    static function checkPassword($clearTextPassword, $encPassword) {
+        $preparedPassword = base64_encode(hash('sha256', $clearTextPassword, true));
+        return password_verify($preparedPassword, $encPassword);
+    }
+
+    /**
+     * Authenticate a user with his login and password.
+     * @param string $login The login provided by the user.
+     * @param string $password The password provided by the user.
+     * @return bool true if authentication is successful, false otherwise.
+     * @since 0.2.8
+     * //TODO wipe passwords from memory
+     */
+    static function authenticateUser($login, $password) {
+        $result = false;
+        $pdo = Util::getDbConnection();
+
+        $getUser = $pdo->prepare('select login, password from users where login=?');
+        $getUser->execute(array($login));
+
+        $nbUsers = $getUser->rowCount();
+        if ($nbUsers === 1) {
+            $userArray = $getUser->fetchall(PDO::FETCH_ASSOC);
+            $dbpassword = $userArray[0]['password'];
+            if (Auth::checkPassword($password, $dbpassword)) {
+                $result = true;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Make sure a user is authenticated, otherwise redirect to login form.
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.7
      */
     static function ensureAuthenticated() {
         if (!self::isAuthenticated()) {
-            $_SESSION['nextPage'] = $_SERVER['SCRIPT_NAME'];
+            $_SESSION['nextPage'] = Util::getRequestURI();
             Util::gotoLoginPage();
         }
     }
@@ -82,13 +141,33 @@ class Auth {
      * @since 0.2.7
      */
     static function hasRole($role) {
-        if (isset($_SESSION['auth']['roles'])) {
-            $roles = $_SESSION['auth']['roles'];
+        $result = false;
+        if (isset($_SESSION['auth']) && $_SESSION['auth'] !== '') {
+            $roles = Auth::getRoles($_SESSION['auth']);
             if (in_array($role, $roles, true)) {
-                return true;
+                $result = true;
             }
         }
-        return false;
+        return $result;
+    }
+
+    /**
+     * Lists the current roles of a given user.
+     * Roles are fetched directly from the database, not from a cache.
+     * @param string $login The login of the user.
+     * @return array An array of the user's roles.
+     * @since 0.2.8
+     */
+    static function getRoles($login) {
+        $pdo = Util::getDbConnection();
+        $getRoles = $pdo->prepare('select role from `users-roles` where login=?');
+        $getRoles->execute(array($login));
+        $rolesResult = $getRoles->fetchAll(PDO::FETCH_ASSOC);
+        $roles = array();
+        foreach ($rolesResult as $roleRecord) {
+            $roles[] = $roleRecord['role'];
+        }
+        return $roles;
     }
 
     /**
@@ -99,18 +178,34 @@ class Auth {
      * @since 0.2.7
      */
     static function hasPermission($perm) {
-        if (isset($_SESSION['auth']['roles'])) {
-            $roles = $_SESSION['auth']['roles'];
-            foreach ($roles as $role) {
-                if (isset($_SESSION['roles'][$role])) {
-                    $permissions = $_SESSION['roles'][$role];
-                    if (in_array($perm, $permissions, true)) {
-                        return true;
-                    }
-                }
+        $result = false;
+        if (isset($_SESSION['auth']) && ($_SESSION['auth'] !== '')) {
+            $permissions = Auth::getPermissions($_SESSION['auth']);
+            if (in_array($perm, $permissions, true)) {
+                $result = true;
             }
         }
-        return false;
+        return $result;
+    }
+
+    /**
+     * Lists the current permissions of a given user.
+     * Permissions are fetched directly from the database, not from a cache.
+     * @param string $login The login of the user.
+     * @return array An array of the user's permissions.
+     * @since 0.2.8
+     */
+    static function getPermissions($login) {
+        $pdo = Util::getDbConnection();
+        $getPermissions = $pdo->prepare('select permission from `users-roles`, `roles-permissions` '
+                . 'where login=? and `users-roles`.role = `roles-permissions`.role');
+        $getPermissions->execute(array($login));
+        $permissionsResult = $getPermissions->fetchAll(PDO::FETCH_ASSOC);
+        $permissions = array();
+        foreach ($permissionsResult as $permissionRecord) {
+            $permissions[] = $permissionRecord['permission'];
+        }
+        return $permissions;
     }
 
     /**
@@ -120,11 +215,11 @@ class Auth {
      * @since 0.2.7
      */
     static function isAuthenticated() {
-        if (isset($_SESSION['auth']) && isset($_SESSION['auth']['login']) && $_SESSION['auth']['login'] !== '') {
-            return true;
-        } else {
-            return false;
+        $result = false;
+        if (isset($_SESSION['auth']) && $_SESSION['auth'] !== '') {
+            $result = true;
         }
+        return $result;
     }
 
     /**
@@ -135,11 +230,11 @@ class Auth {
      */
     static function disconnect() {
         if (self::isAuthenticated()) {
-            unset($_SESSION['auth']);
+            session_unset();
+            session_destroy();
+            session_regenerate_id(true);
         }
         Util::gotoLoginPage();
     }
 
 }
-
-?>

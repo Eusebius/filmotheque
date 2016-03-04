@@ -29,20 +29,21 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
-Auth::ensurePermission('w');
+Auth::ensurePermission('write');
 
+$id_movie_string = Util::getPOSTValueOrNull('id_movie', Util::POST_CHECK_INT);
+$imdb_id = Util::getPOSTValueOrNull('imdb_id', Util::POST_CHECK_STRING);
 
-if (isset($_POST['id_movie']) && $_POST['id_movie'] != '' && isset($_POST['imdb_id']) && $_POST['imdb_id'] != '') {
+if ($id_movie_string !== NULL && $id_movie_string !== '' && $imdb_id !== NULL && $imdb_id !== '') {
 
-    if ((string) (int) $_POST['id_movie'] == $_POST['id_movie']) {
-        $id_movie = (int) $_POST['id_movie'];
+    if ((string) (int) $id_movie_string == $id_movie_string) {
+        $id_movie = (int) $id_movie_string;
     } else {
         // Return to home page if movie ID is not a number
         Util::gotoMainPage();
     }
 
     $movie = new Movie($id_movie);
-    $imdb_id = $_POST['imdb_id']; // TODO sanitize input
 
     if (!isset($_SESSION['imdbdata'][$id_movie])) {
 

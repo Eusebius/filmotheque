@@ -1,4 +1,5 @@
 <?php
+
 /**
  * logon.php
  * 
@@ -28,27 +29,27 @@
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
 
+$login = Util::getPOSTValueOrNull('login', Util::POST_CHECK_STRING);
+$password= Util::getPOSTValueOrNull('password', Util::POST_CHECK_RAW);
+
 // If credentials are incomplete, return to login page
-if (!isset($_POST['login']) || ($_POST['login'] === '')
-    || !isset($_POST['login']) || ($_POST['password'] === '')) {
+if ($login === NULL || $login === '' || $password === NULL || ($password === '')) {
     Util::gotoLoginPage();
 } else {
-    $login = $_POST['login'];
-    $password = $_POST['password'];
-    foreach($_SESSION['users'] as $user) {
-        if ($user['login'] === $login && $user['password'] === $password) {
-            $_SESSION['auth'] = $user;
-            if (isset($_SESSION['nextPage'])) {
-                header('Location: ' . $_SESSION['nextPage']);
-                exit();
-            } else {
-                Util::gotoMainPage();
-            }
+    
+    if (Auth::authenticateUser($login, $password)) {
+        //Authentication is successful
+        $_SESSION['auth'] = $login;
+        session_regenerate_id(false);
+        if (isset($_SESSION['nextPage'])) {
+            header('Location: ' . $_SESSION['nextPage']);
+            exit();
+        } else {
+            Util::gotoMainPage();
         }
     }
+    
     //Authentication has failed
     //TODO include an error message
     Util::gotoLoginPage();
 }
-
-?>

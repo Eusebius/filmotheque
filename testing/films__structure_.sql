@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  localhost
--- Généré le :  Mer 02 Mars 2016 à 19:03
+-- Généré le :  Mer 02 Mars 2016 à 18:58
 -- Version du serveur :  5.6.28-1
 -- Version de PHP :  5.6.14-1
 
@@ -307,18 +307,6 @@ CREATE TABLE IF NOT EXISTS `permissions` (
 -- RELATIONS POUR LA TABLE `permissions`:
 --
 
---
--- Contenu de la table `permissions`
---
-
-REPLACE INTO `permissions` (`permission`, `permdescription`) VALUES
-('admin', 'Allow administration of the website (including user, role and permission management)'),
-('lastseen', 'Allow read access to lastseen information'),
-('rating', 'Allow read access to rating information'),
-('read', 'Read access to basic information (does not cover shortlists, rating or lastseen)'),
-('shortlists', 'Allow read access to shortlist information'),
-('write', 'Write access to all information');
-
 -- --------------------------------------------------------
 
 --
@@ -374,15 +362,6 @@ CREATE TABLE IF NOT EXISTS `roles` (
 -- RELATIONS POUR LA TABLE `roles`:
 --
 
---
--- Contenu de la table `roles`
---
-
-REPLACE INTO `roles` (`role`, `description`) VALUES
-('admin', 'Website administrators'),
-('ro', 'Users with basic read-only rights'),
-('rw', 'Users with full read/write access, but no administration rights');
-
 -- --------------------------------------------------------
 
 --
@@ -403,24 +382,6 @@ CREATE TABLE IF NOT EXISTS `roles-permissions` (
 --   `permission`
 --       `permissions` -> `permission`
 --
-
---
--- Contenu de la table `roles-permissions`
---
-
-REPLACE INTO `roles-permissions` (`role`, `permission`) VALUES
-('admin', 'admin'),
-('admin', 'lastseen'),
-('rw', 'lastseen'),
-('admin', 'rating'),
-('rw', 'rating'),
-('admin', 'read'),
-('ro', 'read'),
-('rw', 'read'),
-('admin', 'shortlists'),
-('rw', 'shortlists'),
-('admin', 'write'),
-('rw', 'write');
 
 -- --------------------------------------------------------
 

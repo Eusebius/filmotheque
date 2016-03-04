@@ -29,12 +29,14 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
-Auth::ensurePermission('r');
+Auth::ensurePermission('read');
 
-if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
+$id_movie_string = filter_input(INPUT_GET, 'id_movie', FILTER_SANITIZE_NUMBER_INT);
 
-    if ((string) (int) $_GET['id_movie'] == $_GET['id_movie']) {
-        $id_movie = (int) $_GET['id_movie'];
+if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string !== '') {
+
+    if ((string) (int) $id_movie_string == $id_movie_string) {
+        $id_movie = (int) $id_movie_string;
     } else {
         // Return to home page if movie ID is not a numberVu 
         Util::gotoMainPage();
@@ -128,7 +130,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     if (Auth::hasPermission('lastseen')) {
         echo '<tr><td>Vu le&nbsp;:</td><td>';
         echo $movie->getFormattedLastseen();
-        if (Auth::hasPermission('w')) {
+        if (Auth::hasPermission('write')) {
             echo '&nbsp;' . '<a href="scripts/doseentoday.php?id_movie=' . $id_movie . '">Vu aujourd\'hui&nbsp;!</a>';
         }
     }
@@ -139,7 +141,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     echo '</table>';
 
     echo "<br /><br />\n";
-    if (Auth::hasPermission('w')) {
+    if (Auth::hasPermission('write')) {
         echo '<a href="?page=updatemovie&id_movie=' . $id_movie . '">Mettre à jour la fiche du film</a>';
         echo "<br /><br />\n";
         if ($movie->getIMDbID() == '') {
@@ -158,7 +160,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     // TODO à faire rentrer dans la classe Medium
     $getMediaBorrowers = $conn->prepare('select * from `media-borrowers` natural join borrowers where id_medium = ? and backdate is null');
 
-    if (Auth::hasPermission('w')) {
+    if (Auth::hasPermission('write')) {
         echo '<p><a href="?page=addmedium&id_movie='
         . $id_movie . '">Ajouter un nouveau support</a></p>';
     }
@@ -213,7 +215,7 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
             echo $date->format('d/m/Y');
         }
         echo '</td>';
-        if (Auth::hasPermission('w')) {
+        if (Auth::hasPermission('write')) {
             echo '<td bgcolor="' . $colour[$quality] . '"><a href="?page=updatemedium&id_medium=' . $medium->getID() . '">'
             . 'Mettre à jour le support'
             . '</a></td>';

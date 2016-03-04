@@ -1,7 +1,7 @@
 <?php
 
 /**
- * includes/Moviephp
+ * includes/Movie.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4
@@ -550,8 +550,13 @@ class Movie {
      * @since 0.2.4
      */
     public function unformatDate($date) {
+        $result = NULL;
         $date2 = DateTime::createFromFormat('d/m/Y', $date);
-        return $date2->format('Y-m-d');
+        if ($date2 !== false) { 
+            // The provided format is OK
+            $result = $date2->format('Y-m-d');
+        }
+        return $result;
     }
 
     /**

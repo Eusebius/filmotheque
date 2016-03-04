@@ -35,25 +35,114 @@
  */
 class Util {
 
+    //TODO propose a check for date strings (cf lastseen)
+    //TODO propose custom check for rating (scale 1-5)
+    const POST_CHECK_STRING = 0;
+    const POST_CHECK_INT = 1;
+    const POST_CHECK_STRING_ARRAY = 2;
+    const POST_CHECK_INT_ARRAY = 3;
+    const POST_CHECK_RAW = 4;
+
     /**
      * Redirects the visitor to the main page of the application and 
-     * stops the current script.
+     * stops the current script. Works even in the absence of a working session,
+     * but just because the developer has no brains (loading the main page 
+     * without a valid session should not be possible).
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
     static function gotoMainPage() {
-        header('Location:' . $_SESSION['http'] . '://' . $_SESSION['baseuri']);
+        if (isset($_SESSION['baseuri'])) {
+            $baseuri = $_SESSION['baseuri'];
+        } else {
+            $completeURI = Util::getHttpHost() . Util::getRequestURI();
+            $baseuri = Util::stripPathFromDirs($completeURI);
+        }
+        if (isset($_SESSION['http'])) {
+            $http = $_SESSION['http'];
+        } else if (Util::isHTTPS()) {
+            $http = 'https';
+        } else {
+            $http = 'http';
+        }
+        header('Location:' . $http . '://' . $baseuri);
         die();
     }
-    
+
+    /**
+     * Determines whether the website is served through HTTP or HTTPS.
+     * @return boolean True if HTTPS is used, false otherwise.
+     * @since 0.2.8
+     */
+    static function isHTTPS() {
+        $result = false;
+        //TODO What are the possible values, how can we filter them properly?
+        $https = filter_input(INPUT_SERVER, 'HTTPS', FILTER_SANITIZE_STRING);
+        if (($https !== NULL) && ($https !== 'off')) {
+            $result = true;
+        }
+        return $result;
+    }
+
+    /**
+     * Get and sanitize the request URI from the server environment.
+     * Crashes with a fatal error if sanitization fails.
+     * @return string The request URI, starting with a slash
+     * @since 0.2.8
+     */
+    static function getRequestURI() {
+        //TODO maybe validate against a regexp for a path starting with /
+        $sanitizedURI = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
+        if ($sanitizedURI === false && strpos('.', $sanitizedURI) !== false) {
+            Util::fatal('Unable to validate request URI: ' . filter_input(INPUT_SERVER, 'REQUEST_URI'));
+            exit();
+        }
+        return $sanitizedURI;
+    }
+
+    /**
+     * Get and sanitize the HTTP host provided by the user agent through the 
+     * server environment.
+     * Crashes with a fatal error if sanitization fails.
+     * @return string the HTTP host sent by the user agent, without trailing 
+     * slash
+     * @since 0.2.8
+     */
+    static function getHttpHost() {
+        //TODO write custom callback filter?
+        $filteredHttpHost = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_STRING);
+        //TODO take precautions on existence of the array and its first element
+        $strippedHttpHost = explode('/', $filteredHttpHost)[0];
+        if (filter_var('http://' . $strippedHttpHost, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
+            return $strippedHttpHost;
+        } else {
+            Util::fatal("Impossible to validate HTTP_HOST: $filteredHttpHost ($strippedHttpHost).");
+            exit();
+        }
+    }
+
     /**
      * Redirects the visitor to the login page of the application and 
-     * stops the current script.
+     * stops the current script. Works even in the absence of a working session
+     * (i.e. right after disconnection).
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.7
      */
     static function gotoLoginPage() {
-        header('Location:' . $_SESSION['http'] . '://' . $_SESSION['baseuri'] . 'login.php');
+        if (isset($_SESSION['baseuri'])) {
+            $baseuri = $_SESSION['baseuri'];
+        } else {
+            $completeURI = Util::getHttpHost() . Util::getRequestURI();
+            $baseuri = Util::stripPathFromDirs($completeURI);
+        }
+        if (isset($_SESSION['http'])) {
+            $http = $_SESSION['http'];
+        } else if (Util::isHTTPS()) {
+            $http = 'https';
+        } else {
+            $http = 'http';
+        }
+        header('Location:' . $http . '://' . $baseuri . 'login.php');
         die();
     }
 
@@ -147,16 +236,42 @@ class Util {
     /**
      * For a given index, returns the corresponding POST parameter if it is 
      * valid, or `null` otherwise.
+     * Crashes with a fatal error if the requested validation/sanitization fails.
      * @param \string $POSTindex The index of the parameter.
+     * @param \int $validation A constant (among the Util class constants) 
+     * specifying the validation/sanitization filter to be used.
      * @return \string Either the value of the parameter, or `null`.
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
-    static function getPOSTValueOrNull($POSTindex) {
-        if (isset($_POST[$POSTindex]) && $_POST[$POSTindex] != '') {
-            $result = $_POST[$POSTindex];
-        } else {
-            $result = null;
+    static function getPOSTValueOrNull($POSTindex, $validation) {
+        $options = array();
+        switch ($validation) {
+            case Util::POST_CHECK_RAW:
+                $filter = FILTER_DEFAULT;
+                $options = FILTER_REQUIRE_SCALAR;
+                break;
+            case Util::POST_CHECK_STRING_ARRAY:
+                $filter = FILTER_SANITIZE_STRING;
+                $options = FILTER_REQUIRE_ARRAY;
+                break;
+            case Util::POST_CHECK_INT:
+                $filter = FILTER_SANITIZE_NUMBER_INT;
+                $options = FILTER_REQUIRE_SCALAR;
+                break;
+            case Util::POST_CHECK_INT_ARRAY:
+                $filter = FILTER_SANITIZE_NUMBER_INT;
+                $options = FILTER_REQUIRE_ARRAY;
+                break;
+            case Util::POST_CHECK_STRING:
+            default:
+                $filter = FILTER_SANITIZE_STRING;
+                $options = FILTER_REQUIRE_SCALAR;
+        }
+        $result = filter_input(INPUT_POST, $POSTindex, $filter, $options);
+        if ($result === false) {
+            Util::fatal("Unable to validate POST parameter against filter $filter: " . filter_input(INPUT_POST, $POSTindex));
+            exit();
         }
         return $result;
     }
@@ -176,7 +291,7 @@ class Util {
         }
         return $_SESSION['movie'];
     }
-    
+
     /**
      * Forget about the movie in session. To be called after an update on the
      * movie object, to ensure that it is fetched from the database again.
@@ -217,24 +332,16 @@ class Util {
      * @since 0.2.4
      */
     static function getDbConnection() {
-        if (!isset($_SESSION['config']['db_type'])
-                || !isset($_SESSION['config']['db_server'])
-                || !isset($_SESSION['config']['db_db'])
-                || !isset($_SESSION['config']['db_user'])
-                || !isset($_SESSION['config']['db_password']))
-                {
-                    Util::fatal('Database configuration is not properly set up in '
-                            . 'session.');
+        if (!isset($_SESSION['config']['db_type']) || !isset($_SESSION['config']['db_server']) || !isset($_SESSION['config']['db_db']) || !isset($_SESSION['config']['db_user']) || !isset($_SESSION['config']['db_password'])) {
+            Util::fatal('Database configuration is not properly set up in '
+                    . 'session.');
         }
         if ((!isset($_SESSION['dbconn'])) or ( $_SESSION['dbconn'] == null)) {
             try {
                 $pdoconn = new PDO(
                         $_SESSION['config']['db_type']
                         . ':host=' . $_SESSION['config']['db_server']
-                        . ';dbname=' . $_SESSION['config']['db_db'], 
-                        $_SESSION['config']['db_user'], 
-                        $_SESSION['config']['db_password'], 
-                        array(PDO::ATTR_PERSISTENT => true));
+                        . ';dbname=' . $_SESSION['config']['db_db'], $_SESSION['config']['db_user'], $_SESSION['config']['db_password'], array(PDO::ATTR_PERSISTENT => true));
             } catch (PDOException $e) {
                 Util::fatal($e->getMessage());
             }
@@ -279,7 +386,7 @@ class Util {
         }
         return $withoutIndex;
     }
-    
+
     /**
      * Strip an string from a suffix starting with a given prefix.
      * 
@@ -290,8 +397,7 @@ class Util {
      * @since 0.2.6
      */
     private static function stripPathFromDir($path, $dir) {
-        return substr($path, 0, 
-                (strpos($path, $dir) ? strpos($path, $dir) : strlen($path)));
+        return substr($path, 0, (strpos($path, $dir) ? strpos($path, $dir) : strlen($path)));
     }
 
 }

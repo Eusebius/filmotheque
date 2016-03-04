@@ -29,19 +29,30 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
-Auth::ensurePermission('w');
+Auth::ensurePermission('write');
 
-if (isset($_POST['id_movie']) && $_POST['id_movie'] != '') {
+$id_movie_string = Util::getPOSTValueOrNull('id_movie', Util::POST_CHECK_INT);
 
-    if ((string) (int) $_POST['id_movie'] == $_POST['id_movie']) {
-        $id_movie = (int) $_POST['id_movie'];
+if ($id_movie_string !== NULL && $id_movie_string !== '') {
+
+    if ((string) (int) $id_movie_string == $id_movie_string) { //== is intended here
+        $id_movie = (int) $id_movie_string;
     } else {
         // Return to home page if movie ID is not a number
         Util::gotoMainPage();
     }
 
     $movie = Util::getMovieInSession($id_movie);
-    $movie->setValues(Util::getPOSTValueOrNull('title'), Util::getPOSTValueOrNull('year'), Util::getPOSTValueOrNull('makers'), Util::getPOSTValueOrNull('actors'), Util::getPOSTValueOrNull('categories'), Util::getPOSTValueOrNull('shortlists'), Util::getPOSTValueOrNull('rating'), Util::getPOSTValueOrNull('lastseen'));
+    $movie->setValues(
+            Util::getPOSTValueOrNull('title', Util::POST_CHECK_STRING),
+            Util::getPOSTValueOrNull('year', Util::POST_CHECK_INT),
+            Util::getPOSTValueOrNull('makers', Util::POST_CHECK_INT_ARRAY),
+            Util::getPOSTValueOrNull('actors', Util::POST_CHECK_INT_ARRAY),
+            Util::getPOSTValueOrNull('categories', Util::POST_CHECK_STRING_ARRAY),
+            Util::getPOSTValueOrNull('shortlists', Util::POST_CHECK_INT_ARRAY),
+            Util::getPOSTValueOrNull('rating', Util::POST_CHECK_INT),
+            //TODO Check as date
+            Util::getPOSTValueOrNull('lastseen', Util::POST_CHECK_STRING));
 
     header('Location:../?page=moviedetails&id_movie=' . $id_movie);
 } else {

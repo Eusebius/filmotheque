@@ -27,21 +27,22 @@
  */
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
-Auth::ensurePermission('r');
+Auth::ensurePermission('read');
 
 // Remember GET parameters
 $sortParameters = '';
 $listFilterParameters = '';
 $catFilterParameters = '';
 
-if (isset($_GET['sort'])) {
-    if ($_GET['sort'] == 'year') {
+$sortbyRequest = filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_STRING);
+if ($sortbyRequest !== false && $sortbyRequest !== NULL && $sortbyRequest !== '') {
+    if ($sortbyRequest === 'year') {
         $sortby = 'year';
         $sortParameters = 'sort=year&';
-    } else if ($_GET['sort'] == 'rating' && Auth::hasPermission('rating')) {
+    } else if ($sortbyRequest === 'rating' && Auth::hasPermission('rating')) {
         $sortby = 'rating';
         $sortParameters = 'sort=rating&';
-    } else if ($_GET['sort'] == 'lastseen' && Auth::hasPermission('lastseen')) {
+    } else if ($sortbyRequest === 'lastseen' && Auth::hasPermission('lastseen')) {
         $sortby = 'lastseen';
         $sortParameters = 'sort=lastseen&';
     } else {
@@ -49,14 +50,14 @@ if (isset($_GET['sort'])) {
         $sortParameters = 'sort=title&';
     }
 
-    if (isset($_GET['order'])) {
-        if ($_GET['order'] == 'desc') {
-            $order = 'desc';
-            $sortParameters .= 'order=desc&';
-        } else {
-            $order = 'asc';
-            $sortParameters .= 'order=asc&';
-        }
+    $orderbyRequest = filter_input(INPUT_GET, 'order', FILTER_SANITIZE_STRING);
+
+    if ($orderbyRequest === 'desc') {
+        $order = 'desc';
+        $sortParameters .= 'order=desc&';
+    } else {
+        $order = 'asc';
+        $sortParameters .= 'order=asc&';
     }
 } else {
     $sortby = 'title';
@@ -79,7 +80,8 @@ $catFilter = array();
 foreach ($catArray as $catentry) {
     $cat = $catentry['category'];
     $catn = 'cat' . $cat;
-    if (isset($_GET[$catn]) && $_GET[$catn] == '1') {
+    $catnGet = filter_input(INPUT_GET, $catn, FILTER_SANITIZE_NUMBER_INT);
+    if ($catnGet === '1') { //This category has been properly selected
         $catFilterParameters .= $catn . '=1&';
         array_push($catFilter, $cat);
         Util::debug($cat);
@@ -104,7 +106,8 @@ foreach ($catArray as $catentry) {
                         if ($id != false) {
                             $listn = 'list' . $id;
                             echo '<input type="checkbox" name="' . $listn . '" value="1"';
-                            if (isset($_GET[$listn]) && $_GET[$listn] == '1') {
+                            $listnGet = filter_input(INPUT_GET, $listn, FILTER_SANITIZE_NUMBER_INT);
+                            if ($listnGet === '1') { //This shortlist has been properly selected
                                 echo ' checked="checked"';
                                 $listFilterParameters .= $listn . '=1&';
                                 array_push($shortlistFilter, $id);
@@ -128,7 +131,8 @@ foreach ($catArray as $catentry) {
                     $cat = $catentry['category'];
                     $catn = 'cat' . $cat;
                     echo '<input type="checkbox" name="' . $catn . '" value="1"';
-                    if (isset($_GET[$catn]) && $_GET[$catn] == '1') {
+                    $catnGet = filter_input(INPUT_GET, $catn, FILTER_SANITIZE_NUMBER_INT);
+                    if ($catnGet === '1') { // This category has been properly selected
                         echo ' checked="checked"';
                     }
                     echo ' />&nbsp;';
@@ -185,7 +189,7 @@ $nMovies = $listMovies->rowCount();
 
 <p>
     <a href="?<?php echo $sortParameters; ?>">Réinitialiser tous les filtres</a><br />
-    <?php if (Auth::hasPermission('w')) { ?>
+    <?php if (Auth::hasPermission('write')) { ?>
         <a href="?page=addmovie">Ajouter un nouveau film</a>
     <?php } ?>
 </p>
@@ -261,7 +265,7 @@ $nMovies = $listMovies->rowCount();
             }
             echo "</td>\n";
         }
-        if (Auth::hasPermission('w')) {
+        if (Auth::hasPermission('write')) {
             if ($movie['imdb_id'] == '') {
                 echo '<td align="center" bgcolor="' . $colour[$quality] . '">';
                 echo '<a href="?page=getimdb&id_movie=' . $movie['id_movie'] . '">Lier à une fiche IMDb</a>';

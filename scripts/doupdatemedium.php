@@ -29,13 +29,14 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
-Auth::ensurePermission('w');
+Auth::ensurePermission('write');
 
+$id_medium_string = Util::getPOSTValueOrNull('id_medium', Util::POST_CHECK_INT);
 
-if (isset($_POST['id_medium']) && $_POST['id_medium'] != '') {
+if ($id_medium_string !== NULL && $id_medium_string !== '') {
 
-    if ((string) (int) $_POST['id_medium'] == $_POST['id_medium']) {
-        $id_medium = (int) $_POST['id_medium'];
+    if ((string) (int) $id_medium_string == $id_medium_string) { //== is intended here
+        $id_medium = (int) $id_medium_string;
     } else {
         // Return to home page if movie ID is not a number
         Util::gotoMainPage();
@@ -43,13 +44,13 @@ if (isset($_POST['id_medium']) && $_POST['id_medium'] != '') {
 
     $medium = Util::getMediumInSession($id_medium);
 
-    $medium->setValues(Util::getPOSTValueOrNull('type'), 
-            Util::getPOSTValueOrNull('height'), 
-            Util::getPOSTValueOrNull('width'), 
-            Util::getPOSTValueOrNull('comment'), 
-            Util::getPOSTValueOrNull('shelfmark'), 
-            Util::getPOSTValueOrNull('audio'), 
-            Util::getPOSTValueOrNull('subs'));
+    $medium->setValues(Util::getPOSTValueOrNull('type', Util::POST_CHECK_STRING), 
+            Util::getPOSTValueOrNull('height', Util::POST_CHECK_INT), 
+            Util::getPOSTValueOrNull('width', Util::POST_CHECK_INT), 
+            Util::getPOSTValueOrNull('comment', Util::POST_CHECK_STRING), 
+            Util::getPOSTValueOrNull('shelfmark', Util::POST_CHECK_INT), 
+            Util::getPOSTValueOrNull('audio', Util::POST_CHECK_STRING_ARRAY), 
+            Util::getPOSTValueOrNull('subs', Util::POST_CHECK_STRING_ARRAY));
 
     header('Location:../?page=moviedetails&id_movie=' . $medium->getMovieID());
 } else {
