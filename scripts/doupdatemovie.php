@@ -41,7 +41,16 @@ if (isset($_POST['id_movie']) && $_POST['id_movie'] != '') {
     }
 
     $movie = Util::getMovieInSession($id_movie);
-    $movie->setValues(Util::getPOSTValueOrNull('title'), Util::getPOSTValueOrNull('year'), Util::getPOSTValueOrNull('makers'), Util::getPOSTValueOrNull('actors'), Util::getPOSTValueOrNull('categories'), Util::getPOSTValueOrNull('shortlists'), Util::getPOSTValueOrNull('rating'), Util::getPOSTValueOrNull('lastseen'));
+    $movie->setValues(
+            Util::getPOSTValueOrNull('title', Util::POST_CHECK_STRING),
+            Util::getPOSTValueOrNull('year', Util::POST_CHECK_INT),
+            Util::getPOSTValueOrNull('makers', Util::POST_CHECK_INT_ARRAY),
+            Util::getPOSTValueOrNull('actors', Util::POST_CHECK_INT_ARRAY),
+            Util::getPOSTValueOrNull('categories', Util::POST_CHECK_STRING_ARRAY),
+            Util::getPOSTValueOrNull('shortlists', Util::POST_CHECK_INT_ARRAY),
+            Util::getPOSTValueOrNull('rating', Util::POST_CHECK_INT),
+            //TODO Check as date
+            Util::getPOSTValueOrNull('lastseen', Util::POST_CHECK_STRING));
 
     header('Location:../?page=moviedetails&id_movie=' . $id_movie);
 } else {

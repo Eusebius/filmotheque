@@ -41,14 +41,14 @@ if (isset($_POST['id_movie']) && $_POST['id_movie'] != '') {
     }
 
     $medium = new Medium(null);
-    $medium->setValues(Util::getPOSTValueOrNull('type'), 
-            Util::getPOSTValueOrNull('height'), 
-            Util::getPOSTValueOrNull('width'), 
-            Util::getPOSTValueOrNull('comment'), 
-            Util::getPOSTValueOrNull('shelfmark'), 
-            Util::getPOSTValueOrNull('audio'), 
-            Util::getPOSTValueOrNull('subs'), 
-            Util::getPOSTValueOrNull('id_movie'));
+    $medium->setValues(Util::getPOSTValueOrNull('type', Util::POST_CHECK_STRING), 
+            Util::getPOSTValueOrNull('height', Util::POST_CHECK_INT), 
+            Util::getPOSTValueOrNull('width', Util::POST_CHECK_INT), 
+            Util::getPOSTValueOrNull('comment', Util::POST_CHECK_STRING), 
+            Util::getPOSTValueOrNull('shelfmark', Util::POST_CHECK_INT), 
+            Util::getPOSTValueOrNull('audio', Util::POST_CHECK_STRING_ARRAY), 
+            Util::getPOSTValueOrNull('subs', Util::POST_CHECK_STRING_ARRAY), 
+            Util::getPOSTValueOrNull('id_movie', Util::POST_CHECK_INT));
 
     //$medium->dump();
     header('Location:../?page=moviedetails&id_movie=' . $medium->getMovieID());

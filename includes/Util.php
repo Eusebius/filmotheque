@@ -35,6 +35,13 @@
  */
 class Util {
 
+    //TODO propose a check for date strings (cf lastseen)
+    //TODO propose custom check for rating (scale 1-5)
+    const POST_CHECK_STRING = 0;
+    const POST_CHECK_INT = 1;
+    const POST_CHECK_STRING_ARRAY = 2;
+    const POST_CHECK_INT_ARRAY = 3;
+
     /**
      * Redirects the visitor to the main page of the application and 
      * stops the current script. Works even in the absence of a working session,
@@ -60,7 +67,7 @@ class Util {
         header('Location:' . $http . '://' . $baseuri);
         die();
     }
-    
+
     /**
      * Determines whether the website is served through HTTP or HTTPS.
      * @return boolean True if HTTPS is used, false otherwise.
@@ -228,16 +235,38 @@ class Util {
     /**
      * For a given index, returns the corresponding POST parameter if it is 
      * valid, or `null` otherwise.
+     * Crashes with a fatal error if the requested validation/sanitization fails.
      * @param \string $POSTindex The index of the parameter.
+     * @param \int $validation A constant (among the Util class constants) 
+     * specifying the validation/sanitization filter to be used.
      * @return \string Either the value of the parameter, or `null`.
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
-    static function getPOSTValueOrNull($POSTindex) {
-        if (isset($_POST[$POSTindex]) && $_POST[$POSTindex] != '') {
-            $result = $_POST[$POSTindex];
-        } else {
-            $result = null;
+    static function getPOSTValueOrNull($POSTindex, $validation) {
+        $options = array();
+        switch ($validation) {
+            case Util::POST_CHECK_STRING_ARRAY:
+                $filter = FILTER_SANITIZE_STRING;
+                $options = FILTER_REQUIRE_ARRAY;
+                break;
+            case Util::POST_CHECK_INT:
+                $filter = FILTER_SANITIZE_NUMBER_INT;
+                $options = FILTER_REQUIRE_SCALAR;
+                break;
+            case Util::POST_CHECK_INT_ARRAY:
+                $filter = FILTER_SANITIZE_NUMBER_INT;
+                $options = FILTER_REQUIRE_ARRAY;
+                break;
+            case Util::POST_CHECK_STRING:
+            default:
+                $filter = FILTER_SANITIZE_STRING;
+                $options = FILTER_REQUIRE_SCALAR;
+        }
+        $result = filter_input(INPUT_POST, $POSTindex, $filter, $options);
+        if ($result === false) {
+            Util::fatal("Unable to validate POST parameter against filter $filter: " . filter_input(INPUT_POST, $POSTindex));
+            exit();
         }
         return $result;
     }
