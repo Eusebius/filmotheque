@@ -52,18 +52,22 @@ Auth::ensureAuthenticated();
         <?php
 
         Util::checkChmod();
-
-        if (isset($_GET['page']) && $_GET['page'] == 'moviedetails') {
+        
+        //TODO provide a specific input filter for page names
+        
+        $getPage = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
+        
+        if ($getPage === 'moviedetails') {
             include('pages/moviedetails.inc.php');
-        } else if (isset($_GET['page']) && $_GET['page'] == 'updatemovie') {
+        } else if ($getPage === 'updatemovie') {
             include('pages/updatemovie.inc.php');
-        } else if (isset($_GET['page']) && $_GET['page'] == 'updatemedium') {
+        } else if ($getPage === 'updatemedium') {
             include('pages/updatemedium.inc.php');
-        } else if (isset($_GET['page']) && $_GET['page'] == 'addmedium') {
+        } else if ($getPage === 'addmedium') {
             include('pages/addmedium.inc.php');
-        } else if (isset($_GET['page']) && $_GET['page'] == 'addmovie') {
+        } else if ($getPage === 'addmovie') {
             include('pages/addmovie.inc.php');
-        } else if (isset($_GET['page']) && $_GET['page'] == 'getimdb') {
+        } else if ($getPage === 'getimdb') {
             include('pages/getimdb.inc.php');
         } else {
             include('pages/listmovies.inc.php');

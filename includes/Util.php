@@ -206,7 +206,7 @@ class Util {
      * @since 0.2.4
      */
     static function isIntString($string) {
-//TODO rewrite that, as "0123abc" coerces to an int.
+        //TODO rewrite that, as "0123abc" coerces to an int.
         if ((string) (int) $string == $string) {
             $result = (int) $string;
         } else {
@@ -360,8 +360,8 @@ class Util {
      * @since 0.2.4
      */
     static function disconnectDB($pdoconn) {
-//TODO do we really disconnect here, or did we modify a copy of the
-//reference?
+        //TODO do we really disconnect here, or did we modify a copy of the
+        //reference?
         $pdoconn = null;
     }
 

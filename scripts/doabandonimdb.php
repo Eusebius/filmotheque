@@ -32,10 +32,12 @@ require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
 Auth::ensurePermission('write');
 
-if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
+$id_movie_string = filter_input(INPUT_GET, 'id_movie', FILTER_SANITIZE_NUMBER_INT);
 
-    if ((string) (int) $_GET['id_movie'] == $_GET['id_movie']) {
-        $id_movie = (int) $_GET['id_movie'];
+if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string !== '') {
+
+    if ((string) (int) $id_movie_string == $id_movie_string) {
+        $id_movie = (int) $id_movie_string;
     } else {
         // Return to home page if movie ID is not a number
         Util::gotoMainPage();

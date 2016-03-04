@@ -32,10 +32,12 @@ require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
 Auth::ensurePermission('write');
 
-if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
+$id_movie_string = filter_input(INPUT_GET, 'id_movie', FILTER_SANITIZE_NUMBER_INT);
 
-    if ((string) (int) $_GET['id_movie'] == $_GET['id_movie']) {
-        $id_movie = (int) $_GET['id_movie'];
+if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string !== '') {
+
+    if ((string) (int) $id_movie_string == $id_movie_string) {
+        $id_movie = (int) $id_movie_string;
     } else {
         // Return to home page if movie ID is not a number
         Util::gotoMainPage();
@@ -46,11 +48,11 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
     $conn = Util::getDbConnection();
 
     echo '<h2>' . $movie->getTitle() . " - lier à une fiche IMDb</h2>\n";
-
+    
     $xml = new DomDocument();
-    $imdb_id = '';
-    if (isset($_GET['imdb_id']) && $_GET['imdb_id'] != '') {
-        $imdb_id = $_GET['imdb_id'];
+    
+    $imdb_id = filter_input(INPUT_GET, 'imdb_id', FILTER_SANITIZE_STRING);
+    if ($imdb_id !== false && $imdb_id !== NULL && $imdb_id !== '') {
         $xml->load('http://myapifilms.com/imdb/idIMDB?idIMDB=' . $imdb_id . '&format=xml&token=' . $apiToken);
         $item = $xml->getElementsByTagName('movie')->item(0);
     } else {
@@ -65,9 +67,9 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
 
     if ($item != null) {
         if (!isset($_SESSION['imdbdata'])) {
-            $_SESSION['imdbdata']=array();
+            $_SESSION['imdbdata'] = array();
         }
-        $_SESSION['imdbdata'][$id_movie]=$xml->saveXML();
+        $_SESSION['imdbdata'][$id_movie] = $xml->saveXML();
         //die($_SESSION['imdbdata'][$id_movie]);
         $originaltitle = $item->getElementsByTagName('title')->item(0)->nodeValue;
         if ($imdb_id == '') {
@@ -83,11 +85,11 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
         <table border="1">
             <tr>
                 <td colspan="2" align="center">
-        <?php
-        if ($cover != null) {
-            echo '<img src="' . $cover . '"/>';
-        }
-        ?>
+                    <?php
+                    if ($cover != null) {
+                        echo '<img src="' . $cover . '"/>';
+                    }
+                    ?>
                 </td>
             </tr>
             <tr>
@@ -105,13 +107,13 @@ if (isset($_GET['id_movie']) && $_GET['id_movie'] != '') {
             <tr>
                 <td>Genres&nbsp;:</td>
                 <td>
-        <?php
-        $genres = $item->getElementsByTagName('genres')->item(0);
-        $genreElements = $genres->getElementsByTagName('genre');
-        foreach ($genreElements as $genre) {
-            echo $genre->nodeValue . ' ';
-        }
-        ?>
+                    <?php
+                    $genres = $item->getElementsByTagName('genres')->item(0);
+                    $genreElements = $genres->getElementsByTagName('genre');
+                    foreach ($genreElements as $genre) {
+                        echo $genre->nodeValue . ' ';
+                    }
+                    ?>
                 </td>
             </tr>
             <tr>

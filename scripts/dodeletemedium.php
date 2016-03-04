@@ -31,10 +31,12 @@ require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
 Auth::ensurePermission('write');
 
-if (isset($_GET['id_medium']) && $_GET['id_medium'] != '') {
+$id_medium_string = filter_input(INPUT_GET, 'id_medium', FILTER_SANITIZE_NUMBER_INT);
 
-    if ((string) (int) $_GET['id_medium'] == $_GET['id_medium']) {
-        $id_medium = (int) $_GET['id_medium'];
+if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_string !== '') {
+
+    if ((string) (int) $id_medium_string == $id_medium_string) {
+        $id_medium = (int) $id_medium_string;
     } else {
         // Return to home page if medium ID is not a number
         Util::gotoMainPage();

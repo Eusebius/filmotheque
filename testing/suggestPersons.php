@@ -37,8 +37,10 @@ Auth::ensurePermission('admin');
 header('Content-Type: text/xml;charset=utf-8');
 echo(utf8_encode("<?xml version='1.0' encoding='UTF-8' ?><options>"));
 
-if (isset($_GET['prefix'])) {
-    $getPrefix = utf8_decode($_GET['prefix']);
+$filteredPrefix = filter_input(INPUT_GET, 'prefix', FILTER_SANITIZE_STRING);
+
+if ($filteredPrefix !== false && $filteredPrefix !== NULL && $filteredPrefix !== '') {
+    $getPrefix = utf8_decode($filteredPrefix);
 } else {
     $getPrefix = "";
 }
