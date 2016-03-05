@@ -23,4 +23,4 @@ php:
 #     date.timezone = "Europe/Paris"
 #     default_socket_timeout = 120
 #       some other configuration directives...
-script: phpunit phpunit/Test.php
+script: phpunit phpunit/.
