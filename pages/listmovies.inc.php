@@ -86,7 +86,7 @@ foreach ($catArray as $catentry) {
     if ($catnGet === '1') { //This category has been properly selected
         $catFilterParameters .= $catn . '=1&';
         array_push($catFilter, $cat);
-        Util::debug($cat);
+        //Util::debug($cat);
     }
 }
 ?>
@@ -181,8 +181,8 @@ $getShortlistsByMovie = $conn->prepare('select id_movie, listname from `movies-s
 $getBestQuality = $conn->prepare('select quality from `media` natural join `media-quality` natural join `quality` where id_movie = ? order by minwidth desc');
 
 $listMovies->execute();
-Util::debug($listMovies->queryString);
-Util::debug($listMovies->errorInfo());
+//Util::debug($listMovies->queryString);
+//Util::debug($listMovies->errorInfo());
 $movieArray = $listMovies->fetchall(PDO::FETCH_ASSOC);
 $nMovies = $listMovies->rowCount();
 ?>

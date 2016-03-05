@@ -11,7 +11,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2016 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -46,45 +46,45 @@ Auth::ensureAuthenticated();
     </head>
 
     <body>
-        <?php
-        if ($_SESSION['debug']) {
-            echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
-        }
-        
-        ?>
-        <div class="disconnect"><a href="scripts/disconnect.php">Se déconnecter</a></div>
-        <?php
+        <!-- <div class="container"> -->
+            <div id="header">
+                <h1>Filmothèque</h1>
+                <?php
+                if ($_SESSION['debug']) {
+                    echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
+                }
+                ?>
+            </div>
+            <?php
+            Util::checkChmod();
+            ?>
+            <div id="sidemenu">
+                <?php
+                include('pages/sidemenu.inc.php');
+                ?>
+            </div>
+            <div id="main">
+                <?php
+//TODO provide a specific input filter for page names
+                $getPage = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
 
-        Util::checkChmod();
-        
-        //TODO provide a specific input filter for page names
-        
-        $getPage = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
-        
-        if ($getPage === 'moviedetails') {
-            include('pages/moviedetails.inc.php');
-        } else if ($getPage === 'updatemovie') {
-            include('pages/updatemovie.inc.php');
-        } else if ($getPage === 'updatemedium') {
-            include('pages/updatemedium.inc.php');
-        } else if ($getPage === 'addmedium') {
-            include('pages/addmedium.inc.php');
-        } else if ($getPage === 'addmovie') {
-            include('pages/addmovie.inc.php');
-        } else if ($getPage === 'getimdb') {
-            include('pages/getimdb.inc.php');
-        } else {
-            include('pages/listmovies.inc.php');
-        }
-        ?>
-
-        <p>
-            <br />
-            <br />
-        </p>
-        <hr />
-        <p>
-            Version <?php echo $_SESSION['config']['version']; ?>
-        </p>
+                if ($getPage === 'moviedetails') {
+                    include('pages/moviedetails.inc.php');
+                } else if ($getPage === 'updatemovie') {
+                    include('pages/updatemovie.inc.php');
+                } else if ($getPage === 'updatemedium') {
+                    include('pages/updatemedium.inc.php');
+                } else if ($getPage === 'addmedium') {
+                    include('pages/addmedium.inc.php');
+                } else if ($getPage === 'addmovie') {
+                    include('pages/addmovie.inc.php');
+                } else if ($getPage === 'getimdb') {
+                    include('pages/getimdb.inc.php');
+                } else {
+                    include('pages/listmovies.inc.php');
+                }
+                ?>
+            </div>
+        <!-- </div> -->
     </body>
 </html>
