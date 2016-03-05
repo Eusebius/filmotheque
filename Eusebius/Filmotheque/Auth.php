@@ -52,8 +52,8 @@ class Auth {
         //TODO add an encryption layer in the end, with a key known only to PHP.
         //Avoid truncating the password to 72 chars (by hashing it a first time), 
         //or on 0x00 (by encoding it in base64)
-        $preparedPassword = \base64_encode(hash('sha256', $password, true));
-        $encPassword = \password_hash($preparedPassword, PASSWORD_DEFAULT);
+        $preparedPassword = base64_encode(hash('sha256', $password, true));
+        $encPassword = password_hash($preparedPassword, PASSWORD_DEFAULT);
         return $encPassword;
     }
 
@@ -69,8 +69,8 @@ class Auth {
      * @since 0.2.8
      */
     static function checkPassword($clearTextPassword, $encPassword) {
-        $preparedPassword = \base64_encode(hash('sha256', $clearTextPassword, true));
-        return \password_verify($preparedPassword, $encPassword);
+        $preparedPassword = base64_encode(hash('sha256', $clearTextPassword, true));
+        return password_verify($preparedPassword, $encPassword);
     }
 
     /**
@@ -148,7 +148,7 @@ class Auth {
         $result = false;
         if (isset($_SESSION['auth']) && $_SESSION['auth'] !== '') {
             $roles = Auth::getRoles($_SESSION['auth']);
-            if (\in_array($role, $roles, true)) {
+            if (in_array($role, $roles, true)) {
                 $result = true;
             }
         }
@@ -185,7 +185,7 @@ class Auth {
         $result = false;
         if (isset($_SESSION['auth']) && ($_SESSION['auth'] !== '')) {
             $permissions = Auth::getPermissions($_SESSION['auth']);
-            if (\in_array($perm, $permissions, true)) {
+            if (in_array($perm, $permissions, true)) {
                 $result = true;
             }
         }
@@ -234,9 +234,9 @@ class Auth {
      */
     static function disconnect() {
         if (self::isAuthenticated()) {
-            \session_unset();
-            \session_destroy();
-            \session_regenerate_id(true);
+            session_unset();
+            session_destroy();
+            session_regenerate_id(true);
         }
         Util::gotoLoginPage();
     }
