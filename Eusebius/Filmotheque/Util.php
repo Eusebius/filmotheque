@@ -27,6 +27,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+namespace Eusebius\Filmotheque;
+
+use \PDO;
+
 /**
  * Class providing static utility functions.
  *
@@ -379,7 +383,9 @@ class Util {
         $withoutCovers = Util::stripPathFromDir($withoutIncludes, '/covers');
         $withoutScripts = Util::stripPathFromDir($withoutCovers, '/scripts');
         $withoutPages = Util::stripPathFromDir($withoutScripts, '/pages');
-        $withoutParams1 = Util::stripPathFromDir($withoutPages, '?');
+        $withoutTesting = Util::stripPathFromDir($withoutPages, '/testing');
+        $withoutEusebius = Util::stripPathFromDir($withoutTesting, '/Eusebius');
+        $withoutParams1 = Util::stripPathFromDir($withoutEusebius, '?');
         $withoutIndex = Util::stripPathFromDir($withoutParams1, 'index.php');
         if (substr($withoutIndex, -1) !== '/') {
             $withoutIndex .='/';
@@ -388,7 +394,7 @@ class Util {
     }
 
     /**
-     * Strip an string from a suffix starting with a given prefix.
+     * Strip a string from a suffix starting with a given prefix.
      * 
      * @param \string $path The original string.
      * @dir \string $dir The prefix to look for.

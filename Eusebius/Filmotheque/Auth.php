@@ -28,6 +28,10 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Eusebius\Filmotheque;
+
+use \PDO;
+
 /**
  * Class providing static authentication and access control functions.
  *

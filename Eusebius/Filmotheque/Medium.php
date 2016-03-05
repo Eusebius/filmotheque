@@ -28,6 +28,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+namespace Eusebius\Filmotheque;
+use \PDO;
+
 /**
  * Class representing a given medium in the application, and managing its 
  * persistency in the database.

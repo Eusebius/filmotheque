@@ -28,6 +28,8 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+use Eusebius\Filmotheque\Auth;
+use Eusebius\Filmotheque\Util;
 Auth::ensurePermission('write');
 ?>
 <h3>Création d'un nouveau film</h3><?php //'  ?>

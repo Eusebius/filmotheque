@@ -28,6 +28,10 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+namespace Eusebius\Filmotheque;
+use \PDO;
+use \DateTime;
+
 /**
  * Class representing a given movie in the application, and managing its 
  * persistency in the database.

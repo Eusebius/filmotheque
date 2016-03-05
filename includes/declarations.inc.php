@@ -28,7 +28,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-require_once('Medium.php');
-require_once('Movie.php');
-require_once('Util.php');
-require_once('Auth.php');
+require_once(__DIR__.'/../Eusebius/Filmotheque/Medium.php');
+require_once(__DIR__.'/../Eusebius/Filmotheque/Movie.php');
+require_once(__DIR__.'/../Eusebius/Filmotheque/Util.php');
+require_once(__DIR__.'/../Eusebius/Filmotheque/Auth.php');

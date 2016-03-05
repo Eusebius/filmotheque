@@ -27,6 +27,7 @@
  */
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
+use Eusebius\Filmotheque\Auth;
 Auth::ensurePermission('admin');
 ?>
 

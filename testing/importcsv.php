@@ -29,6 +29,8 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
+use Eusebius\Filmotheque\Auth;
+use Eusebius\Filmotheque\Util;
 Auth::ensurePermission('admin');
 
 $csvfilename = 'films.csv';

@@ -29,6 +29,8 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
+use Eusebius\Filmotheque\Auth;
+use Eusebius\Filmotheque\Util;
 Auth::ensurePermission('write');
 
 $id_medium_string = Util::getPOSTValueOrNull('id_medium', Util::POST_CHECK_INT);

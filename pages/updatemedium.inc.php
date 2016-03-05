@@ -28,6 +28,9 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+use Eusebius\Filmotheque\Auth;
+use Eusebius\Filmotheque\Medium;
+use Eusebius\Filmotheque\Util;
 Auth::ensurePermission('write');
 
 $id_medium_string = filter_input(INPUT_GET, 'id_medium', FILTER_SANITIZE_NUMBER_INT);

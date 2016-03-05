@@ -30,6 +30,9 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+use Eusebius\Filmotheque\Auth;
+use Eusebius\Filmotheque\Movie;
+use Eusebius\Filmotheque\Util;
 Auth::ensurePermission('write');
 
 $id_movie_string = filter_input(INPUT_GET, 'id_movie', FILTER_SANITIZE_NUMBER_INT);
