@@ -37,6 +37,7 @@ Auth::ensurePermission('read');
 $sortParameters = '';
 $lastseenFilterParameters = '';
 $listFilterParameters = '';
+$ratingFilterParameters = '';
 $catFilterParameters = '';
 
 $sortbyRequest = filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_STRING);
@@ -94,6 +95,22 @@ if ($dateFilter === '0' || $formattedDateFilter !== NULL) {
     $lastseenFilterParameters = 'lastseen=' . $dateFilter . '&';
 }
 
+// Fetch rating filter
+$maxRatingFilter = filter_input(INPUT_GET, 'maxrating', FILTER_SANITIZE_NUMBER_INT);
+if ($maxRatingFilter === '') {
+    $maxRatingFilter = NULL;
+}
+if ($maxRatingFilter !== NULL) {
+    $ratingFilterParameters = 'maxrating=' . $maxRatingFilter . '&';
+}
+$minRatingFilter = filter_input(INPUT_GET, 'minrating', FILTER_SANITIZE_NUMBER_INT);
+if ($minRatingFilter === '') {
+    $minRatingFilter = NULL;
+}
+if ($minRatingFilter !== NULL) {
+    $ratingFilterParameters .= 'minrating=' . $minRatingFilter . '&';
+}
+
 // Fetch category filter
 $catFilter = array();
 foreach ($catArray as $catentry) {
@@ -124,8 +141,8 @@ foreach ($listArray as $list) {
 <h2>Liste des films</h2>
 <table>
     <tr>
-        <?php if (Auth::hasPermission('lastseen')) { ?>
-            <td>
+        <td>
+            <?php if (Auth::hasPermission('lastseen')) { ?>
                 Afficher uniquement les films non vus après<br />
                 (0 pour les films jamais vus)&nbsp;:<br />
                 <form action="" method="GET">
@@ -133,6 +150,7 @@ foreach ($listArray as $list) {
                     Util::makeHiddenParameters($sortParameters);
                     Util::makeHiddenParameters($catFilterParameters);
                     Util::makeHiddenParameters($listFilterParameters);
+                    Util::makeHiddenParameters($ratingFilterParameters);
                     ?>
                     <input type="text" name="lastseen" value="<?php
                     if ($dateFilter === '0' || $formattedDateFilter !== NULL) {
@@ -141,10 +159,69 @@ foreach ($listArray as $list) {
                     ?>"/>
                     <input type="submit" value="Filtrer"/>
                 </form>
-            </td>
-        <?php } ?>
-        <?php if (Auth::hasPermission('shortlists')) { ?>
-            <td>
+            <?php } ?>
+        </td>
+        <td rowspan="3">
+            Afficher uniquement les catégories suivantes&nbsp;:<br />
+            <form action="" method="GET">
+                <?php
+                Util::makeHiddenParameters($sortParameters);
+                Util::makeHiddenParameters($lastseenFilterParameters);
+                Util::makeHiddenParameters($listFilterParameters);
+                Util::makeHiddenParameters($ratingFilterParameters);
+                foreach ($catArray as $catentry) {
+                    $cat = $catentry['category'];
+                    $catn = 'cat' . $cat;
+                    echo '<input type="checkbox" name="' . $catn . '" value="1"';
+                    $catnGet = filter_input(INPUT_GET, $catn, FILTER_SANITIZE_NUMBER_INT);
+                    if ($catnGet === '1') { // This category has been properly selected
+                        echo ' checked="checked"';
+                    }
+                    echo ' />&nbsp;';
+                    echo $cat . "<br />\n";
+                }
+                ?>
+                <input type="submit" value="Filtrer"/>
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <?php if (Auth::hasPermission('rating')) { ?>
+                <form action="" method="GET">
+                    <?php
+                    Util::makeHiddenParameters($sortParameters);
+                    Util::makeHiddenParameters($catFilterParameters);
+                    Util::makeHiddenParameters($listFilterParameters);
+                    Util::makeHiddenParameters($ratingFilterParameters);
+                    ?>
+                    Afficher uniquement les films notés<br />
+                    entre&nbsp;<select name="minrating">
+                        <option <?php if ($minRatingFilter === NULL) echo 'selected'; ?>></option>
+                        <option <?php if ($minRatingFilter === '0') echo 'selected'; ?>>0</option>
+                        <option <?php if ($minRatingFilter === '1') echo 'selected'; ?>>1</option>
+                        <option <?php if ($minRatingFilter === '2') echo 'selected'; ?>>2</option>
+                        <option <?php if ($minRatingFilter === '3') echo 'selected'; ?>>3</option>
+                        <option <?php if ($minRatingFilter === '4') echo 'selected'; ?>>4</option>
+                        <option <?php if ($minRatingFilter === '5') echo 'selected'; ?>>5</option>
+                    </select>
+                    et&nbsp;<select name="maxrating">
+                        <option <?php if ($maxRatingFilter === NULL) echo 'selected'; ?>></option>
+                        <option <?php if ($maxRatingFilter === '0') echo 'selected'; ?>>0</option>
+                        <option <?php if ($maxRatingFilter === '1') echo 'selected'; ?>>1</option>
+                        <option <?php if ($maxRatingFilter === '2') echo 'selected'; ?>>2</option>
+                        <option <?php if ($maxRatingFilter === '3') echo 'selected'; ?>>3</option>
+                        <option <?php if ($maxRatingFilter === '4') echo 'selected'; ?>>4</option>
+                        <option <?php if ($maxRatingFilter === '5') echo 'selected'; ?>>5</option>
+                    </select>
+                    <input type="submit" value="Filtrer"/>
+                </form>
+            <?php } ?>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <?php if (Auth::hasPermission('shortlists')) { ?>
                 Afficher uniquement les shortlists suivantes&nbsp;:<br />
                 <form action="" method="GET">
                     <?php
@@ -153,6 +230,7 @@ foreach ($listArray as $list) {
                     Util::makeHiddenParameters($sortParameters);
                     Util::makeHiddenParameters($lastseenFilterParameters);
                     Util::makeHiddenParameters($catFilterParameters);
+                    Util::makeHiddenParameters($ratingFilterParameters);
                     foreach ($listArray as $list) {
                         $id = Util::isIntString($list['id_shortlist']);
                         if ($id != false) {
@@ -170,34 +248,35 @@ foreach ($listArray as $list) {
                     ?>
                     <input type="submit" value="Filtrer"/>
                 </form>
-            </td>
-        <?php } ?>
-        <td>
-            Afficher uniquement les catégories suivantes&nbsp;:<br />
-            <form action="" method="GET">
-                <?php
-                Util::makeHiddenParameters($sortParameters);
-                Util::makeHiddenParameters($lastseenFilterParameters);
-                Util::makeHiddenParameters($listFilterParameters);
-                foreach ($catArray as $catentry) {
-                    $cat = $catentry['category'];
-                    $catn = 'cat' . $cat;
-                    echo '<input type="checkbox" name="' . $catn . '" value="1"';
-                    $catnGet = filter_input(INPUT_GET, $catn, FILTER_SANITIZE_NUMBER_INT);
-                    if ($catnGet === '1') { // This category has been properly selected
-                        echo ' checked="checked"';
-                    }
-                    echo ' />&nbsp;';
-                    echo $cat . "<br />\n";
-                }
-                ?>
-                <input type="submit" value="Filtrer"/>
-            </form>
+            <?php } ?>
         </td>
     </tr>
 </table>
 
 <?php
+$ratingWhere = '(1=1';
+if ($minRatingFilter !== NULL || $maxRatingFilter !== NULL) {
+
+    if ($minRatingFilter !== NULL) {
+        $ratingWhere .= " AND `rating` >= $minRatingFilter";
+    } else {
+        $ratingWhere .= ' AND `rating` is null';
+    }
+    
+    if ($minRatingFilter === NULL || $maxRatingFilter === NULL) {
+        $ratingWhere .= ' OR ';
+    } else {
+        $ratingWhere .= ' AND ';
+    }
+    
+    if ($maxRatingFilter !== NULL) {
+        $ratingWhere .= "`rating` <= $maxRatingFilter";
+    } else {
+        $ratingWhere .= '`rating` is null';
+    }
+}
+$ratingWhere .= ')';
+
 $lastseenWhere = '(1=1)';
 
 if ($dateFilter === '0') {
@@ -233,7 +312,7 @@ if ($nCats > 0) {
 $catWhere .= ')';
 
 try {
-    $listMovies = $conn->prepare('select movies.id_movie, title, year, originaltitle, imdb_id, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie left outer join `movies-shortlists` on movies.id_movie=`movies-shortlists`.id_movie left outer join shortlists on `movies-shortlists`.id_shortlist=shortlists.id_shortlist left outer join `movies-categories` on movies.id_movie=`movies-categories`.id_movie where ' . $shortlistWhere . ' and ' . $lastseenWhere . ' and ' . $catWhere . ' group by movies.id_movie order by ' . $sortby . ' ' . $order);
+    $listMovies = $conn->prepare('select movies.id_movie, title, year, originaltitle, imdb_id, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie left outer join `movies-shortlists` on movies.id_movie=`movies-shortlists`.id_movie left outer join shortlists on `movies-shortlists`.id_shortlist=shortlists.id_shortlist left outer join `movies-categories` on movies.id_movie=`movies-categories`.id_movie where ' . $shortlistWhere . ' and ' . $lastseenWhere . ' and ' . $catWhere . ' and ' . $ratingWhere . ' group by movies.id_movie order by ' . $sortby . ' ' . $order);
     $getCategoriesByMovie = $conn->prepare('select id_movie, category from `movies-categories` where id_movie = ?');
     $getShortlistsByMovie = $conn->prepare('select id_movie, listname from `movies-shortlists` natural join shortlists where id_movie = ?');
     $getBestQuality = $conn->prepare('select quality from `media` natural join `media-quality` natural join `quality` where id_movie = ? order by minwidth desc');
@@ -260,17 +339,17 @@ try {
 
 <table border="1">
     <tr>
-        <th>Titre&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters; ?>sort=title&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters; ?>sort=title&order=desc">⇩</a></th>
-        <th>Année&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters; ?>sort=year&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters; ?>sort=year&order=desc">⇩</a></th>
+        <th>Titre&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters . $ratingFilterParameters; ?>sort=title&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters . $ratingFilterParameters; ?>sort=title&order=desc">⇩</a></th>
+        <th>Année&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters . $ratingFilterParameters; ?>sort=year&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters . $ratingFilterParameters; ?>sort=year&order=desc">⇩</a></th>
         <th>Catégories</th>
         <?php if (Auth::hasPermission('rating')) { ?>
-            <th>Note&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters; ?>sort=rating&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters; ?>sort=rating&order=desc">⇩</a></th>
+            <th>Note&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters . $ratingFilterParameters; ?>sort=rating&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters . $ratingFilterParameters; ?>sort=rating&order=desc">⇩</a></th>
         <?php } ?>
         <?php if (Auth::hasPermission('shortlists')) { ?>
             <th>Shortlists</th>
         <?php } ?>
         <?php if (Auth::hasPermission('lastseen')) { ?>
-            <th>Vu le&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters; ?>sort=lastseen&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters; ?>sort=lastseen&order=desc">⇩</a></th>
+            <th>Vu le&nbsp;<a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters . $ratingFilterParameters; ?>sort=lastseen&order=asc">⇧</a><a href="index.php?<?php echo $catFilterParameters . $listFilterParameters . $lastseenFilterParameters . $ratingFilterParameters; ?>sort=lastseen&order=desc">⇩</a></th>
         <?php } ?>
     </tr>
 
