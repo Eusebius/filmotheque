@@ -29,6 +29,7 @@
  */
 
 namespace Eusebius\Filmotheque;
+
 use \PDO;
 
 /**
@@ -261,14 +262,18 @@ class Medium {
      */
     public function delete() {
         $conn = Util::getDbConnection();
-        $delMedium = $conn->prepare('delete from `media` where `id_medium`=?');
-        if (!$delMedium->execute(array($this->mediumID))) {
-            // What on Earth is this td function, 
-            // and why die silently in debug mode?
-            td($delMedium->errorInfo());
-            if ($_SESSION['debug']) {
-                die();
+        try {
+            $delMedium = $conn->prepare('delete from `media` where `id_medium`=?');
+            if (!$delMedium->execute(array($this->mediumID))) {
+                // What on Earth is this td function, 
+                // and why die silently in debug mode?
+                td($delMedium->errorInfo());
+                if ($_SESSION['debug']) {
+                    die();
+                }
             }
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
         }
     }
 
@@ -280,12 +285,16 @@ class Medium {
      */
     public function updateAll() {
         $conn = Util::getDbConnection();
-        $getMedium = $conn->prepare('select media.id_medium, id_movie, type, '
-                . 'height, width, comment, shelfmark, quality from media, '
-                . '`media-quality` where media.id_medium = ? and '
-                . 'media.id_medium=`media-quality`.id_medium');
+        try {
+            $getMedium = $conn->prepare('select media.id_medium, id_movie, type, '
+                    . 'height, width, comment, shelfmark, quality from media, '
+                    . '`media-quality` where media.id_medium = ? and '
+                    . 'media.id_medium=`media-quality`.id_medium');
 
-        $getMedium->execute(array($this->mediumID));
+            $getMedium->execute(array($this->mediumID));
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         $nMedia = $getMedium->rowCount();
         if ($nMedia == 0) {
             Util::fatal('<br />' . $getMedium->queryString . '<br />' .
@@ -323,9 +332,13 @@ class Medium {
     public function updateAudio() {
         $this->audio = array();
         $conn = Util::getDbConnection();
-        $getAudio = $conn->prepare('select language from `media-audio` where id_medium = ?');
-        $getAudio->execute(array($this->mediumID));
-        $audioArray = $getAudio->fetchall(PDO::FETCH_ASSOC);
+        try {
+            $getAudio = $conn->prepare('select language from `media-audio` where id_medium = ?');
+            $getAudio->execute(array($this->mediumID));
+            $audioArray = $getAudio->fetchall(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         foreach ($audioArray as $audio) {
             array_push($this->audio, $audio['language']);
         }
@@ -340,10 +353,14 @@ class Medium {
     public function updateSubs() {
         $this->subs = array();
         $conn = Util::getDbConnection();
-        $getSubs = $conn->prepare('select language from `media-subs` where '
-                . 'id_medium = ?');
-        $getSubs->execute(array($this->mediumID));
-        $subArray = $getSubs->fetchall(PDO::FETCH_ASSOC);
+        try {
+            $getSubs = $conn->prepare('select language from `media-subs` where '
+                    . 'id_medium = ?');
+            $getSubs->execute(array($this->mediumID));
+            $subArray = $getSubs->fetchall(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         foreach ($subArray as $sub) {
             array_push($this->subs, $sub['language']);
         }
@@ -432,41 +449,44 @@ class Medium {
      */
     public function writeAll() {
         $conn = Util::getDbConnection();
+        try {
+            $conn->beginTransaction();
 
-        $conn->beginTransaction();
+            $checkMedium = $conn->prepare('select id_medium from media where '
+                    . 'id_medium = ?');
+            $checkMedium->execute(array($this->mediumID));
+            if ($checkMedium->rowCount() == 0) {
+                $insertMedium = $conn->prepare('insert into media (id_movie, type) '
+                        . 'values (?, ?)');
+                $insertMedium->execute(array($this->movieID, $this->type));
+                $this->mediumID = $conn->lastInsertId();
+            }
+            $updateMovies = $conn->prepare('update media set type=?, height=?, '
+                    . 'width=?, comment=?, shelfmark=? where id_medium=?');
+            $updateMovies->execute(array($this->type,
+                ($this->height != '' ? $this->height : null),
+                ($this->width != '' ? $this->width : null), $this->comment,
+                ($this->shelfmark != '' ? $this->shelfmark : null),
+                $this->mediumID));
 
-        $checkMedium = $conn->prepare('select id_medium from media where '
-                . 'id_medium = ?');
-        $checkMedium->execute(array($this->mediumID));
-        if ($checkMedium->rowCount() == 0) {
-            $insertMedium = $conn->prepare('insert into media (id_movie, type) '
-                    . 'values (?, ?)');
-            $insertMedium->execute(array($this->movieID, $this->type));
-            $this->mediumID = $conn->lastInsertId();
+            $deleteAudio = $conn->prepare('delete from `media-audio` where id_medium = ?');
+            $deleteAudio->execute(array($this->mediumID));
+            foreach ($this->audio as $lang) {
+                $insertLang = $conn->prepare('insert into `media-audio` (id_medium, language) values (?, ?)');
+                $insertLang->execute(array($this->mediumID, $lang));
+            }
+
+            $deleteSubs = $conn->prepare('delete from `media-subs` where id_medium = ?');
+            $deleteSubs->execute(array($this->mediumID));
+            foreach ($this->subs as $lang) {
+                $insertLang = $conn->prepare('insert into `media-subs` (id_medium, language) values (?, ?)');
+                $insertLang->execute(array($this->mediumID, $lang));
+            }
+
+            $conn->commit();
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
         }
-        $updateMovies = $conn->prepare('update media set type=?, height=?, '
-                . 'width=?, comment=?, shelfmark=? where id_medium=?');
-        $updateMovies->execute(array($this->type,
-            ($this->height != '' ? $this->height : null),
-            ($this->width != '' ? $this->width : null), $this->comment,
-            ($this->shelfmark != '' ? $this->shelfmark : null),
-            $this->mediumID));
-
-        $deleteAudio = $conn->prepare('delete from `media-audio` where id_medium = ?');
-        $deleteAudio->execute(array($this->mediumID));
-        foreach ($this->audio as $lang) {
-            $insertLang = $conn->prepare('insert into `media-audio` (id_medium, language) values (?, ?)');
-            $insertLang->execute(array($this->mediumID, $lang));
-        }
-
-        $deleteSubs = $conn->prepare('delete from `media-subs` where id_medium = ?');
-        $deleteSubs->execute(array($this->mediumID));
-        foreach ($this->subs as $lang) {
-            $insertLang = $conn->prepare('insert into `media-subs` (id_medium, language) values (?, ?)');
-            $insertLang->execute(array($this->mediumID, $lang));
-        }
-
-        $conn->commit();
     }
 
     /**

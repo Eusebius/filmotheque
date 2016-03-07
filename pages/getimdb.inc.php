@@ -48,8 +48,6 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
 
     $movie = new Movie($id_movie);
 
-    $conn = Util::getDbConnection();
-
     echo '<h2>' . $movie->getTitle() . " - lier à une fiche IMDb</h2>\n";
     
     $xml = new DomDocument();

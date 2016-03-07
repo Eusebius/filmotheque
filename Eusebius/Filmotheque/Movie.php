@@ -29,6 +29,7 @@
  */
 
 namespace Eusebius\Filmotheque;
+
 use \PDO;
 use \DateTime;
 
@@ -190,14 +191,18 @@ class Movie {
     public function delete() {
         if ($this->movieID != null) {
             $conn = Util::getDbConnection();
-            $delMovie = $conn->prepare('delete from `movies` where `id_movie`=?');
-            if (!$delMovie->execute(array($this->movieID))) {
-                //What on Earth is this td function?
-                //Why do we die silently in debug mode?
-                td($delMovie->errorInfo());
-                if ($_SESSION['debug']) {
-                    die();
+            try {
+                $delMovie = $conn->prepare('delete from `movies` where `id_movie`=?');
+                if (!$delMovie->execute(array($this->movieID))) {
+                    //What on Earth is this td function?
+                    //Why do we die silently in debug mode?
+                    td($delMovie->errorInfo());
+                    if ($_SESSION['debug']) {
+                        die();
+                    }
                 }
+            } catch (PDOException $e) {
+                Util::fatal($e->getMessage());
             }
         }
     }
@@ -288,17 +293,21 @@ class Movie {
         $this->lastseen = ($lastseen != null ? $this->unformatDate($lastseen) : null);
 
         $conn = Util::getDbConnection();
-        $conn->beginTransaction();
+        try {
+            $conn->beginTransaction();
 
-        if ($this->rating != null && $this->rating != '') {
-            $setLastSeen = $conn->prepare('update experience set lastseen=? where id_movie=?');
-            $setLastSeen->execute(array($this->lastseen, $this->movieID));
-        } else {
-            $setLastSeen = $conn->prepare('insert into experience (lastseen, id_movie) values(?, ?)');
-            $setLastSeen->execute(array($this->lastseen, $this->movieID));
+            if ($this->rating != null && $this->rating != '') {
+                $setLastSeen = $conn->prepare('update experience set lastseen=? where id_movie=?');
+                $setLastSeen->execute(array($this->lastseen, $this->movieID));
+            } else {
+                $setLastSeen = $conn->prepare('insert into experience (lastseen, id_movie) values(?, ?)');
+                $setLastSeen->execute(array($this->lastseen, $this->movieID));
+            }
+
+            $conn->commit();
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
         }
-
-        $conn->commit();
     }
 
     /**
@@ -312,57 +321,62 @@ class Movie {
     public function writeAll() {
         $conn = Util::getDbConnection();
 
-        $conn->beginTransaction();
+        try {
+            $conn->beginTransaction();
 
-        // Ensure that the tuple exists in movies, create or update it
-        $checkMovie = $conn->prepare('select id_movie from movies where id_movie = ?');
-        $checkMovie->execute(array($this->movieID));
-        if ($checkMovie->rowCount() == 0) {
-            $insertMovie = $conn->prepare('insert into movies (title, year, imdb_id, originaltitle) values (?, ?, ?, ?)');
-            $insertMovie->execute(array($this->title, ($this->year != '' ? $this->year : null), ($this->imdbID != '' ? $this->imdbID : null), ($this->originaltitle != '' ? $this->originaltitle : null)));
-            $this->movieID = $conn->lastInsertId();
-        } else {
-            $updateMovies = $conn->prepare('update movies set title=?, year=?, imdb_id=?, originaltitle=? where id_movie=?');
-            $result = $updateMovies->execute(array($this->title, ($this->year != '' ? $this->year : null), ($this->imdbID != '' ? $this->imdbID : null), ($this->originaltitle != '' ? $this->originaltitle : null), $this->movieID));
-            if (!$result) {
-                Util::fatal($updateMovies->errorInfo());
+            // Ensure that the tuple exists in movies, create or update it
+            $checkMovie = $conn->prepare('select id_movie from movies where id_movie = ?');
+            $checkMovie->execute(array($this->movieID));
+            if ($checkMovie->rowCount() == 0) {
+                $insertMovie = $conn->prepare('insert into movies (title, year, imdb_id, originaltitle) values (?, ?, ?, ?)');
+                $insertMovie->execute(array($this->title, ($this->year != '' ? $this->year : null), ($this->imdbID != '' ? $this->imdbID : null), ($this->originaltitle != '' ? $this->originaltitle : null)));
+                $this->movieID = $conn->lastInsertId();
+            } else {
+                $updateMovies = $conn->prepare('update movies set title=?, year=?, imdb_id=?, originaltitle=? where id_movie=?');
+                $result = $updateMovies->execute(array($this->title, ($this->year != '' ? $this->year : null), ($this->imdbID != '' ? $this->imdbID : null), ($this->originaltitle != '' ? $this->originaltitle : null), $this->movieID));
+                if (!$result) {
+                    Util::fatal($updateMovies->errorInfo());
+                }
             }
+
+            $deleteMakers = $conn->prepare('delete from `movies-makers` where id_movie = ?');
+            $deleteMakers->execute(array($this->movieID));
+            foreach ($this->makersID as $makerID) {
+                $insertMakers = $conn->prepare('insert into `movies-makers` (id_movie, id_person) values (?, ?)');
+                $insertMakers->execute(array($this->movieID, $makerID));
+            }
+
+            $deleteActors = $conn->prepare('delete from `movies-actors` where id_movie = ?');
+            $deleteActors->execute(array($this->movieID));
+            foreach ($this->actorsID as $actorID) {
+                $insertActors = $conn->prepare('insert into `movies-actors` (id_movie, id_person) values (?, ?)');
+                $insertActors->execute(array($this->movieID, $actorID));
+            }
+
+            $deleteCategories = $conn->prepare('delete from `movies-categories` where id_movie = ?');
+            $deleteCategories->execute(array($this->movieID));
+            foreach ($this->categories as $category) {
+                $insertCategories = $conn->prepare('insert into `movies-categories` (id_movie, category) values (?, ?)');
+                $insertCategories->execute(array($this->movieID, $category));
+            }
+
+            $deleteShortlists = $conn->prepare('delete from `movies-shortlists` where id_movie = ?');
+            $deleteShortlists->execute(array($this->movieID));
+            foreach ($this->shortlistsID as $id_shortlist) {
+                $insertShortlists = $conn->prepare('insert into `movies-shortlists` (id_movie, id_shortlist) values (?, ?)');
+                $insertShortlists->execute(array($this->movieID, $id_shortlist));
+            }
+
+            //NB This creates a completely empty entry if neither field is provided.
+            $deleteExperience = $conn->prepare('delete from experience where id_movie = ?');
+            $deleteExperience->execute(array($this->movieID));
+            $updateExperience = $conn->prepare('insert into experience (rating, lastseen, id_movie) values (?, ?, ?)');
+            $updateExperience->execute(array(($this->rating != '' ? $this->rating : null), ($this->lastseen != '' ? $this->lastseen : null), $this->movieID));
+
+            $conn->commit();
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
         }
-
-        $deleteMakers = $conn->prepare('delete from `movies-makers` where id_movie = ?');
-        $deleteMakers->execute(array($this->movieID));
-        foreach ($this->makersID as $makerID) {
-            $insertMakers = $conn->prepare('insert into `movies-makers` (id_movie, id_person) values (?, ?)');
-            $insertMakers->execute(array($this->movieID, $makerID));
-        }
-
-        $deleteActors = $conn->prepare('delete from `movies-actors` where id_movie = ?');
-        $deleteActors->execute(array($this->movieID));
-        foreach ($this->actorsID as $actorID) {
-            $insertActors = $conn->prepare('insert into `movies-actors` (id_movie, id_person) values (?, ?)');
-            $insertActors->execute(array($this->movieID, $actorID));
-        }
-
-        $deleteCategories = $conn->prepare('delete from `movies-categories` where id_movie = ?');
-        $deleteCategories->execute(array($this->movieID));
-        foreach ($this->categories as $category) {
-            $insertCategories = $conn->prepare('insert into `movies-categories` (id_movie, category) values (?, ?)');
-            $insertCategories->execute(array($this->movieID, $category));
-        }
-
-        $deleteShortlists = $conn->prepare('delete from `movies-shortlists` where id_movie = ?');
-        $deleteShortlists->execute(array($this->movieID));
-        foreach ($this->shortlistsID as $id_shortlist) {
-            $insertShortlists = $conn->prepare('insert into `movies-shortlists` (id_movie, id_shortlist) values (?, ?)');
-            $insertShortlists->execute(array($this->movieID, $id_shortlist));
-        }
-
-        $deleteExperience = $conn->prepare('delete from experience where id_movie = ?');
-        $deleteExperience->execute(array($this->movieID));
-        $updateExperience = $conn->prepare('insert into experience (rating, lastseen, id_movie) values (?, ?, ?)');
-        $updateExperience->execute(array(($this->rating != '' ? $this->rating : null), ($this->lastseen != '' ? $this->lastseen : null), $this->movieID));
-
-        $conn->commit();
     }
 
     /**
@@ -556,7 +570,7 @@ class Movie {
     public function unformatDate($date) {
         $result = NULL;
         $date2 = DateTime::createFromFormat('d/m/Y', $date);
-        if ($date2 !== false) { 
+        if ($date2 !== false) {
             // The provided format is OK
             $result = $date2->format('Y-m-d');
         }
@@ -574,9 +588,13 @@ class Movie {
         $this->makers = array();
         $this->makersID = array();
         $conn = Util::getDbConnection();
-        $getMakers = $conn->prepare('select id_person, name from `movies-makers` natural join persons where id_movie = ?');
-        $getMakers->execute(array($this->movieID));
-        $makerArray = $getMakers->fetchall(PDO::FETCH_ASSOC);
+        try {
+            $getMakers = $conn->prepare('select id_person, name from `movies-makers` natural join persons where id_movie = ?');
+            $getMakers->execute(array($this->movieID));
+            $makerArray = $getMakers->fetchall(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         foreach ($makerArray as $maker) {
             array_push($this->makers, $maker['name']);
             array_push($this->makersID, $maker['id_person']);
@@ -594,9 +612,13 @@ class Movie {
         $this->actors = array();
         $this->actorsID = array();
         $conn = Util::getDbConnection();
-        $getActors = $conn->prepare('select id_person, name from `movies-actors` natural join persons where id_movie = ?');
-        $getActors->execute(array($this->movieID));
-        $actorArray = $getActors->fetchall(PDO::FETCH_ASSOC);
+        try {
+            $getActors = $conn->prepare('select id_person, name from `movies-actors` natural join persons where id_movie = ?');
+            $getActors->execute(array($this->movieID));
+            $actorArray = $getActors->fetchall(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         foreach ($actorArray as $actor) {
             array_push($this->actors, $actor['name']);
             array_push($this->actorsID, $actor['id_person']);
@@ -613,9 +635,13 @@ class Movie {
     public function updateCategories() {
         $this->categories = array();
         $conn = Util::getDbConnection();
-        $getCategories = $conn->prepare('select category from `movies-categories` where id_movie = ?');
-        $getCategories->execute(array($this->movieID));
-        $categoryArray = $getCategories->fetchall(PDO::FETCH_ASSOC);
+        try {
+            $getCategories = $conn->prepare('select category from `movies-categories` where id_movie = ?');
+            $getCategories->execute(array($this->movieID));
+            $categoryArray = $getCategories->fetchall(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         foreach ($categoryArray as $category) {
             array_push($this->categories, $category['category']);
         }
@@ -632,9 +658,13 @@ class Movie {
         $this->shortlists = array();
         $this->shortlistsID = array();
         $conn = Util::getDbConnection();
-        $getShortlists = $conn->prepare('select id_shortlist, listname from `movies-shortlists` natural join shortlists where id_movie = ?');
-        $getShortlists->execute(array($this->movieID));
-        $shortlistArray = $getShortlists->fetchall(PDO::FETCH_ASSOC);
+        try {
+            $getShortlists = $conn->prepare('select id_shortlist, listname from `movies-shortlists` natural join shortlists where id_movie = ?');
+            $getShortlists->execute(array($this->movieID));
+            $shortlistArray = $getShortlists->fetchall(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         foreach ($shortlistArray as $shortlist) {
             array_push($this->shortlists, $shortlist['listname']);
             array_push($this->shortlistsID, $shortlist['id_shortlist']);
@@ -654,9 +684,13 @@ class Movie {
      */
     public function updateAll($withPeople = true, $withCategories = true, $withShortlists = true) {
         $conn = Util::getDbConnection();
-        $getMovie = $conn->prepare('select movies.id_movie id_movie, title, year, imdb_id, originaltitle, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie where movies.id_movie = ?');
+        try {
+            $getMovie = $conn->prepare('select movies.id_movie id_movie, title, year, imdb_id, originaltitle, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie where movies.id_movie = ?');
 
-        $getMovie->execute(array($this->movieID));
+            $getMovie->execute(array($this->movieID));
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         $nMovies = $getMovie->rowCount();
         if ($nMovies == 0) {
             Util::fatal(
@@ -703,10 +737,14 @@ class Movie {
         $this->media = Array();
 
         $conn = Util::getDbConnection();
-        $getMedia = $conn->prepare('select distinct id_medium from media where id_movie = ?');
+        try {
+            $getMedia = $conn->prepare('select distinct id_medium from media where id_movie = ?');
 
-        $getMedia->execute(array($this->movieID));
-        $mediaArray = $getMedia->fetchall(PDO::FETCH_ASSOC);
+            $getMedia->execute(array($this->movieID));
+            $mediaArray = $getMedia->fetchall(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         foreach ($mediaArray as $mediumArray) {
             $id_medium = $mediumArray['id_medium'];
             $medium = new Medium($id_medium);

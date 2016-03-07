@@ -85,8 +85,12 @@ class Auth {
         $result = false;
         $pdo = Util::getDbConnection();
 
-        $getUser = $pdo->prepare('select login, password from users where login=?');
-        $getUser->execute(array($login));
+        try {
+            $getUser = $pdo->prepare('select login, password from users where login=?');
+            $getUser->execute(array($login));
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
 
         $nbUsers = $getUser->rowCount();
         if ($nbUsers === 1) {
@@ -96,6 +100,7 @@ class Auth {
                 $result = true;
             }
         }
+
         return $result;
     }
 
@@ -164,8 +169,12 @@ class Auth {
      */
     static function getRoles($login) {
         $pdo = Util::getDbConnection();
-        $getRoles = $pdo->prepare('select role from `users-roles` where login=?');
-        $getRoles->execute(array($login));
+        try {
+            $getRoles = $pdo->prepare('select role from `users-roles` where login=?');
+            $getRoles->execute(array($login));
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         $rolesResult = $getRoles->fetchAll(PDO::FETCH_ASSOC);
         $roles = array();
         foreach ($rolesResult as $roleRecord) {
@@ -201,10 +210,14 @@ class Auth {
      */
     static function getPermissions($login) {
         $pdo = Util::getDbConnection();
-        $getPermissions = $pdo->prepare('select permission from `users-roles`, `roles-permissions` '
-                . 'where login=? and `users-roles`.role = `roles-permissions`.role');
-        $getPermissions->execute(array($login));
-        $permissionsResult = $getPermissions->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $getPermissions = $pdo->prepare('select permission from `users-roles`, `roles-permissions` '
+                    . 'where login=? and `users-roles`.role = `roles-permissions`.role');
+            $getPermissions->execute(array($login));
+            $permissionsResult = $getPermissions->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         $permissions = array();
         foreach ($permissionsResult as $permissionRecord) {
             $permissions[] = $permissionRecord['permission'];

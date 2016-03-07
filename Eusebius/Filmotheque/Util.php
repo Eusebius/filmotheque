@@ -323,9 +323,8 @@ class Util {
     }
 
     /**
-     * Provides a valid connection to the database, either by retrieving an existing
-     * one in session or by opening a new one (and registering it in session for 
-     * future use).
+     * Provides a valid connection to the database, using persistent connections
+     * to improve performance.
      * 
      * In case of errors, dies with an error message (unspecific if not in debug
      * mode).
@@ -340,17 +339,18 @@ class Util {
             Util::fatal('Database configuration is not properly set up in '
                     . 'session.');
         }
-        if ((!isset($_SESSION['dbconn'])) or ( $_SESSION['dbconn'] == null)) {
-            try {
-                $pdoconn = new PDO(
-                        $_SESSION['config']['db_type']
-                        . ':host=' . $_SESSION['config']['db_server']
-                        . ';dbname=' . $_SESSION['config']['db_db'], $_SESSION['config']['db_user'], $_SESSION['config']['db_password'], array(PDO::ATTR_PERSISTENT => true));
-            } catch (PDOException $e) {
-                Util::fatal($e->getMessage());
-            }
+        try {
+            $pdoconn = new PDO(
+                    $_SESSION['config']['db_type']
+                    . ':host=' . $_SESSION['config']['db_server']
+                    . ';dbname=' . $_SESSION['config']['db_db'], $_SESSION['config']['db_user'], $_SESSION['config']['db_password'], array(PDO::ATTR_PERSISTENT => true)
+            );
+
+            $pdoconn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdoconn->query("SET NAMES utf8");
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
         }
-        $pdoconn->query("SET NAMES utf8");
         return $pdoconn;
     }
 

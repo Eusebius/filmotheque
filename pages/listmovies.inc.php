@@ -27,8 +27,10 @@
  */
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+
 use Eusebius\Filmotheque\Auth;
 use Eusebius\Filmotheque\Util;
+
 Auth::ensurePermission('read');
 
 // Remember GET parameters
@@ -68,13 +70,17 @@ if ($sortbyRequest !== false && $sortbyRequest !== NULL && $sortbyRequest !== ''
 
 $conn = Util::getDbConnection();
 
-$getAllShortlists = $conn->prepare('select id_shortlist, listname from `shortlists` order by listname asc');
-$getAllShortlists->execute();
-$listArray = $getAllShortlists->fetchall(PDO::FETCH_ASSOC);
+try {
+    $getAllShortlists = $conn->prepare('select id_shortlist, listname from `shortlists` order by listname asc');
+    $getAllShortlists->execute();
+    $listArray = $getAllShortlists->fetchall(PDO::FETCH_ASSOC);
 
-$getAllCats = $conn->prepare('select category from categories order by category asc');
-$getAllCats->execute();
-$catArray = $getAllCats->fetchall(PDO::FETCH_ASSOC);
+    $getAllCats = $conn->prepare('select category from categories order by category asc');
+    $getAllCats->execute();
+    $catArray = $getAllCats->fetchall(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    Util::fatal($e->getMessage());
+}
 
 // Rebuild all filtering parameters, except for the first kind (shortlists) which is done inline
 // Those variables has to be there when we build the first filter form
@@ -174,17 +180,20 @@ if ($nCats > 0) {
 }
 $catWhere .= ')';
 
+try {
+    $listMovies = $conn->prepare('select movies.id_movie, title, year, originaltitle, imdb_id, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie left outer join `movies-shortlists` on movies.id_movie=`movies-shortlists`.id_movie left outer join shortlists on `movies-shortlists`.id_shortlist=shortlists.id_shortlist left outer join `movies-categories` on movies.id_movie=`movies-categories`.id_movie where ' . $shortlistWhere . ' and ' . $catWhere . ' group by movies.id_movie order by ' . $sortby . ' ' . $order);
+    $getCategoriesByMovie = $conn->prepare('select id_movie, category from `movies-categories` where id_movie = ?');
+    $getShortlistsByMovie = $conn->prepare('select id_movie, listname from `movies-shortlists` natural join shortlists where id_movie = ?');
+    $getBestQuality = $conn->prepare('select quality from `media` natural join `media-quality` natural join `quality` where id_movie = ? order by minwidth desc');
 
-$listMovies = $conn->prepare('select movies.id_movie, title, year, originaltitle, imdb_id, rating, lastseen from movies left outer join experience on movies.id_movie = experience.id_movie left outer join `movies-shortlists` on movies.id_movie=`movies-shortlists`.id_movie left outer join shortlists on `movies-shortlists`.id_shortlist=shortlists.id_shortlist left outer join `movies-categories` on movies.id_movie=`movies-categories`.id_movie where ' . $shortlistWhere . ' and ' . $catWhere . ' group by movies.id_movie order by ' . $sortby . ' ' . $order);
-$getCategoriesByMovie = $conn->prepare('select id_movie, category from `movies-categories` where id_movie = ?');
-$getShortlistsByMovie = $conn->prepare('select id_movie, listname from `movies-shortlists` natural join shortlists where id_movie = ?');
-$getBestQuality = $conn->prepare('select quality from `media` natural join `media-quality` natural join `quality` where id_movie = ? order by minwidth desc');
-
-$listMovies->execute();
+    $listMovies->execute();
 //Util::debug($listMovies->queryString);
 //Util::debug($listMovies->errorInfo());
-$movieArray = $listMovies->fetchall(PDO::FETCH_ASSOC);
-$nMovies = $listMovies->rowCount();
+    $movieArray = $listMovies->fetchall(PDO::FETCH_ASSOC);
+    $nMovies = $listMovies->rowCount();
+} catch (PDOException $e) {
+    Util::fatal($e->getMessage());
+}
 ?>
 
 <p><em><?php echo $nMovies ?>&nbsp;films distincts</em></p>
@@ -218,8 +227,12 @@ $nMovies = $listMovies->rowCount();
         echo "<tr>\n";
 
         //TODO get best available quality
-        $getBestQuality->execute(array($movie['id_movie']));
-        $quality = $getBestQuality->fetch(PDO::FETCH_ASSOC);
+        try {
+            $getBestQuality->execute(array($movie['id_movie']));
+            $quality = $getBestQuality->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         if ($quality) {
             $quality = $quality['quality'];
         }
@@ -231,8 +244,12 @@ $nMovies = $listMovies->rowCount();
         . $movie['year']
         . "</td>\n";
         echo '<td bgcolor="' . $colour[$quality] . '">';
-        $getCategoriesByMovie->execute(array($movie['id_movie']));
-        $categoryArray = $getCategoriesByMovie->fetchall(PDO::FETCH_ASSOC);
+        try {
+            $getCategoriesByMovie->execute(array($movie['id_movie']));
+            $categoryArray = $getCategoriesByMovie->fetchall(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         $ncat = count($categoryArray);
         if ($ncat > 0) {
             echo $categoryArray[0]['category'];
@@ -248,8 +265,12 @@ $nMovies = $listMovies->rowCount();
         }
         if (Auth::hasPermission('shortlists')) {
             echo '<td bgcolor="' . $colour[$quality] . '">';
-            $getShortlistsByMovie->execute(array($movie['id_movie']));
-            $ShortlistArray = $getShortlistsByMovie->fetchall(PDO::FETCH_ASSOC);
+            try {
+                $getShortlistsByMovie->execute(array($movie['id_movie']));
+                $ShortlistArray = $getShortlistsByMovie->fetchall(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                Util::fatal($e->getMessage());
+            }
             $nsl = count($ShortlistArray);
             if ($nsl > 0) {
                 echo $ShortlistArray[0]['listname'];

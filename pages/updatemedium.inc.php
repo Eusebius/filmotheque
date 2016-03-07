@@ -28,9 +28,11 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+
 use Eusebius\Filmotheque\Auth;
 use Eusebius\Filmotheque\Medium;
 use Eusebius\Filmotheque\Util;
+
 Auth::ensurePermission('write');
 
 $id_medium_string = filter_input(INPUT_GET, 'id_medium', FILTER_SANITIZE_NUMBER_INT);
@@ -65,51 +67,63 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
             <tr><td>Titre du film&nbsp;:</td><td><?php echo $movie->getTitle(); ?></td></tr>
             <tr><td>Type&nbsp;:</td><td>
                     <select name="type">
-    <?php
-    $conn = Util::getDbConnection();
-    $types = $conn->prepare('select distinct type from `media`');
-    $types->execute();
-    $typeArray = $types->fetchall(PDO::FETCH_ASSOC);
-    foreach ($typeArray as $type) {
-        if ($type['type'] != '') {
-            echo '<option value="' . $type['type'] . '" ';
-            if ($type['type'] == $medium->getType()) {
-                echo 'selected';
-            }
-            echo '>' . $type['type'] . '</option>' . "\n";
-        }
-    }
-    ?>
+                        <?php
+                        $conn = Util::getDbConnection();
+                        try {
+                            $types = $conn->prepare('select distinct type from `media`');
+                            $types->execute();
+                            $typeArray = $types->fetchall(PDO::FETCH_ASSOC);
+                        } catch (PDOException $e) {
+                            Util::fatal($e->getMessage());
+                        }
+                        foreach ($typeArray as $type) {
+                            if ($type['type'] != '') {
+                                echo '<option value="' . $type['type'] . '" ';
+                                if ($type['type'] == $medium->getType()) {
+                                    echo 'selected';
+                                }
+                                echo '>' . $type['type'] . '</option>' . "\n";
+                            }
+                        }
+                        ?>
                     </select>
                 </td></tr>
             <tr><td>Largeur en pixels&nbsp;:</td><td><input type="text" name="width" value="<?php echo $medium->getWidth(); ?>"/></td></tr>
             <tr><td>Hauteur en pixels&nbsp;:</td><td><input type="text" name="height" value="<?php echo $medium->getHeight(); ?>"/></td></tr>
             <tr><td>Commentaires&nbsp;:</td><td><input type="text" name="comment" value="<?php echo $medium->getComment(); ?>"/></td></tr>
-    <?php
-    $next = $conn->prepare('SELECT shelfmark+1 next FROM `media` m WHERE not exists (select shelfmark from media where media.shelfmark = m.shelfmark+1) and m.shelfmark is not null order by next limit 1');
-    $next->execute();
-    if ($next->rowCount() == 0) {
-        Util::fatal('Impossible de trouver la prochaine cote disponible');
-    }
-    $nextArray = $next->fetchall(PDO::FETCH_ASSOC);
-    $nextShelfmark = $nextArray[0]['next'];
-    ?>
+            <?php
+            try {
+                $next = $conn->prepare('SELECT shelfmark+1 next FROM `media` m WHERE not exists (select shelfmark from media where media.shelfmark = m.shelfmark+1) and m.shelfmark is not null order by next limit 1');
+                $next->execute();
+                if ($next->rowCount() == 0) {
+                    Util::fatal('Impossible de trouver la prochaine cote disponible');
+                }
+                $nextArray = $next->fetchall(PDO::FETCH_ASSOC);
+                $nextShelfmark = $nextArray[0]['next'];
+            } catch (PDOException $e) {
+                Util::fatal($e->getMessage());
+            }
+            ?>
             <tr><td>Cote&nbsp;:</td><td><input type="text" name="shelfmark" value="<?php echo $medium->getShelfmark(); ?>"/></td><td>(première cote disponible&nbsp;: <?php echo $nextShelfmark; ?>)</td></tr>
             <tr><td>Pistes audio&nbsp;:</td><td>
                     <select name="audio[]" multiple>
-    <?php
-    $conn2 = Util::getDbConnection();
-    $languages = $conn2->prepare('select distinct language from `languages`');
-    $languages->execute();
-    $languageArray = $languages->fetchall(PDO::FETCH_ASSOC);
-    foreach ($languageArray as $lang) {
-        echo '<option value="' . $lang['language'] . '" ';
-        if (in_array($lang['language'], $medium->getAudio())) {
-            echo 'selected';
-        }
-        echo '>' . $lang['language'] . '</option>' . "\n";
-    }
-    ?>
+                        <?php
+                        $conn2 = Util::getDbConnection();
+                        try {
+                            $languages = $conn2->prepare('select distinct language from `languages`');
+                            $languages->execute();
+                            $languageArray = $languages->fetchall(PDO::FETCH_ASSOC);
+                        } catch (PDOException $e) {
+                            Util::fatal($e->getMessage());
+                        }
+                        foreach ($languageArray as $lang) {
+                            echo '<option value="' . $lang['language'] . '" ';
+                            if (in_array($lang['language'], $medium->getAudio())) {
+                                echo 'selected';
+                            }
+                            echo '>' . $lang['language'] . '</option>' . "\n";
+                        }
+                        ?>
                     </select>
                 </td></tr>
             <tr><td>Sous-titres&nbsp;:</td><td>
