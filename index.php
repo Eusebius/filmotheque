@@ -46,45 +46,47 @@ Auth::ensureAuthenticated();
     </head>
 
     <body>
-        <!-- <div class="container"> -->
-            <div id="header">
-                <h1>Filmothèque</h1>
-                <?php
-                if ($_SESSION['debug']) {
-                    echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
-                }
-                ?>
+        <div id="aside">
+            <div id="corner">
             </div>
-            <?php
-            Util::checkChmod();
-            ?>
             <div id="sidemenu">
                 <?php
                 include('pages/sidemenu.inc.php');
                 ?>
             </div>
-            <div id="main">
-                <?php
-//TODO provide a specific input filter for page names
-                $getPage = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
+        </div>
 
-                if ($getPage === 'moviedetails') {
-                    include('pages/moviedetails.inc.php');
-                } else if ($getPage === 'updatemovie') {
-                    include('pages/updatemovie.inc.php');
-                } else if ($getPage === 'updatemedium') {
-                    include('pages/updatemedium.inc.php');
-                } else if ($getPage === 'addmedium') {
-                    include('pages/addmedium.inc.php');
-                } else if ($getPage === 'addmovie') {
-                    include('pages/addmovie.inc.php');
-                } else if ($getPage === 'getimdb') {
-                    include('pages/getimdb.inc.php');
-                } else {
-                    include('pages/listmovies.inc.php');
-                }
-                ?>
-            </div>
+        <div id="header">
+            <h1>Filmothèque</h1>
+            <?php
+            Util::checkChmod();
+            if ($_SESSION['debug']) {
+                echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
+            }
+            ?>
+        </div>
+        <div class="container">
+            <?php
+//TODO provide a specific input filter for page names
+            $getPage = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
+
+            if ($getPage === 'moviedetails') {
+                include('pages/moviedetails.inc.php');
+            } else if ($getPage === 'updatemovie') {
+                include('pages/updatemovie.inc.php');
+            } else if ($getPage === 'updatemedium') {
+                include('pages/updatemedium.inc.php');
+            } else if ($getPage === 'addmedium') {
+                include('pages/addmedium.inc.php');
+            } else if ($getPage === 'addmovie') {
+                include('pages/addmovie.inc.php');
+            } else if ($getPage === 'getimdb') {
+                include('pages/getimdb.inc.php');
+            } else {
+                include('pages/listmovies.inc.php');
+            }
+            ?>
+        </div>
         <!-- </div> -->
     </body>
 </html>
