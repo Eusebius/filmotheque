@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
 
 CREATE TABLE IF NOT EXISTS `experience` (
   `id_movie` int(10) UNSIGNED NOT NULL,
-  `rating` tinyint(3) UNSIGNED NOT NULL,
+  `rating` tinyint(3) UNSIGNED DEFAULT NULL,
   `lastseen` date DEFAULT NULL,
   PRIMARY KEY (`id_movie`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

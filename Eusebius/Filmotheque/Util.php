@@ -30,6 +30,7 @@
 namespace Eusebius\Filmotheque;
 
 use \PDO;
+use \DateTime;
 
 /**
  * Class providing static utility functions.
@@ -227,6 +228,7 @@ class Util {
      * @since 0.2.4
      */
     static function makeHiddenParameters($paramString) {
+        //Util::debug($paramString);
         $couples = explode('&', $paramString);
         foreach ($couples as $couple) {
             $couple = explode('=', $couple);
@@ -404,6 +406,24 @@ class Util {
      */
     private static function stripPathFromDir($path, $dir) {
         return substr($path, 0, (strpos($path, $dir) ? strpos($path, $dir) : strlen($path)));
+    }
+
+    /**
+     * Convert a date from a 'dd/mm/yyyy' format to a 'yyyy-mm-dd' format.
+     * @param \string The date in a 'dd/mm/yyyy' format.
+     * @return \string The date in a 'yyyy-mm-dd' format, or null if the input format was incorrect.
+     * 
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.0
+     */
+    public static function unformatDate($date) {
+        $result = NULL;
+        $date2 = DateTime::createFromFormat('d/m/Y', $date);
+        if ($date2 !== false) {
+            // The provided format is OK
+            $result = $date2->format('Y-m-d');
+        }
+        return $result;
     }
 
 }

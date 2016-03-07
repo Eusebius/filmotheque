@@ -267,7 +267,7 @@ class Movie {
         $this->categories = ($categories != null ? $categories : array());
         $this->shortlistsID = ($shortlistsID != null ? $shortlistsID : array());
         $this->rating = ($rating != null ? $rating : '');
-        $this->lastseen = ($lastseen != null ? $this->unformatDate($lastseen) : null);
+        $this->lastseen = ($lastseen != null ? Util::unformatDate($lastseen) : null);
 
         /*
          * There is a need to update lists after the write, because only the 
@@ -290,7 +290,7 @@ class Movie {
      * @since 0.2.4
      */
     public function setLastSeen($lastseen) {
-        $this->lastseen = ($lastseen != null ? $this->unformatDate($lastseen) : null);
+        $this->lastseen = ($lastseen != null ? Util::unformatDate($lastseen) : null);
 
         $conn = Util::getDbConnection();
         try {
@@ -555,24 +555,6 @@ class Movie {
             $result = $date->format($format);
         } else {
             $result = '';
-        }
-        return $result;
-    }
-
-    /**
-     * Convert a date from a 'dd/mm/yyyy' format to a 'yyyy-mm-dd' format.
-     * @param \string The date in a 'dd/mm/yyyy' format.
-     * @return \string The date in a 'yyyy-mm-dd' format.
-     * 
-     * @author Eusebius <eusebius@eusebius.fr>
-     * @since 0.2.4
-     */
-    public function unformatDate($date) {
-        $result = NULL;
-        $date2 = DateTime::createFromFormat('d/m/Y', $date);
-        if ($date2 !== false) {
-            // The provided format is OK
-            $result = $date2->format('Y-m-d');
         }
         return $result;
     }
