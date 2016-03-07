@@ -27,6 +27,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+use Eusebius\Filmotheque\Util;
+
 //Check whether we are in HTTPS or not
 $secure = Util::isHTTPS();
 

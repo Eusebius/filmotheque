@@ -29,6 +29,10 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+
+use Eusebius\Filmotheque\Auth;
+use Eusebius\Filmotheque\Util;
+
 Auth::ensurePermission('read');
 
 $id_movie_string = filter_input(INPUT_GET, 'id_movie', FILTER_SANITIZE_NUMBER_INT);
@@ -207,8 +211,12 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
         echo '</td>';
         echo '<td align="center" bgcolor="' . $colour[$quality] . '">' . $medium->getComment() . '</td>';
         echo '<td align="center" bgcolor="' . $colour[$quality] . '">';
-        $getMediaBorrowers->execute(array($medium->getID()));
-        $borrowerArray = $getMediaBorrowers->fetchall(PDO::FETCH_ASSOC);
+        try {
+            $getMediaBorrowers->execute(array($medium->getID()));
+            $borrowerArray = $getMediaBorrowers->fetchall(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
         if (count($borrowerArray) > 0) {
             echo $borrowerArray[0]['borrowername'] . ', le ';
             $date = DateTime::createFromFormat('Y-m-d', $borrowerArray[0]['loandate']);

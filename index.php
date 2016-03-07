@@ -11,7 +11,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2016 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,10 @@
  */
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+
+use Eusebius\Filmotheque\Auth;
+use Eusebius\Filmotheque\Util;
+
 Auth::ensureAuthenticated();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -42,45 +46,47 @@ Auth::ensureAuthenticated();
     </head>
 
     <body>
-        <?php
-        if ($_SESSION['debug']) {
-            echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
-        }
-        
-        ?>
-        <div class="disconnect"><a href="scripts/disconnect.php">Se déconnecter</a></div>
-        <?php
+        <div id="aside">
+            <div id="corner">
+            </div>
+            <div id="sidemenu">
+                <?php
+                include('pages/sidemenu.inc.php');
+                ?>
+            </div>
+        </div>
 
-        Util::checkChmod();
-        
-        //TODO provide a specific input filter for page names
-        
-        $getPage = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
-        
-        if ($getPage === 'moviedetails') {
-            include('pages/moviedetails.inc.php');
-        } else if ($getPage === 'updatemovie') {
-            include('pages/updatemovie.inc.php');
-        } else if ($getPage === 'updatemedium') {
-            include('pages/updatemedium.inc.php');
-        } else if ($getPage === 'addmedium') {
-            include('pages/addmedium.inc.php');
-        } else if ($getPage === 'addmovie') {
-            include('pages/addmovie.inc.php');
-        } else if ($getPage === 'getimdb') {
-            include('pages/getimdb.inc.php');
-        } else {
-            include('pages/listmovies.inc.php');
-        }
-        ?>
+        <div id="header">
+            <h1>Filmothèque</h1>
+            <?php
+            Util::checkChmod();
+            if ($_SESSION['debug']) {
+                echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
+            }
+            ?>
+        </div>
+        <div class="container">
+            <?php
+//TODO provide a specific input filter for page names
+            $getPage = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
 
-        <p>
-            <br />
-            <br />
-        </p>
-        <hr />
-        <p>
-            Version <?php echo $_SESSION['config']['version']; ?>
-        </p>
+            if ($getPage === 'moviedetails') {
+                include('pages/moviedetails.inc.php');
+            } else if ($getPage === 'updatemovie') {
+                include('pages/updatemovie.inc.php');
+            } else if ($getPage === 'updatemedium') {
+                include('pages/updatemedium.inc.php');
+            } else if ($getPage === 'addmedium') {
+                include('pages/addmedium.inc.php');
+            } else if ($getPage === 'addmovie') {
+                include('pages/addmovie.inc.php');
+            } else if ($getPage === 'getimdb') {
+                include('pages/getimdb.inc.php');
+            } else {
+                include('pages/listmovies.inc.php');
+            }
+            ?>
+        </div>
+        <!-- </div> -->
     </body>
 </html>

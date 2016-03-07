@@ -27,6 +27,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+namespace Eusebius\Filmotheque;
+
+use \PDO;
+use \DateTime;
+
 /**
  * Class providing static utility functions.
  *
@@ -223,6 +228,7 @@ class Util {
      * @since 0.2.4
      */
     static function makeHiddenParameters($paramString) {
+        //Util::debug($paramString);
         $couples = explode('&', $paramString);
         foreach ($couples as $couple) {
             $couple = explode('=', $couple);
@@ -319,9 +325,8 @@ class Util {
     }
 
     /**
-     * Provides a valid connection to the database, either by retrieving an existing
-     * one in session or by opening a new one (and registering it in session for 
-     * future use).
+     * Provides a valid connection to the database, using persistent connections
+     * to improve performance.
      * 
      * In case of errors, dies with an error message (unspecific if not in debug
      * mode).
@@ -336,17 +341,18 @@ class Util {
             Util::fatal('Database configuration is not properly set up in '
                     . 'session.');
         }
-        if ((!isset($_SESSION['dbconn'])) or ( $_SESSION['dbconn'] == null)) {
-            try {
-                $pdoconn = new PDO(
-                        $_SESSION['config']['db_type']
-                        . ':host=' . $_SESSION['config']['db_server']
-                        . ';dbname=' . $_SESSION['config']['db_db'], $_SESSION['config']['db_user'], $_SESSION['config']['db_password'], array(PDO::ATTR_PERSISTENT => true));
-            } catch (PDOException $e) {
-                Util::fatal($e->getMessage());
-            }
+        try {
+            $pdoconn = new PDO(
+                    $_SESSION['config']['db_type']
+                    . ':host=' . $_SESSION['config']['db_server']
+                    . ';dbname=' . $_SESSION['config']['db_db'], $_SESSION['config']['db_user'], $_SESSION['config']['db_password'], array(PDO::ATTR_PERSISTENT => true)
+            );
+
+            $pdoconn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdoconn->query("SET NAMES utf8");
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
         }
-        $pdoconn->query("SET NAMES utf8");
         return $pdoconn;
     }
 
@@ -379,7 +385,9 @@ class Util {
         $withoutCovers = Util::stripPathFromDir($withoutIncludes, '/covers');
         $withoutScripts = Util::stripPathFromDir($withoutCovers, '/scripts');
         $withoutPages = Util::stripPathFromDir($withoutScripts, '/pages');
-        $withoutParams1 = Util::stripPathFromDir($withoutPages, '?');
+        $withoutTesting = Util::stripPathFromDir($withoutPages, '/testing');
+        $withoutEusebius = Util::stripPathFromDir($withoutTesting, '/Eusebius');
+        $withoutParams1 = Util::stripPathFromDir($withoutEusebius, '?');
         $withoutIndex = Util::stripPathFromDir($withoutParams1, 'index.php');
         if (substr($withoutIndex, -1) !== '/') {
             $withoutIndex .='/';
@@ -388,7 +396,7 @@ class Util {
     }
 
     /**
-     * Strip an string from a suffix starting with a given prefix.
+     * Strip a string from a suffix starting with a given prefix.
      * 
      * @param \string $path The original string.
      * @dir \string $dir The prefix to look for.
@@ -398,6 +406,24 @@ class Util {
      */
     private static function stripPathFromDir($path, $dir) {
         return substr($path, 0, (strpos($path, $dir) ? strpos($path, $dir) : strlen($path)));
+    }
+
+    /**
+     * Convert a date from a 'dd/mm/yyyy' format to a 'yyyy-mm-dd' format.
+     * @param \string The date in a 'dd/mm/yyyy' format.
+     * @return \string The date in a 'yyyy-mm-dd' format, or null if the input format was incorrect.
+     * 
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.0
+     */
+    public static function unformatDate($date) {
+        $result = NULL;
+        $date2 = DateTime::createFromFormat('d/m/Y', $date);
+        if ($date2 !== false) {
+            // The provided format is OK
+            $result = $date2->format('Y-m-d');
+        }
+        return $result;
     }
 
 }

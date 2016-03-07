@@ -27,6 +27,8 @@
  */
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
+use Eusebius\Filmotheque\Auth;
+use Eusebius\Filmotheque\Util;
 
 $hash = Util::getPOSTValueOrNull('hash', Util::POST_CHECK_RAW);
 $password= Util::getPOSTValueOrNull('password', Util::POST_CHECK_RAW);

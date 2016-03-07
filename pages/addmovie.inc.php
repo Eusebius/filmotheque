@@ -28,9 +28,13 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+
+use Eusebius\Filmotheque\Auth;
+use Eusebius\Filmotheque\Util;
+
 Auth::ensurePermission('write');
 ?>
-<h3>Création d'un nouveau film</h3><?php //'  ?>
+<h3>Création d'un nouveau film</h3><?php //'    ?>
 <form action="scripts/docreatemovie.php" method="POST">
     <input type="hidden" name="id_movie" value="<?php echo $id_movie; ?>" />
     <table>
@@ -40,9 +44,13 @@ Auth::ensurePermission('write');
                 <select name="makers[]" multiple>
                     <?php
                     $conn = Util::getDbConnection();
-                    $persons = $conn->prepare('SELECT id_person, name FROM `persons` order by name');
-                    $persons->execute();
-                    $personArray = $persons->fetchall(PDO::FETCH_ASSOC);
+                    try {
+                        $persons = $conn->prepare('SELECT id_person, name FROM `persons` order by name');
+                        $persons->execute();
+                        $personArray = $persons->fetchall(PDO::FETCH_ASSOC);
+                    } catch (PDOException $e) {
+                        Util::fatal($e->getMessage());
+                    }
                     foreach ($personArray as $person) {
                         echo '<option value="' . $person['id_person'] . '">' . $person['name'] . '</option>' . "\n";
                     }
@@ -61,9 +69,13 @@ Auth::ensurePermission('write');
         <tr><td>Catégorie(s)&nbsp;:</td><td>
                 <select name="categories[]" multiple>
                     <?php
-                    $cats = $conn->prepare('select category from categories');
-                    $cats->execute();
-                    $catArray = $cats->fetchall(PDO::FETCH_ASSOC);
+                    try {
+                        $cats = $conn->prepare('select category from categories');
+                        $cats->execute();
+                        $catArray = $cats->fetchall(PDO::FETCH_ASSOC);
+                    } catch (PDOException $e) {
+                        Util::fatal($e->getMessage());
+                    }
                     foreach ($catArray as $cat) {
                         echo '<option value="' . $cat['category'] . '"';
                         echo '>' . $cat['category'] . '</option>' . "\n";
@@ -74,9 +86,13 @@ Auth::ensurePermission('write');
         <tr><td>Shortlist(s)&nbsp;:</td><td>
                 <select name="shortlists[]" multiple>
                     <?php
-                    $shortlists = $conn->prepare('select id_shortlist, listname from shortlists');
-                    $shortlists->execute();
-                    $slArray = $shortlists->fetchall(PDO::FETCH_ASSOC);
+                    try {
+                        $shortlists = $conn->prepare('select id_shortlist, listname from shortlists');
+                        $shortlists->execute();
+                        $slArray = $shortlists->fetchall(PDO::FETCH_ASSOC);
+                    } catch (PDOException $e) {
+                        Util::fatal($e->getMessage());
+                    }
                     foreach ($slArray as $sl) {
                         echo '<option value="' . $sl['id_shortlist'] . '"';
                         echo '>' . $sl['listname'] . '</option>' . "\n";

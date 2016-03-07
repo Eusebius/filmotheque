@@ -39,13 +39,15 @@ require_once('includes/initialization.inc.php');
     </head>
 
     <body>
-        <h2>Authentification</h2>
-        <form action="scripts/logon.php" method="POST">
-            <table>
-                <tr><td>Login&nbsp;:</td><td><input type="text" name="login" /></td></tr>
-                <tr><td>Mot de passe&nbsp;:</td><td><input type="password" name="password" /></td></tr>
-                <tr><td colspan="2"><input type="submit" value="Connexion" /></td></tr>
-            </table>
-        </form>
+        <div class="login">
+            <h2>Authentification</h2>
+            <form action="scripts/logon.php" method="POST">
+                <table id="login">
+                    <tr><td>Login&nbsp;:</td><td><input type="text" name="login" /></td></tr>
+                    <tr><td>Mot de passe&nbsp;:</td><td><input type="password" name="password" /></td></tr>
+                    <tr><td colspan="2"><input type="submit" value="Connexion" /></td></tr>
+                </table>
+            </form>
+        </div>
     </body>
 </html>

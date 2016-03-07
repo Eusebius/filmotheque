@@ -1,12 +1,11 @@
 <?php
 /**
- * disconnect.php
+ * sidemenu.inc.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.2.7
+ * @since 0.3.0
  * 
- * This script disconnects any authenticated user and returns them to the 
- * login form.
+ * This is the side menu for most application pages.
  */
 /*
   Filmothèque
@@ -26,8 +25,25 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
-require_once('../includes/declarations.inc.php');
-require_once('../includes/initialization.inc.php');
+require_once('includes/declarations.inc.php');
+require_once('includes/initialization.inc.php');
 use Eusebius\Filmotheque\Auth;
-Auth::disconnect();
+Auth::ensureAuthenticated();
+
+?>
+
+    <ul>
+        <li><a href="?page=listmovies">Liste des films</a></li>
+        <li><a href="?page=addmovie">Ajouter un nouveau film</a></li>
+    </ul>
+    <ul>
+        <li><a href="scripts/disconnect.php">Se déconnecter</a></li>
+    </ul>
+    
+    <br />
+    <br />
+    <hr />
+    <p>
+        Filmothèque by Eusebius<br />
+        version <?php echo $_SESSION['config']['version']; ?>
+    </p>
