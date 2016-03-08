@@ -85,7 +85,6 @@ class User {
                         . 'where `users`.login=?');
                 $getUser->execute(array($login));
             } catch (PDOException $e) {
-                Util::debug($getUser->queryString);
                 Util::fatal($e->getMessage());
             }
 
