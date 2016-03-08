@@ -193,7 +193,7 @@ foreach ($listArray as $list) {
                     Util::makeHiddenParameters($sortParameters);
                     Util::makeHiddenParameters($catFilterParameters);
                     Util::makeHiddenParameters($listFilterParameters);
-                    Util::makeHiddenParameters($ratingFilterParameters);
+                    Util::makeHiddenParameters($lastseenFilterParameters);
                     ?>
                     Afficher uniquement les films notés<br />
                     entre&nbsp;<select name="minrating">
@@ -318,7 +318,7 @@ try {
     $getBestQuality = $conn->prepare('select quality from `media` natural join `media-quality` natural join `quality` where id_movie = ? order by minwidth desc');
 
     $listMovies->execute();
-    //Util::debug($listMovies->queryString);
+    Util::debug($listMovies->queryString);
     //Util::debug($listMovies->errorInfo());
     $movieArray = $listMovies->fetchall(PDO::FETCH_ASSOC);
     $nMovies = $listMovies->rowCount();
