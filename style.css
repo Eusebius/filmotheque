@@ -77,6 +77,15 @@ h2 {
     color:gray;
 }
 
+h3 {
+    font-size: 12pt;
+    font-family: "Century Gothic", Arial, sans-serif;
+    font-weight: bold;
+    font-style: normal;
+    color:gray;
+    margin-left: 30px;
+}
+
 .login {
     position: fixed;
     left: 40%;

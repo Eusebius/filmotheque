@@ -1,11 +1,11 @@
 <?php
 /**
- * sidemenu.inc.php
+ * pages/admin/manageusers.inc.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.3.0
+ * @since 0.3.2
  * 
- * This is the side menu for most application pages.
+ * User management administration page
  */
 /*
   Filmothèque
@@ -30,34 +30,8 @@ require_once('includes/initialization.inc.php');
 
 use Eusebius\Filmotheque\Auth;
 
-Auth::ensureAuthenticated();
+Auth::ensurePermission('admin');
+
 ?>
 
-<hr />
-<ul>
-    <li><a href="?page=listmovies">Liste des films</a></li>
-    <li><a href="?page=addmovie">Ajouter un nouveau film</a></li>
-</ul>
-<ul>
-    <li><a href="scripts/disconnect.php">Se déconnecter</a></li>
-</ul>
-
-<br />
-<br />
-<hr />
-    <?php
-    if (Auth::hasRole('admin')) {
-        ?>
-<h3>[Administration]</h3>
-<ul>
-    <li><a href="?page=admin/manageusers.inc.php">Gestion des utilisateurs</a></li>
-</ul>
-<hr />
-<br />
-        <?php
-    }
-    ?>
-<p>
-    Filmothèque by Eusebius<br />
-    version <?php echo $_SESSION['config']['version']; ?>
-</p>
+User management page
