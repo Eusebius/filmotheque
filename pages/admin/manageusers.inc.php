@@ -29,9 +29,29 @@ require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
 
 use Eusebius\Filmotheque\Auth;
+use Eusebius\Filmotheque\User;
 
 Auth::ensurePermission('admin');
 
 ?>
 
-User management page
+<h2>Liste des utilisateurs existants</h2>
+<table border="1">
+    <tr>
+        <th>Login</th>
+        <th>E-mail</th>
+        <th>Rôles</th>
+        <th>Permissions</th>
+        <th>&nbsp;</th>
+    </tr>
+    <?php
+        $users = User::fetchAllUsers();
+        foreach ($users as $user) {
+            echo '<tr><td>' . $user->getLogin() . '</td><td>' 
+                    . $user->getEmail() . '</td><td>'
+                    . implode(', ', $user->getRoles()) . '</td><td>'
+                    . implode(', ', $user->getPermissions()) . '</td><td>'
+                    . '</td></tr>';
+        }
+    ?>
+</table>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * includes/Auth.php
+ * Eusebius/Filmotheque/Auth.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.7
@@ -30,7 +30,7 @@
 
 namespace Eusebius\Filmotheque;
 
-use \PDO;
+use PDO,    PDOException;
 
 /**
  * Class providing static authentication and access control functions.
