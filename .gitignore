@@ -8,3 +8,5 @@ nbproject
 doc
 .htpasswd
 .htaccess
+composer.lock
+vendor

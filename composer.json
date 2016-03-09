@@ -1,0 +1,15 @@
+{
+    "name": "eusebius/filmotheque",
+    "description": "A personal, web-based movie collection manager.",
+    "authors": [
+        {
+            "name": "Eusebius",
+            "email": "eusebius@eusebius.fr"
+        }
+    ],
+    "require": {
+        "facebook/webdriver": "dev-master",
+        "phpunit/phpunit-mock-objects": "dev-master",
+        "phpunit/phpunit": "dev-master"
+    }
+}
