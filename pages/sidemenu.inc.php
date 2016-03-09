@@ -36,7 +36,13 @@ Auth::ensureAuthenticated();
 <hr />
 <ul>
     <li><a href="?page=listmovies">Liste des films</a></li>
-    <li><a href="?page=addmovie">Ajouter un nouveau film</a></li>
+    <?php
+    if (Auth::hasPermission('w')) {
+        ?>
+        <li><a href="?page=addmovie">Ajouter un nouveau film</a></li>
+        <?php
+    }
+    ?>
 </ul>
 <ul>
     <li><a href="scripts/disconnect.php">Se déconnecter</a></li>
@@ -45,18 +51,18 @@ Auth::ensureAuthenticated();
 <br />
 <br />
 <hr />
-    <?php
-    if (Auth::hasRole('admin')) {
-        ?>
-<h3>[Administration]</h3>
-<ul>
-    <li><a href="?page=admin/manageusers.inc.php">Gestion des utilisateurs</a></li>
-</ul>
-<hr />
-<br />
-        <?php
-    }
+<?php
+if (Auth::hasRole('admin')) {
     ?>
+    <h3>[Administration]</h3>
+    <ul>
+        <li><a href="?page=admin/manageusers.inc.php">Gestion des utilisateurs</a></li>
+    </ul>
+    <hr />
+    <br />
+    <?php
+}
+?>
 <p>
     Filmothèque by Eusebius<br />
     version <?php echo $_SESSION['config']['version']; ?>
