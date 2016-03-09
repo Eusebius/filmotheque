@@ -30,7 +30,8 @@
 
 namespace Eusebius\Filmotheque;
 
-use PDO,    PDOException;
+use PDO,
+    PDOException;
 
 /**
  * Class providing static authentication and access control functions.
