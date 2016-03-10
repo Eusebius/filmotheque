@@ -37,7 +37,7 @@ Auth::ensureAuthenticated();
 <ul>
     <li><a href="?page=listmovies">Liste des films</a></li>
     <?php
-    if (Auth::hasPermission('w')) {
+    if (Auth::hasPermission('write')) {
         ?>
         <li><a href="?page=addmovie">Ajouter un nouveau film</a></li>
         <?php
