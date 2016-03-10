@@ -49,6 +49,7 @@ class User {
     private $email;
     private $roles;
     private $permissions;
+    private $password; //Not always instantiated
 
     /**
      * Create either a new user object.
@@ -59,6 +60,7 @@ class User {
      * @param string $login The login for the user, or null to create an empty user object.
      * @since 0.3.2
      */
+
     public function __construct($login = NULL) {
         if (is_null($login)) {
             //One has to be an administrator to create a new user
@@ -241,6 +243,34 @@ class User {
             } catch (PDOException $e) {
                 Util::fatal($e->getMessage());
             }
+        }
+        $pdo->commit();
+    }
+
+    /**
+     * Delete a user from the database.
+     * Triggers a fatal error if the login is not provided (or in other unusual cases).
+     * @since 0.3.2
+     */
+    public function deleteFromDB() {
+        if (is_null($this->login)) {
+            Util::fatal('The user object is incomplete, impossible to delete it.');
+        }
+
+        $pdo = Util::getDbConnection();
+        $pdo->beginTransaction();
+
+        try {
+            $deleteRoles = $pdo->prepare('delete from `users-roles` where login=?');
+            $deleteRoles->execute(array($this->login));
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
+        try {
+            $deleteUser = $pdo->prepare('delete from users where login=?');
+            $deleteUser->execute(array($this->login));
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
         }
         $pdo->commit();
     }

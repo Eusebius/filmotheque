@@ -34,9 +34,9 @@ use Eusebius\Filmotheque\User;
 Auth::ensurePermission('admin');
 
 if (isset($_SESSION['error'])) {
-?>
-<div id="error"><?php echo $_SESSION['error']; ?></div>
-<?php
+    ?>
+    <div id="error"><?php echo $_SESSION['error']; ?></div>
+    <?php
     unset($_SESSION['error']);
 }
 ?>
@@ -54,7 +54,7 @@ if (isset($_SESSION['error'])) {
                 <select name="roles[]" multiple>
                     <?php
                     $roles = Auth::getAllRoles();
-                    foreach($roles as $role) {
+                    foreach ($roles as $role) {
                         echo '<option value="' . $role . '">' . $role . '</option>';
                     }
                     ?>
@@ -80,8 +80,13 @@ if (isset($_SESSION['error'])) {
         echo '<tr><td>' . $user->getLogin() . '</td><td>'
         . $user->getEmail() . '</td><td>'
         . implode(', ', $user->getRoles()) . '</td><td>'
-        . implode(', ', $user->getPermissions()) . '</td><td>'
-        . '</td></tr>';
+        . implode(', ', $user->getPermissions()) . '</td><td>';
+        if ($user->getLogin() !== $_SESSION['auth']) {
+            echo '<a href="scripts/dodeleteuser.php?login=' . $user->getLogin()
+            . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer l\\\'utilisateur '
+            . $user->getLogin() . ' ?\')">Supprimer l\'utilisateur</a>';
+        }
+        echo '</td></tr>';
     }
     ?>
 </table>
