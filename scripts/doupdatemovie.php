@@ -1,7 +1,7 @@
 <?php
 
 /**
- * doupdatemovie.php
+ * scripts/doupdatemovie.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4

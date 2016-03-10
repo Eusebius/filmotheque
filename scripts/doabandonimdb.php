@@ -1,7 +1,7 @@
 <?php
 
 /**
- * doabandonimdb.php
+ * scripts/doabandonimdb.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.5

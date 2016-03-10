@@ -1,7 +1,7 @@
 <?php
 
 /**
- * doupdatemedium.php
+ * scripts/doupdatemedium.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4

@@ -29,6 +29,7 @@
  */
 
 require_once(__DIR__.'/../Eusebius/Exceptions/UserNotFoundException.php');
+require_once(__DIR__.'/../Eusebius/Exceptions/UserExistsException.php');
 require_once(__DIR__.'/../Eusebius/Filmotheque/Medium.php');
 require_once(__DIR__.'/../Eusebius/Filmotheque/Movie.php');
 require_once(__DIR__.'/../Eusebius/Filmotheque/Util.php');

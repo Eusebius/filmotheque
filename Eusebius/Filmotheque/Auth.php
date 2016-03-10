@@ -160,6 +160,27 @@ class Auth {
         }
         return $result;
     }
+    
+    /**
+     * Lists all the roles of the application.
+     * @return array The list of existing roles, as an array of strings.
+     * @since 0.3.2
+     */
+    static function getAllRoles() {
+        $result = array();
+        $pdo = Util::getDbConnection();
+        try {
+            $listRoles = $pdo->prepare('select role from roles');
+            $listRoles->execute();
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
+        $roleArray = $listRoles->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($roleArray as $roleEntry) {
+            $result[] = $roleEntry['role'];
+        }
+        return $result;
+    }
 
     /**
      * Lists the current roles of a given user.

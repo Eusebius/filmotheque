@@ -33,7 +33,37 @@ use Eusebius\Filmotheque\User;
 
 Auth::ensurePermission('admin');
 
+if (isset($_SESSION['error'])) {
 ?>
+<div id="error"><?php echo $_SESSION['error']; ?></div>
+<?php
+    unset($_SESSION['error']);
+}
+?>
+
+<h2>Ajouter un nouvel utilisateur</h2>
+
+<form action="scripts/doadduser.php" method="POST">
+    <table>
+        <tr><td>Login&nbsp;:</td><td><input type="text" name="login" /></td></tr>
+        <tr><td>E-mail&nbsp;:</td><td><input type="text" name="email" /></td></tr>
+        <tr><td>Mot de passe (temporaire)&nbsp;:</td><td><input type="password" name="password" /></td></tr>
+        <tr>
+            <td>Rôles&nbsp;:</td>
+            <td>
+                <select name="roles[]" multiple>
+                    <?php
+                    $roles = Auth::getAllRoles();
+                    foreach($roles as $role) {
+                        echo '<option value="' . $role . '">' . $role . '</option>';
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+        <tr><td colspan="2"><input type="submit" value="Créer l'utilisateur" /></td></tr>
+    </table>
+</form>
 
 <h2>Liste des utilisateurs existants</h2>
 <table border="1">
@@ -45,13 +75,13 @@ Auth::ensurePermission('admin');
         <th>&nbsp;</th>
     </tr>
     <?php
-        $users = User::fetchAllUsers();
-        foreach ($users as $user) {
-            echo '<tr><td>' . $user->getLogin() . '</td><td>' 
-                    . $user->getEmail() . '</td><td>'
-                    . implode(', ', $user->getRoles()) . '</td><td>'
-                    . implode(', ', $user->getPermissions()) . '</td><td>'
-                    . '</td></tr>';
-        }
+    $users = User::fetchAllUsers();
+    foreach ($users as $user) {
+        echo '<tr><td>' . $user->getLogin() . '</td><td>'
+        . $user->getEmail() . '</td><td>'
+        . implode(', ', $user->getRoles()) . '</td><td>'
+        . implode(', ', $user->getPermissions()) . '</td><td>'
+        . '</td></tr>';
+    }
     ?>
 </table>

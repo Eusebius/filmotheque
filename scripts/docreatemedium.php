@@ -1,7 +1,7 @@
 <?php
 
 /**
- * docreatemedium.php
+ * scripts/docreatemedium.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4

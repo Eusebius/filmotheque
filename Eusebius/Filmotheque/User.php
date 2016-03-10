@@ -32,7 +32,8 @@ namespace Eusebius\Filmotheque;
 
 use PDO,
     PDOException,
-    Eusebius\Exceptions\UserNotFoundException;
+    Eusebius\Exceptions\UserNotFoundException,
+    Eusebius\Exceptions\UserExistsException;
 
 //TODO enforce authorizations on this class's methods
 
@@ -139,6 +140,51 @@ class User {
     }
 
     /**
+     * Set a user's login.
+     * Nothing is pushed to the database at this step.
+     * @param string $login The new login.
+     * @since 0.3.2
+     */
+    public function setLogin($login) {
+        Auth::ensurePermission('admin');
+        //TOOD validate parameter type
+        $this->login = $login;
+    }
+
+    /**
+     * Set a user's e-mail.
+     * Nothing is pushed to the database at this step.
+     * @param string $email The new e-mail.
+     * @since 0.3.2
+     */
+    public function setEmail($email) {
+        //TOOD validate parameter type
+        $this->email = $email;
+    }
+
+    /**
+     * Set a user's password.
+     * Nothing is pushed to the database at this step.
+     * @param string $password The new password.
+     * @since 0.3.2
+     */
+    public function setPassword($password) {
+        //TODO ensure that this variable is cleaned in memory
+        //TOOD validate parameter type
+        $this->password = $password;
+    }
+
+    /**
+     * Set a user's roles.
+     * Nothing is pushed to the database at this step.
+     * @param array $roles The roles of the user, as an array of strings.
+     */
+    public function setRoles(array $roles) {
+        //TOOD validate parameter type
+        $this->roles = $roles;
+    }
+
+    /**
      * Get the user's e-mail.
      * @return string the user's e-mail.
      * @since 0.3.2
@@ -163,6 +209,40 @@ class User {
      */
     public function getPermissions() {
         return $this->permissions;
+    }
+
+    /**
+     * Create the current user in the database.
+     * Triggers a fatal error if the user is incomplete. //TODO use an exception
+     * @throws UserExistsException If the login already exists.
+     */
+    public function createInDB() {
+        if (is_null($this->login) || is_null($this->email) || is_null($this->password) || is_null($this->roles)) {
+            Util::fatal('The user object is incomplete, impossible to create it.');
+        }
+        $pdo = Util::getDbConnection();
+        $pdo->beginTransaction();
+        $encPassword = Auth::encryptPassword($this->password);
+        $insertUser = $pdo->prepare('insert into users (login, email, password) values(?, ?, ?)');
+        try {
+            $insertUser->execute(array($this->login, $this->email, $encPassword));
+        } catch (PDOException $e) {
+            if ($insertUser->errorCode() === '23000') {
+                throw new UserExistsException('User already exists: ' . $this->login);
+            } else {
+                Util::debug($insertUser->errorInfo());
+                Util::fatal($e->getMessage());
+            }
+        }
+        foreach ($this->roles as $role) {
+            try {
+                $addRole = $pdo->prepare('insert into `users-roles` (login, role) values(?, ?)');
+                $addRole->execute(array($this->login, $role));
+            } catch (PDOException $e) {
+                Util::fatal($e->getMessage());
+            }
+        }
+        $pdo->commit();
     }
 
 }
