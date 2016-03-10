@@ -367,6 +367,8 @@ try {
         }
         if ($quality) {
             $quality = $quality['quality'];
+        } else {
+            $quality='absent';
         }
 
         echo '<td bgcolor="' . $colour[$quality] . '"><a href="?page=moviedetails&id_movie=' . $movie['id_movie'] . '">'

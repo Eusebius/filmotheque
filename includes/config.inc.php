@@ -67,8 +67,8 @@ $colour['Blu-Ray'] = "#55D955";
 $colour['DVD'] = "#B7D2FF";
 $colour['DivX moyen'] = "#FFFF64";
 $colour['DivX médiocre'] = "#FFC264";
-$colour['undefined'] = "#FFFFFF";
-$colour['0'] = "#DDDDDD";
+$colour['indéterminé'] = "#FFFFFF";
+$colour['absent'] = "#DDDDDD";
 
 /**
  * Ranking of the medium qualities.

@@ -51,6 +51,17 @@ Auth::ensureAuthenticated();
 <br />
 <br />
 <hr />
+<h3>Qualité des supports</h3>
+<ul>
+    <?php
+    foreach($colour as $quality=>$col) {
+        echo '<li><div style="background-color:' . $col . ';">';
+        echo $quality;
+        echo '</div></li>';
+    }
+    ?>
+</ul>
+<hr />
 <?php
 if (Auth::hasRole('admin')) {
     ?>
