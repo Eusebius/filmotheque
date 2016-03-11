@@ -68,25 +68,47 @@ if (isset($_SESSION['error'])) {
 <h2>Liste des utilisateurs existants</h2>
 <table border="1">
     <tr>
-        <th>Login</th>
-        <th>E-mail</th>
-        <th>Rôles</th>
-        <th>Permissions</th>
-        <th>&nbsp;</th>
+        <th rowspan="2">Login</th>
+        <th rowspan="2">E-mail</th>
+        <?php echo '<th colspan="' . count($roles) . '">Rôles</th>'; ?>
+        <!-- <th rowspan="2">Permissions</th> -->
+        <th rowspan="2">&nbsp;</th>
+        <th rowspan="2">&nbsp;</th>
+    </tr>
+    <tr>
+        <?php
+        foreach ($roles as $role) {
+            echo '<th>' . $role . '</th>';
+        }
+        ?>
     </tr>
     <?php
     $users = User::fetchAllUsers();
     foreach ($users as $user) {
-        echo '<tr><td>' . $user->getLogin() . '</td><td>'
-        . $user->getEmail() . '</td><td>'
-        . implode(', ', $user->getRoles()) . '</td><td>'
-        . implode(', ', $user->getPermissions()) . '</td><td>';
+        echo '<form action="scripts/doupdateuser.php" method="POST">';
+        echo '<input type="hidden" name="login" value="' . $user->getLogin() . '" />';
+        echo '<tr><td>' . $user->getLogin() . '</td><td><input type="text" name="email" value="'
+        . $user->getEmail() . '" /></td>' . "\n";
+        foreach ($roles as $role) {
+            echo '<td align="center"><input type="checkbox" name="roles[]" value="';
+            echo $role . '" ';
+            if (in_array($role, $user->getRoles())) {
+                echo 'checked ';
+            }
+            if ($user->getLogin() === $_SESSION['auth']) {
+                echo 'disabled ';
+            }
+            echo '/></td>' . "\n";
+        }
+        //echo '<td>' . implode(', ', $user->getPermissions()) . '</td>';
+        echo '<td><input type="submit" value="Mettre à jour" /></form></td>' . "\n";
+        echo '<td>';
         if ($user->getLogin() !== $_SESSION['auth']) {
             echo '<a href="scripts/dodeleteuser.php?login=' . $user->getLogin()
             . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer l\\\'utilisateur '
             . $user->getLogin() . ' ?\')">Supprimer l\'utilisateur</a>';
         }
-        echo '</td></tr>';
+        echo '</td></tr>' . "\n";
     }
     ?>
 </table>

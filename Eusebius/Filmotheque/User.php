@@ -33,7 +33,8 @@ namespace Eusebius\Filmotheque;
 use PDO,
     PDOException,
     Eusebius\Exceptions\UserNotFoundException,
-    Eusebius\Exceptions\UserExistsException;
+    Eusebius\Exceptions\UserExistsException,
+    Eusebius\Exceptions\UnauthorizedException;
 
 //TODO enforce authorizations on this class's methods
 
@@ -58,6 +59,7 @@ class User {
      * In this case, he can create an emtpy user object or fetch any user object.
      * 
      * @param string $login The login for the user, or null to create an empty user object.
+     * @throws UserNotFoundException If a login has been provided but the user does not exist.
      * @since 0.3.2
      */
 
@@ -182,7 +184,8 @@ class User {
      * @param array $roles The roles of the user, as an array of strings.
      */
     public function setRoles(array $roles) {
-        //TOOD validate parameter type
+        //TODO validate parameter type
+        //TODO check that the roles are valid
         $this->roles = $roles;
     }
 
@@ -192,6 +195,7 @@ class User {
      * @since 0.3.2
      */
     public function getEmail() {
+        //TODO validate e-mail again?
         return $this->email;
     }
 
@@ -229,6 +233,7 @@ class User {
         try {
             $insertUser->execute(array($this->login, $this->email, $encPassword));
         } catch (PDOException $e) {
+            $pdo->rollBack();
             if ($insertUser->errorCode() === '23000') {
                 throw new UserExistsException('User already exists: ' . $this->login);
             } else {
@@ -236,15 +241,8 @@ class User {
                 Util::fatal($e->getMessage());
             }
         }
-        foreach ($this->roles as $role) {
-            try {
-                $addRole = $pdo->prepare('insert into `users-roles` (login, role) values(?, ?)');
-                $addRole->execute(array($this->login, $role));
-            } catch (PDOException $e) {
-                Util::fatal($e->getMessage());
-            }
-        }
         $pdo->commit();
+        $this->writeRolesInDB();
     }
 
     /**
@@ -264,15 +262,93 @@ class User {
             $deleteRoles = $pdo->prepare('delete from `users-roles` where login=?');
             $deleteRoles->execute(array($this->login));
         } catch (PDOException $e) {
+            $pdo->rollBack();
             Util::fatal($e->getMessage());
         }
         try {
             $deleteUser = $pdo->prepare('delete from users where login=?');
             $deleteUser->execute(array($this->login));
         } catch (PDOException $e) {
+            $pdo->rollBack();
             Util::fatal($e->getMessage());
         }
         $pdo->commit();
+    }
+
+    /**
+     * Sets a new e-mail in the (already valid) object, and updates the value in the database.
+     * @param string $email The new e-mail of the user.
+     * @throws UnauthorizedException If the authenticated user is neither an admin nor the corresponding user.
+     * @since 0.3.2
+     */
+    public function updateEmail($email) {
+        if (is_null($this->login)) {
+            Util::fatal('The user object is incomplete, impossible to update it.');
+        } else if (!Auth::hasPermission('admin') && $_SESSION['auth'] !== $this->login) {
+            //The authenticated user has no right to update the user object
+            throw new UnauthorizedException('The authenticated user ('
+            . $_SESSION['auth'] . ') is neither an admin nor the user to be updated ('
+            . $this->login . ').');
+        } else if ($this->email !== $email) {
+            $this->setEmail($email);
+            $pdo = Util::getDbConnection();
+            try {
+                $updateEmail = $pdo->prepare('update users set email=? where login=?');
+                $updateEmail->execute(array($email, $this->login));
+            } catch (PDOException $e) {
+                Util::fatal('Unable to set new e-mail (' . $email
+                        . ') for user ' . $this->login . ': ' . $e);
+            }
+        }
+    }
+
+    /**
+     * Sets the roles in the (already valid) object, and updates the database accordingly.
+     * @param array $roles The new roles for the user, as an array of strings.
+     * @throws UnauthorizedException If the authenticated user is neither an admin nor the corresponding user.
+     * @since 0.3.2
+     */
+    public function updateRoles($roles) {
+        if (is_null($this->login)) {
+            Util::fatal('The user object is incomplete, impossible to update it.');
+        } else if (!Auth::hasPermission('admin') && $_SESSION['auth'] !== $this->login) {
+            //The authenticated user has no right to update the user object
+            throw new UnauthorizedException('The authenticated user ('
+            . $_SESSION['auth'] . ') is neither an admin nor the user to be updated ('
+            . $this->login . ').');
+        } else {
+            $this->setRoles($roles);
+            $this->writeRolesInDB();
+        }
+    }
+
+    /**
+     * Updates the database for the object's user so that it reflects the roles currently set in the object.
+     * Does nothing if either the user's login or his roles are not set in the object.
+     * This method starts a new transaction, so any pending transaction should be taken care of before, or it will be committed automatically (for MySQL at least).
+     */
+    private function writeRolesInDB() {
+        if (!is_null($this->login) && !is_null($this->roles)) {
+            $pdo = Util::getDbConnection();
+            $pdo->beginTransaction();
+            try {
+                $deleteRoles = $pdo->prepare('delete from `users-roles` where login=?');
+                $deleteRoles->execute(array($this->login));
+            } catch (PDOException $e) {
+                $pdo->rollBack();
+                Util::fatal($e->getMessage());
+            }
+            foreach ($this->roles as $role) {
+                try {
+                    $addRole = $pdo->prepare('insert into `users-roles` (login, role) values(?, ?)');
+                    $addRole->execute(array($this->login, $role));
+                } catch (PDOException $e) {
+                    $pdo->rollBack();
+                    Util::fatal($e->getMessage());
+                }
+            }
+            $pdo->commit();
+        }
     }
 
 }

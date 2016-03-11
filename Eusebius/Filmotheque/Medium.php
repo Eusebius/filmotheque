@@ -485,6 +485,7 @@ class Medium {
 
             $conn->commit();
         } catch (PDOException $e) {
+            $conn->rollBack();
             Util::fatal($e->getMessage());
         }
     }
