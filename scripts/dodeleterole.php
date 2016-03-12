@@ -1,12 +1,12 @@
 <?php
 
 /**
- * scripts/doupdaterole.php
+ * scripts/dodeleterole.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.3.2
  * 
- * This script updates the permissions of a given role
+ * This script deletes a given role, if unused.
  */
 /*
   Filmothèque
@@ -38,37 +38,20 @@ Auth::ensurePermission('admin');
 
 $stdRegexp = '/^[a-z_\-0-9]*$/i';
 
-$role = filter_input(INPUT_POST, 'role', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp)));
+$role = filter_input(INPUT_GET, 'role', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp)));
 if ($role === false || $role === '') {
     Util::fatal('Invalid role name provided: ' . filter_input(INPUT_POST, 'role'));
 }
 if (!in_array($role, Auth::getAllRoles())) {
     Util::fatal('Invalid role provided: ' . $role);
 }
+if (!Auth::isRoleUnused($role)) {
+    Util::fatal('Role ' . $role . ' is in use and cannot be deleted.');
+}
 if ($role === 'admin') {
-    Util::fatal('The admin role cannot be updated.');
+    Util::fatal('The admin role cannot be deleted.');
 }
 
-$permissions = filter_input(INPUT_POST, 'permissions', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp), 'flags' => FILTER_REQUIRE_ARRAY));
-//$roles may be false or null
-
-if (!is_null($permissions) && $permissions !== false) {
-    $validPermissions = Auth::getAllPermissions();
-    foreach ($permissions as $permission) {
-        if (!in_array($permission, $validPermissions)) {
-            Util::fatal('Invalid permission provided: ' . $permission);
-        }
-    }
-} else {
-    $permissions = false;
-}
-
-if ($permissions === false) {
-    $permissions = array();
-}
-//TODO maybe check before if there is a diff, but beware, 
-//order might be different and === is probably not adapted.
-//It has to be a set equality.
 $pdo = Util::getDbConnection();
 try {
     $pdo->beginTransaction();
@@ -76,15 +59,13 @@ try {
     $deletePermissions = $pdo->prepare('delete from `roles-permissions` where role=?');
     $deletePermissions->execute(array($role));
     
-    foreach($permissions as $permission) {
-        $addPermission = $pdo->prepare('insert into `roles-permissions` (role, permission) values(?, ?)');
-        $addPermission->execute(array($role, $permission));
-    }
+    $deleteRole = $pdo->prepare('delete from roles where role=?');
+    $deleteRole->execute(array($role));
     
     $pdo->commit();
 } catch (PDOException $e) {
     $pdo->rollBack();
-    Util::fatal('Impossible to update permissions for role ' . $role . ': ' . $e);
+    Util::fatal('Impossible to delete role ' . $role . ': ' . $e);
 }
 
 header('Location:../?page=admin/manageusers.inc.php');

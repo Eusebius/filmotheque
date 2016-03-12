@@ -160,7 +160,36 @@ class Auth {
         }
         return $result;
     }
-    
+
+    /**
+     * Checks whether a role is unused in the application, i.e. no user has this role.
+     * @param string $role The role to check.
+     * @return bool True if the role is valid and currently unused, false otherwise.
+     * @since 0.3.2
+     */
+    static function isRoleUnused($role) {
+        $result = false;
+        if (in_array($role, Auth::getAllRoles())) {
+            $pdo = Util::getDbConnection();
+            try {
+                $countUsers = $pdo->prepare('select count(login) as count from `users-roles` where role=?');
+                $countUsers->execute(array($role));
+                if ($countUsers->rowCount() !== 1) {
+                    Util::fatal('Unexpected database error with query: ' . $countUsers->queryString);
+                } else {
+                    $count = $countUsers->fetchAll(PDO::FETCH_ASSOC)[0]['count'];
+                    if ($count === '0') {
+                        $result = true;
+                    }
+                }
+                
+            } catch (PDOException $e) {
+                Util::fatal($e->getMessage());
+            }
+        }
+        return $result;
+    }
+
     /**
      * Lists all the roles of the application.
      * @return array The list of existing roles, as an array of strings.
@@ -181,7 +210,7 @@ class Auth {
         }
         return $result;
     }
-    
+
     /**
      * Lists all the permissions of the application.
      * @return array The list of existing permissions, as an array of strings.
