@@ -112,3 +112,42 @@ if (isset($_SESSION['error'])) {
     }
     ?>
 </table>
+
+<h2>Liste des rôles disponibles</h2>
+<table border="1">
+    <tr>
+        <th rowspan="2">Rôle</th>
+        <?php
+        $permissions = Auth::getAllPermissions();
+        echo '<th colspan="' . count($permissions) . '">Permissions</th>';
+        ?>
+        <!-- <th rowspan="2">Permissions</th> -->
+        <th rowspan="2">&nbsp;</th>
+        <th rowspan="2">&nbsp;</th>
+    </tr>
+    <tr>
+        <?php
+        foreach ($permissions as $permission) {
+            echo '<th>' . $permission . '</th>';
+        }
+        ?>
+    </tr>
+    <?php
+    foreach ($roles as $role) {
+        $rolePermissions = Auth::getPermissionsOfRole($role);
+        echo '<tr><td>' . $role . '</td>' . "\n";
+        foreach ($permissions as $permission) {
+            echo '<td align="center"><input type="checkbox" name="permissions[]" value="';
+            echo $permission . '" ';
+            if (in_array($permission, $rolePermissions)) {
+                echo 'checked ';
+            }
+            if ($role === 'admin') {
+                echo 'disabled ';
+            }
+            echo '/></td>' . "\n";
+        }
+        echo '<td></td><td></td>';
+        echo '</tr>';
+    }
+    ?>
