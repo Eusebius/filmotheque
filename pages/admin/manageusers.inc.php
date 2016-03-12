@@ -135,7 +135,12 @@ if (isset($_SESSION['error'])) {
     <?php
     foreach ($roles as $role) {
         $rolePermissions = Auth::getPermissionsOfRole($role);
-        echo '<tr><td>' . $role . '</td>' . "\n";
+        echo '<tr>';
+        if ($role !== 'admin') {
+            echo '<form action="scripts/doupdaterole.php" method="POST">';
+        }
+        echo '<input type="hidden" name="role" value="' . $role . '" />' . "\n";
+        echo '<td>' . $role . '</td>' . "\n";
         foreach ($permissions as $permission) {
             echo '<td align="center"><input type="checkbox" name="permissions[]" value="';
             echo $permission . '" ';
@@ -147,7 +152,10 @@ if (isset($_SESSION['error'])) {
             }
             echo '/></td>' . "\n";
         }
-        echo '<td></td><td></td>';
+        if ($role !== 'admin') {
+            echo '<td><input type="submit" value="Mettre à jour les permissions" /></td>';
+        }
+        echo '<td></td></form>';
         echo '</tr>';
     }
     ?>
