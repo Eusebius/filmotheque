@@ -305,17 +305,17 @@ class User {
     /**
      * Sets the roles in the (already valid) object, and updates the database accordingly.
      * @param array $roles The new roles for the user, as an array of strings.
-     * @throws UnauthorizedException If the authenticated user is neither an admin nor the corresponding user.
+     * @throws UnauthorizedException If the authenticated user is not an admin, or he is the user to be updated.
      * @since 0.3.2
      */
     public function updateRoles($roles) {
         if (is_null($this->login)) {
             Util::fatal('The user object is incomplete, impossible to update it.');
-        } else if (!Auth::hasPermission('admin') && $_SESSION['auth'] !== $this->login) {
+        } else if (!Auth::hasPermission('admin') || $_SESSION['auth'] === $this->login) {
             //The authenticated user has no right to update the user object
             throw new UnauthorizedException('The authenticated user ('
-            . $_SESSION['auth'] . ') is neither an admin nor the user to be updated ('
-            . $this->login . ').');
+            . $_SESSION['auth'] . ') is not an admin authorize to update the roles of user '
+            . $this->login . ')');
         } else {
             $this->setRoles($roles);
             $this->writeRolesInDB();

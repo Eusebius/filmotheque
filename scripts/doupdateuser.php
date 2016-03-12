@@ -93,11 +93,13 @@ if ($roles === false) {
 //TODO maybe check before if there is a diff, but beware, 
 //order might be different and === is probably not adapted.
 //It has to be a set equality.
-try {
-    $user->updateRoles($roles);
-} catch (UnauthorizedException $e) {
-    $_SESSION['error'] = 'Une erreur d\'autorisation inattendue est '
-            . 'survenue, vous ne pouvez pas mettre à jour cet utilisateur';
+if (Auth::hasPermission('admin') && $_SESSION['auth'] !== $login) {
+    try {
+        $user->updateRoles($roles);
+    } catch (UnauthorizedException $e) {
+        $_SESSION['error'] = 'Une erreur d\'autorisation inattendue est '
+                . 'survenue, vous ne pouvez pas mettre à jour cet utilisateur';
+    }
 }
 
 header('Location:../?page=admin/manageusers.inc.php');
