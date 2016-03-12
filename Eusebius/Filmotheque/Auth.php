@@ -182,7 +182,6 @@ class Auth {
                         $result = true;
                     }
                 }
-                
             } catch (PDOException $e) {
                 Util::fatal($e->getMessage());
             }
@@ -320,6 +319,28 @@ class Auth {
             $permissions[] = $permissionRecord['permission'];
         }
         return $permissions;
+    }
+
+    /**
+     * Gets the description of a given role.
+     * @param string $role The considered role.
+     * @return string The description of the role.
+     * @since 0.3.2
+     */
+    static function getDescriptionOfRole($role) {
+        $description = null;
+        $pdo = Util::getDbConnection();
+        try {
+            $getDescription = $pdo->prepare('select description from roles '
+                    . 'where role=?');
+            $getDescription->execute(array($role));
+            if ($getDescription->rowCount() === 1) {
+                $description = $getDescription->fetchAll(PDO::FETCH_ASSOC)[0]['description'];
+            }
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
+        return $description;
     }
 
     /**

@@ -6,7 +6,7 @@
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.3.2
  * 
- * This script updates the permissions of a given role
+ * This script updates the description and permissions of a given role.
  */
 /*
   Filmothèque
@@ -49,6 +49,15 @@ if ($role === 'admin') {
     Util::fatal('The admin role cannot be updated.');
 }
 
+$description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING, array('flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_ENCODE_HIGH | FILTER_FLAG_ENCODE_AMP));
+//If $description is false, do nothing, do not update it
+if ($description === '') {
+    $description = null;
+}
+if ($description === Auth::getDescriptionOfRole($role)) {
+    $description = false; // Description is unchanged, do nothing
+}
+
 $permissions = filter_input(INPUT_POST, 'permissions', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp), 'flags' => FILTER_REQUIRE_ARRAY));
 //$roles may be false or null
 
@@ -72,6 +81,11 @@ if ($permissions === false) {
 $pdo = Util::getDbConnection();
 try {
     $pdo->beginTransaction();
+    
+    if ($description !== false) {
+        $updateDescription = $pdo->prepare('update roles set description=? where role=?');
+        $updateDescription->execute(array($description, $role));
+    }
     
     $deletePermissions = $pdo->prepare('delete from `roles-permissions` where role=?');
     $deletePermissions->execute(array($role));

@@ -80,7 +80,7 @@ if (isset($_SESSION['error'])) {
         </td>
     </tr>
     <tr>
-        <td>
+        <td colspan="2">
             <h2>Liste des utilisateurs existants</h2>
             <table border="1">
                 <tr>
@@ -130,12 +130,15 @@ if (isset($_SESSION['error'])) {
             </table>
 
         </td>
-        <td>
+    </tr>
+    <tr>
+        <td colspan="2">
 
             <h2>Liste des rôles disponibles</h2>
             <table border="1">
                 <tr>
                     <th rowspan="2">Rôle</th>
+                    <th rowspan="2">Description</th>
                     <?php
                     $permissions = Auth::getAllPermissions();
                     echo '<th colspan="' . count($permissions) . '">Permissions</th>';
@@ -154,12 +157,20 @@ if (isset($_SESSION['error'])) {
                 <?php
                 foreach ($roles as $role) {
                     $rolePermissions = Auth::getPermissionsOfRole($role);
+                    $roleDescription = Auth::getDescriptionOfRole($role);
                     echo '<tr>';
                     if ($role !== 'admin') {
                         echo '<form action="scripts/doupdaterole.php" method="POST">';
                     }
                     echo '<input type="hidden" name="role" value="' . $role . '" />' . "\n";
                     echo '<td>' . $role . '</td>' . "\n";
+                    echo '<td>';
+                    if ($role !== 'admin') {
+                        echo '<input type="text" name="description" size="50" value="' . $roleDescription . '" />';
+                    } else {
+                        echo  $roleDescription;
+                    }
+                    echo  '</td>' . "\n";
                     foreach ($permissions as $permission) {
                         echo '<td align="center"><input type="checkbox" name="permissions[]" value="';
                         echo $permission . '" ';
@@ -172,7 +183,7 @@ if (isset($_SESSION['error'])) {
                         echo '/></td>' . "\n";
                     }
                     if ($role !== 'admin') {
-                        echo '<td><input type="submit" value="Mettre à jour les permissions" /></td>';
+                        echo '<td><input type="submit" value="Mettre à jour" /></td>';
                     }
                     echo '<td>';
                     if ($role !== 'admin' && Auth::isRoleUnused($role)) {
