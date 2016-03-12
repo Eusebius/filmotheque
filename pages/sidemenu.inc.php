@@ -27,23 +27,54 @@
  */
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
-use Eusebius\Filmotheque\Auth;
-Auth::ensureAuthenticated();
 
+use Eusebius\Filmotheque\Auth;
+
+Auth::ensureAuthenticated();
 ?>
 
-    <ul>
-        <li><a href="?page=listmovies">Liste des films</a></li>
+<hr />
+<ul>
+    <li><a href="?page=listmovies">Liste des films</a></li>
+    <?php
+    if (Auth::hasPermission('write')) {
+        ?>
         <li><a href="?page=addmovie">Ajouter un nouveau film</a></li>
-    </ul>
+        <?php
+    }
+    ?>
+</ul>
+<ul>
+    <li><a href="scripts/disconnect.php">Se déconnecter</a></li>
+</ul>
+
+<br />
+<br />
+<hr />
+<h3>Qualité des supports</h3>
+<ul>
+    <?php
+    foreach($colour as $quality=>$col) {
+        echo '<li><div style="background-color:' . $col . ';">';
+        echo $quality;
+        echo '</div></li>';
+    }
+    ?>
+</ul>
+<hr />
+<?php
+if (Auth::hasRole('admin')) {
+    ?>
+    <h3>[Administration]</h3>
     <ul>
-        <li><a href="scripts/disconnect.php">Se déconnecter</a></li>
+        <li><a href="?page=admin/manageusers.inc.php">Gestion des utilisateurs</a></li>
     </ul>
-    
-    <br />
-    <br />
     <hr />
-    <p>
-        Filmothèque by Eusebius<br />
-        version <?php echo $_SESSION['config']['version']; ?>
-    </p>
+    <br />
+    <?php
+}
+?>
+<p>
+    Filmothèque by Eusebius<br />
+    version <?php echo $_SESSION['config']['version']; ?>
+</p>

@@ -29,8 +29,8 @@
 
 namespace Eusebius\Filmotheque;
 
-use \PDO;
-use \DateTime;
+use PDO,    PDOException;
+use DateTime;
 
 /**
  * Class providing static utility functions.

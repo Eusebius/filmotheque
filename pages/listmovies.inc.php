@@ -318,7 +318,7 @@ try {
     $getBestQuality = $conn->prepare('select quality from `media` natural join `media-quality` natural join `quality` where id_movie = ? order by minwidth desc');
 
     $listMovies->execute();
-    Util::debug($listMovies->queryString);
+    //Util::debug($listMovies->queryString);
     //Util::debug($listMovies->errorInfo());
     $movieArray = $listMovies->fetchall(PDO::FETCH_ASSOC);
     $nMovies = $listMovies->rowCount();
@@ -367,6 +367,8 @@ try {
         }
         if ($quality) {
             $quality = $quality['quality'];
+        } else {
+            $quality='absent';
         }
 
         echo '<td bgcolor="' . $colour[$quality] . '"><a href="?page=moviedetails&id_movie=' . $movie['id_movie'] . '">'

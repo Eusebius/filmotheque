@@ -1,7 +1,7 @@
 <?php
 
 /**
- * dodeletemedium.php
+ * scripts/dodeletemedium.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4

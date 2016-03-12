@@ -1,7 +1,7 @@
 <?php
 
 /**
- * logon.php
+ * scripts/logon.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.7

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * docreatemovie.php
+ * scripts/docreatemovie.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4

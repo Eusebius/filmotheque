@@ -1,7 +1,7 @@
 <?php
 
 /**
- * dolinkimdb.php
+ * scripts/dolinkimdb.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.4

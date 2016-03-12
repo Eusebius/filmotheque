@@ -1,7 +1,7 @@
 <?php
 
 /**
- * includes/Auth.php
+ * Eusebius/Filmotheque/Auth.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.2.7
@@ -30,7 +30,8 @@
 
 namespace Eusebius\Filmotheque;
 
-use \PDO;
+use PDO,
+    PDOException;
 
 /**
  * Class providing static authentication and access control functions.
@@ -161,6 +162,76 @@ class Auth {
     }
 
     /**
+     * Checks whether a role is unused in the application, i.e. no user has this role.
+     * @param string $role The role to check.
+     * @return bool True if the role is valid and currently unused, false otherwise.
+     * @since 0.3.2
+     */
+    static function isRoleUnused($role) {
+        $result = false;
+        if (in_array($role, Auth::getAllRoles())) {
+            $pdo = Util::getDbConnection();
+            try {
+                $countUsers = $pdo->prepare('select count(login) as count from `users-roles` where role=?');
+                $countUsers->execute(array($role));
+                if ($countUsers->rowCount() !== 1) {
+                    Util::fatal('Unexpected database error with query: ' . $countUsers->queryString);
+                } else {
+                    $count = $countUsers->fetchAll(PDO::FETCH_ASSOC)[0]['count'];
+                    if ($count === '0') {
+                        $result = true;
+                    }
+                }
+            } catch (PDOException $e) {
+                Util::fatal($e->getMessage());
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Lists all the roles of the application.
+     * @return array The list of existing roles, as an array of strings.
+     * @since 0.3.2
+     */
+    static function getAllRoles() {
+        $result = array();
+        $pdo = Util::getDbConnection();
+        try {
+            $listRoles = $pdo->prepare('select role from roles');
+            $listRoles->execute();
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
+        $roleArray = $listRoles->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($roleArray as $roleEntry) {
+            $result[] = $roleEntry['role'];
+        }
+        return $result;
+    }
+
+    /**
+     * Lists all the permissions of the application.
+     * @return array The list of existing permissions, as an array of strings.
+     * @since 0.3.2
+     */
+    static function getAllPermissions() {
+        $result = array();
+        $pdo = Util::getDbConnection();
+        try {
+            $listPermissions = $pdo->prepare('select permission from permissions');
+            $listPermissions->execute();
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
+        $permissionArray = $listPermissions->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($permissionArray as $permissionEntry) {
+            $result[] = $permissionEntry['permission'];
+        }
+        return $result;
+    }
+
+    /**
      * Lists the current roles of a given user.
      * Roles are fetched directly from the database, not from a cache.
      * @param string $login The login of the user.
@@ -211,6 +282,7 @@ class Auth {
     static function getPermissions($login) {
         $pdo = Util::getDbConnection();
         try {
+            //TODO I think we need a left outer join here
             $getPermissions = $pdo->prepare('select permission from `users-roles`, `roles-permissions` '
                     . 'where login=? and `users-roles`.role = `roles-permissions`.role');
             $getPermissions->execute(array($login));
@@ -223,6 +295,52 @@ class Auth {
             $permissions[] = $permissionRecord['permission'];
         }
         return $permissions;
+    }
+
+    /**
+     * Lists the current permissions of a given role.
+     * Permissions are fetched directly from the database, not from a cache.
+     * @param string $role The considered role.
+     * @return array The permissions associated to the role, as an array of strings.
+     * @since 0.3.2
+     */
+    static function getPermissionsOfRole($role) {
+        $pdo = Util::getDbConnection();
+        try {
+            $getPermissions = $pdo->prepare('select permission from `roles-permissions` '
+                    . 'where role=?');
+            $getPermissions->execute(array($role));
+            $permissionsResult = $getPermissions->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
+        $permissions = array();
+        foreach ($permissionsResult as $permissionRecord) {
+            $permissions[] = $permissionRecord['permission'];
+        }
+        return $permissions;
+    }
+
+    /**
+     * Gets the description of a given role.
+     * @param string $role The considered role.
+     * @return string The description of the role.
+     * @since 0.3.2
+     */
+    static function getDescriptionOfRole($role) {
+        $description = null;
+        $pdo = Util::getDbConnection();
+        try {
+            $getDescription = $pdo->prepare('select description from roles '
+                    . 'where role=?');
+            $getDescription->execute(array($role));
+            if ($getDescription->rowCount() === 1) {
+                $description = $getDescription->fetchAll(PDO::FETCH_ASSOC)[0]['description'];
+            }
+        } catch (PDOException $e) {
+            Util::fatal($e->getMessage());
+        }
+        return $description;
     }
 
     /**

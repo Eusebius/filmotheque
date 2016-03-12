@@ -1,12 +1,12 @@
 <?php
+
 /**
- * scripts/disconnect.php
+ * scripts/dodeleteuser.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.2.7
+ * @since 0.3.2
  * 
- * This script disconnects any authenticated user and returns them to the 
- * login form.
+ * This script deletes a user from the system.
  */
 /*
   Filmothèque
@@ -29,5 +29,31 @@
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
+
 use Eusebius\Filmotheque\Auth;
-Auth::disconnect();
+use Eusebius\Filmotheque\User;
+use Eusebius\Filmotheque\Util,
+    Eusebius\Exceptions\UserNotFoundException;
+
+Auth::ensurePermission('admin');
+$stdRegexp = '/^[a-z_\-0-9]*$/i';
+
+$login = filter_input(INPUT_GET, 'login', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp)));
+if ($login === false || $login === '') {
+    Util::fatal('Invalid login provided for deletion: ' . filter_input(INPUT_POST, 'login'));
+}
+
+if ($login === $_SESSION['auth']) {
+    Util::fatal('You cannot delete your own account.');
+}
+
+try {
+    $user = new User($login);
+} catch (UserNotFoundException $e) {
+    $_SESSION['error'] = 'Cet utilisateur n\'existe pas';
+    header('Location:../?page=admin/manageusers.inc.php');
+    die();
+}
+$user->deleteFromDB();
+
+header('Location:../?page=admin/manageusers.inc.php');

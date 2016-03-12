@@ -1,12 +1,12 @@
 <?php
+
 /**
- * scripts/disconnect.php
+ * Eusebius/Exceptions/UserNotFoundException.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.2.7
+ * @since 0.3.2
  * 
- * This script disconnects any authenticated user and returns them to the 
- * login form.
+ * Exception thrown when a particular user cannot be found.
  */
 /*
   Filmothèque
@@ -27,7 +27,20 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-require_once('../includes/declarations.inc.php');
-require_once('../includes/initialization.inc.php');
-use Eusebius\Filmotheque\Auth;
-Auth::disconnect();
+namespace Eusebius\Exceptions;
+
+use Exception;
+
+/**
+ * Exception thrown when a particular user cannot be found.
+ *
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.3.2
+ */
+class UserNotFoundException extends Exception {
+
+    public function __construct($message) {
+        parent::__construct($message);
+    }
+
+}

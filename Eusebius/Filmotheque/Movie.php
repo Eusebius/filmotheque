@@ -30,8 +30,8 @@
 
 namespace Eusebius\Filmotheque;
 
-use \PDO;
-use \DateTime;
+use PDO,    PDOException;
+use DateTime;
 
 /**
  * Class representing a given movie in the application, and managing its 
@@ -306,6 +306,7 @@ class Movie {
 
             $conn->commit();
         } catch (PDOException $e) {
+            $conn->rollBack();
             Util::fatal($e->getMessage());
         }
     }
@@ -375,6 +376,7 @@ class Movie {
 
             $conn->commit();
         } catch (PDOException $e) {
+            $conn->rollBack();
             Util::fatal($e->getMessage());
         }
     }

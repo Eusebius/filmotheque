@@ -30,7 +30,7 @@
 
 namespace Eusebius\Filmotheque;
 
-use \PDO;
+use PDO,    PDOException;
 
 /**
  * Class representing a given medium in the application, and managing its 
@@ -485,6 +485,7 @@ class Medium {
 
             $conn->commit();
         } catch (PDOException $e) {
+            $conn->rollBack();
             Util::fatal($e->getMessage());
         }
     }

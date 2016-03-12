@@ -77,6 +77,15 @@ h2 {
     color:gray;
 }
 
+h3 {
+    font-size: 12pt;
+    font-family: "Century Gothic", Arial, sans-serif;
+    font-weight: bold;
+    font-style: normal;
+    color:gray;
+    margin-left: 30px;
+}
+
 .login {
     position: fixed;
     left: 40%;
@@ -95,9 +104,9 @@ h2 {
     width: 280px;
     padding: 10px;
     border-right: 1px solid;
+    z-index: 99;
 
-
-    /* background: #90EE90; */
+    background: white;
 }
 #corner {
     height: 120px;
@@ -132,4 +141,9 @@ ul {
 }
 #figure {
     margin: 0;
+}
+
+#error {
+    color: red;
+    font-weight: bold;
 }

@@ -8,3 +8,7 @@ nbproject
 doc
 .htpasswd
 .htaccess
+composer.json
+composer.lock
+vendor
+Selenium
