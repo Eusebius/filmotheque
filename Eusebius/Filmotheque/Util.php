@@ -400,6 +400,7 @@ class Util {
      * 
      * @param \string $path The original string.
      * @dir \string $dir The prefix to look for.
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
      * 
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.6

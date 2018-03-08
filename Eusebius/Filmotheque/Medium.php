@@ -234,11 +234,11 @@ class Medium {
      * @since 0.2.4
      */
     public function getAudio() {
-        $r = array();
+        $audioLanguages = array();
         foreach ($this->audio as $lang) {
-            array_push($r, $lang);
+            array_push($audioLanguages, $lang);
         }
-        return $r;
+        return $audioLanguages;
     }
 
     /**
@@ -421,6 +421,8 @@ class Medium {
      * ({@link subs}).
      * @param \int $id_movie The unique identifier of the movie associated to 
      * the medium ({@link id_movie}).
+     * 
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */

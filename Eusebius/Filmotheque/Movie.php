@@ -316,6 +316,7 @@ class Movie {
      * includes information contained in secondary tables, such as related 
      * persons, categories, and so on.
      * 
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
