@@ -61,7 +61,7 @@ class Auth {
     /**
      * Checks that a cleartext password matches with a given hash (as stored in 
      * the database).
-     * This function is to be used jointly with password_encrypt, and uses the 
+     * This function is to be used jointly with encryptPassword, and uses the 
      * same process (SHA256 hashing and base64 encoding of the cleartext 
      * password before passing it to the standard PHP method).
      * @param string $clearTextPassword The cleartext password, as provided by the user.
