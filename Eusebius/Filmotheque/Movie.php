@@ -185,6 +185,7 @@ class Movie {
     /**
      * Delete the movie and all associated information from the database.
      * 
+     * @SuppressWarnings(PHPMD.ExitExpression)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
@@ -317,6 +318,7 @@ class Movie {
      * persons, categories, and so on.
      * 
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
@@ -451,11 +453,11 @@ class Movie {
      * @since 0.2.4
      */
     public function getMakers() {
-        $r = array();
+        $movieMakers = array();
         foreach ($this->makers as $maker) {
-            array_push($r, $maker);
+            array_push($movieMakers, $maker);
         }
-        return $r;
+        return $movieMakers;
     }
 
     /**

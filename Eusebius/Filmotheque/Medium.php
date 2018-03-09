@@ -248,15 +248,17 @@ class Medium {
      * @since 0.2.4
      */
     public function getSubs() {
-        $r = array();
+        $subLanguages = array();
         foreach ($this->subs as $lang) {
-            array_push($r, $lang);
+            array_push($subLanguages, $lang);
         }
-        return $r;
+        return $subLanguages;
     }
 
     /**
      * Delete the medium and all associated information from the database.
+     * 
+     * @SuppressWarnings(PHPMD.ExitExpression)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */

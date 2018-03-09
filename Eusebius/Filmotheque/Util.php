@@ -100,7 +100,6 @@ class Util {
         $sanitizedURI = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
         if ($sanitizedURI === false && strpos('.', $sanitizedURI) !== false) {
             Util::fatal('Unable to validate request URI: ' . filter_input(INPUT_SERVER, 'REQUEST_URI'));
-            exit();
         }
         return $sanitizedURI;
     }
@@ -170,6 +169,8 @@ class Util {
      * Halts the application, with an error message if in debug mode, or 
      * with a generic message otherwise.
      * @param $message The message to display (can be a string or an array).
+     * 
+     * @SuppressWarnings(PHPMD.ExitExpression)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
