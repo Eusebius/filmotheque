@@ -81,6 +81,7 @@ try {
     $getAllCats->execute();
     $catArray = $getAllCats->fetchall(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
+    Util::log('fatal', 'listmovies', 'Error while listing categories and shortlists: ' . $e->getMessage());
     Util::fatal($e->getMessage());
 }
 
@@ -262,13 +263,13 @@ if ($minRatingFilter !== NULL || $maxRatingFilter !== NULL) {
     } else {
         $ratingWhere .= ' AND `rating` is null';
     }
-    
+
     if ($minRatingFilter === NULL || $maxRatingFilter === NULL) {
         $ratingWhere .= ' OR ';
     } else {
         $ratingWhere .= ' AND ';
     }
-    
+
     if ($maxRatingFilter !== NULL) {
         $ratingWhere .= "`rating` <= $maxRatingFilter";
     } else {
@@ -324,6 +325,7 @@ try {
     $nMovies = $listMovies->rowCount();
 } catch (PDOException $e) {
     Util::debug($listMovies->queryString);
+    Util::log('fatal', 'listmovies', 'Error while listing movies: ' . $e->getMessage());
     Util::fatal($e->getMessage());
 }
 ?>
@@ -358,17 +360,17 @@ try {
 
         echo "<tr>\n";
 
-        //TODO get best available quality
         try {
             $getBestQuality->execute(array($movie['id_movie']));
             $quality = $getBestQuality->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'listmovies', 'Error while getting best quality for movie ' . $movie->getID() . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         if ($quality) {
             $quality = $quality['quality'];
         } else {
-            $quality='absent';
+            $quality = 'absent';
         }
 
         echo '<td bgcolor="' . $colour[$quality] . '"><a href="?page=moviedetails&id_movie=' . $movie['id_movie'] . '">'
@@ -382,6 +384,7 @@ try {
             $getCategoriesByMovie->execute(array($movie['id_movie']));
             $categoryArray = $getCategoriesByMovie->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'listmovies', 'Error while getting categories for movie ' . $movie->getID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         $ncat = count($categoryArray);
@@ -403,6 +406,7 @@ try {
                 $getShortlistsByMovie->execute(array($movie['id_movie']));
                 $ShortlistArray = $getShortlistsByMovie->fetchall(PDO::FETCH_ASSOC);
             } catch (PDOException $e) {
+            Util::log('fatal', 'listmovies', 'Error while getting shortlists for movie ' . $movie->getID . ': ' . $e->getMessage());
                 Util::fatal($e->getMessage());
             }
             $nsl = count($ShortlistArray);

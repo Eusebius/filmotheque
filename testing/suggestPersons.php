@@ -66,7 +66,9 @@ function generateOptions($prefix) {
         //$getPersons->execute(array($length, $prefix, $prefix));
         $persons = $getPersons->fetchall(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        Util::fatal($e->getMessage());
+        $message = 'Error while retrieving person suggestions: ' . $e->getMessage();
+        Util::log('fatal', 'suggestpersons', $message);
+        Util::fatal($message);
     }
     foreach ($persons as $person) {
         echo('<option value="' . htmlspecialchars($person['id_person'])

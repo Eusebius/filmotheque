@@ -40,11 +40,15 @@ $stdRegexp = '/^[a-z_\-0-9]*$/i';
 
 $login = filter_input(INPUT_GET, 'login', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp)));
 if ($login === false || $login === '') {
-    Util::fatal('Invalid login provided for deletion: ' . filter_input(INPUT_POST, 'login'));
+    $message = 'Invalid login provided for deletion: ' . filter_input(INPUT_POST, 'login');
+    Util::log('fatal', 'dodeleteuser', $message);
+    Util::fatal($message);
 }
 
 if ($login === $_SESSION['auth']) {
-    Util::fatal('You cannot delete your own account.');
+    $message = 'You cannot delete your own account.';
+    Util::log('fatal', 'dodeleteuser', $message);
+    Util::fatal($message);
 }
 
 try {

@@ -215,6 +215,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
             $getMediaBorrowers->execute(array($medium->getID()));
             $borrowerArray = $getMediaBorrowers->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'moviedetails', 'Error while getting borrowers for medium ' . $medium->getID() . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         if (count($borrowerArray) > 0) {

@@ -30,7 +30,8 @@
 
 namespace Eusebius\Filmotheque;
 
-use PDO,    PDOException;
+use PDO,
+    PDOException;
 use DateTime;
 
 /**
@@ -308,6 +309,8 @@ class Movie {
             $conn->commit();
         } catch (PDOException $e) {
             $conn->rollBack();
+            Util::log('fatal', 'movie', 'Error while writing experience data for movie '
+                    . $this->movieID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
     }
@@ -339,6 +342,8 @@ class Movie {
                 $updateMovies = $conn->prepare('update movies set title=?, year=?, imdb_id=?, originaltitle=? where id_movie=?');
                 $result = $updateMovies->execute(array($this->title, ($this->year != '' ? $this->year : null), ($this->imdbID != '' ? $this->imdbID : null), ($this->originaltitle != '' ? $this->originaltitle : null), $this->movieID));
                 if (!$result) {
+                    Util::log('fatal', 'movie', 'Error while updating data for movie '
+                            . $this->movieID . ': ' . $updateMovies->errorInfo());
                     Util::fatal($updateMovies->errorInfo());
                 }
             }
@@ -380,6 +385,8 @@ class Movie {
             $conn->commit();
         } catch (PDOException $e) {
             $conn->rollBack();
+            Util::log('fatal', 'movie', 'Error while writing all data for movie '
+                    . $this->movieID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
     }
@@ -580,6 +587,8 @@ class Movie {
             $getMakers->execute(array($this->movieID));
             $makerArray = $getMakers->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'movie', 'Error while retrieving maker data for movie '
+                    . $this->movieID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         foreach ($makerArray as $maker) {
@@ -604,6 +613,8 @@ class Movie {
             $getActors->execute(array($this->movieID));
             $actorArray = $getActors->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'movie', 'Error while retrieving actor data for movie '
+                    . $this->movieID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         foreach ($actorArray as $actor) {
@@ -627,6 +638,8 @@ class Movie {
             $getCategories->execute(array($this->movieID));
             $categoryArray = $getCategories->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'movie', 'Error while retrieving categories for movie '
+                    . $this->movieID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         foreach ($categoryArray as $category) {
@@ -650,6 +663,8 @@ class Movie {
             $getShortlists->execute(array($this->movieID));
             $shortlistArray = $getShortlists->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'movie', 'Error while retrieving shortlists for movie '
+                    . $this->movieID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         foreach ($shortlistArray as $shortlist) {
@@ -676,16 +691,22 @@ class Movie {
 
             $getMovie->execute(array($this->movieID));
         } catch (PDOException $e) {
+            Util::log('fatal', 'movie', 'Error while retrieving all data for movie '
+                    . $this->movieID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         $nMovies = $getMovie->rowCount();
         if ($nMovies == 0) {
+            Util::log('fatal', 'movie', 'Error while retrieving all data for movie '
+                    . $this->movieID . ': no corresponding movie in database');
             Util::fatal(
                     "Erreur inattendue : aucun film ne correspond à l'ID {$this->movieID}.<br /><br />"
                     . '<a href=".">Retour à la page principale</a>'
             );
         }
         if ($nMovies > 1) {
+            Util::log('fatal', 'movie', 'Error while retrieving all data for movie '
+                    . $this->movieID . ': more than one corresponding movie in database');
             Util::fatal(
                     "Erreur inattendue : plusieurs films correspondent à l'ID"
                     . "{$this->movieID}.<br /><br />"
@@ -730,6 +751,8 @@ class Movie {
             $getMedia->execute(array($this->movieID));
             $mediaArray = $getMedia->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'movie', 'Error while retrieving media for movie '
+                    . $this->movieID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         foreach ($mediaArray as $mediumArray) {

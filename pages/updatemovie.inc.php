@@ -65,6 +65,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
                             $selectedMakers->execute(array($id_movie));
                             $selectedMakersArray = $selectedMakers->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
+                            Util::log('fatal', 'updatemovie', 'Error while retrieving data for movie ' .$id_movie. ': ' . $e->getMessage());
                             Util::fatal($e->getMessage());
                         }
                         foreach ($selectedMakersArray as $maker) {
@@ -75,6 +76,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
                             $otherMakers->execute(array($id_movie));
                             $otherMakersArray = $otherMakers->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
+                            Util::log('fatal', 'updatemovie', 'Error while retrieving "other makers" for movie ' .$id_movie. ': ' . $e->getMessage());
                             Util::fatal($e->getMessage());
                         }
                         foreach ($otherMakersArray as $maker) {
@@ -92,6 +94,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
                             $selectedActors->execute(array($id_movie));
                             $selectedActorsArray = $selectedActors->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
+                            Util::log('fatal', 'updatemovie', 'Error while retrieving selected actors for movie ' .$id_movie. ': ' . $e->getMessage());
                             Util::fatal($e->getMessage());
                         }
                         foreach ($selectedActorsArray as $actor) {
@@ -102,6 +105,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
                             $otherActors->execute(array($id_movie));
                             $otherActorsArray = $otherActors->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
+                            Util::log('fatal', 'updatemovie', 'Error while retrieving "other actors" for movie ' .$id_movie. ': ' . $e->getMessage());
                             Util::fatal($e->getMessage());
                         }
                         foreach ($otherActorsArray as $actor) {
@@ -118,6 +122,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
                             $cats->execute();
                             $catArray = $cats->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
+                            Util::log('fatal', 'updatemovie', 'Error while retrieving categories: ' . $e->getMessage());
                             Util::fatal($e->getMessage());
                         }
                         foreach ($catArray as $cat) {
@@ -138,6 +143,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
                             $shortlists->execute();
                             $slArray = $shortlists->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
+                            Util::log('fatal', 'updatemovie', 'Error while retrieving shortlist info: ' . $e->getMessage());
                             Util::fatal($e->getMessage());
                         }
                         foreach ($slArray as $sl) {

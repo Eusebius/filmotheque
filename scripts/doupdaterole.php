@@ -40,13 +40,19 @@ $stdRegexp = '/^[a-z_\-0-9]*$/i';
 
 $role = filter_input(INPUT_POST, 'role', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp)));
 if ($role === false || $role === '') {
-    Util::fatal('Invalid role name provided: ' . filter_input(INPUT_POST, 'role'));
+    $message = 'Invalid role name provided: ' . filter_input(INPUT_POST, 'role');
+    Util::log('fatal', 'doupdaterole', $message);
+    Util::fatal($message);
 }
 if (!in_array($role, Auth::getAllRoles())) {
-    Util::fatal('Invalid role provided: ' . $role);
+    $message = 'Invalid role name provided: ' . $role;
+    Util::log('fatal', 'doupdaterole', $message);
+    Util::fatal($message);
 }
 if ($role === 'admin') {
-    Util::fatal('The admin role cannot be updated.');
+    $message = 'The admin role cannot be updated.';
+    Util::log('fatal', 'doupdaterole', $message);
+    Util::fatal($message);
 }
 
 $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING, array('flags' => FILTER_FLAG_STRIP_LOW | FILTER_FLAG_ENCODE_HIGH | FILTER_FLAG_ENCODE_AMP));
@@ -65,7 +71,9 @@ if (!is_null($permissions) && $permissions !== false) {
     $validPermissions = Auth::getAllPermissions();
     foreach ($permissions as $permission) {
         if (!in_array($permission, $validPermissions)) {
-            Util::fatal('Invalid permission provided: ' . $permission);
+            $message = 'Invalid permission provided: ' . $permission;
+            Util::log('fatal', 'doupdaterole', $message);
+            Util::fatal($message);
         }
     }
 } else {
@@ -98,7 +106,9 @@ try {
     $pdo->commit();
 } catch (PDOException $e) {
     $pdo->rollBack();
-    Util::fatal('Impossible to update permissions for role ' . $role . ': ' . $e);
+    $message = 'Impossible to update permissions for role ' . $role . ': ' . $e->getMessage();
+    Util::log('fatal', 'doupdaterole', $message);
+    Util::fatal($message);
 }
 
 header('Location:../?page=admin/manageusers.inc.php');

@@ -40,6 +40,8 @@ use DateTime;
  * @since 0.2.6
  */
 class Util {
+    
+    //TODO merge Util::fatal into Util::log?
 
     //TODO propose a check for date strings (cf lastseen)
     //TODO propose custom check for rating (scale 1-5)
@@ -100,6 +102,8 @@ class Util {
         //TODO maybe validate against a regexp for a path starting with /
         $sanitizedURI = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
         if ($sanitizedURI === false && strpos('.', $sanitizedURI) !== false) {
+            Util::log('fatal', 'util', 'Unable to validate request URI: '
+                    . filter_input(INPUT_SERVER, 'REQUEST_URI'));
             Util::fatal('Unable to validate request URI: ' . filter_input(INPUT_SERVER, 'REQUEST_URI'));
         }
         return $sanitizedURI;
@@ -121,6 +125,8 @@ class Util {
         if (filter_var('http://' . $strippedHttpHost, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
             return $strippedHttpHost;
         } else {
+            Util::log('fatal', 'util', "Impossible to validate HTTP_HOST: "
+                    . "$filteredHttpHost ($strippedHttpHost).");
             Util::fatal("Impossible to validate HTTP_HOST: $filteredHttpHost ($strippedHttpHost).");
             exit();
         }
@@ -194,6 +200,9 @@ class Util {
      */
     static function checkChmod() {
         if (!isset($_SESSION['basepath'])) {
+            Util::log('fatal', 'util', 'The application wants to check the '
+                    . 'rights on the "covers" directory, but the basepath is '
+                    . 'not recorded in the session.');
             Util::fatal('The application wants to check the rights on the '
                     . '"covers" directory, but the basepath is not recorded in '
                     . 'the session.');
@@ -214,7 +223,7 @@ class Util {
      */
     static function checkAdminPwd() {
         $dbconn = Util::getDbConnection();
-        
+
         $pwRes = $dbconn->query('select login from `users` where login=\'admin\' and '
                 . 'password=\'$2y$10$XTOHjbXWky4JHVUaanvWLuJfNvV58IRd1bUuGQp3XicPgJQmJSNDe\'');
 
@@ -298,6 +307,7 @@ class Util {
         }
         $result = filter_input(INPUT_POST, $POSTindex, $filter, $options);
         if ($result === false) {
+            Util::log('fatal', 'util', "Unable to validate POST parameter against filter $filter: " . filter_input(INPUT_POST, $POSTindex));
             Util::fatal("Unable to validate POST parameter against filter $filter: " . filter_input(INPUT_POST, $POSTindex));
             exit();
         }
@@ -319,7 +329,7 @@ class Util {
         }
         return $_SESSION['movie'];
     }
-    
+
     /**
      * Logs a message in the database.
      * @param type $level The message level ('info', 'warning', 'error', or 'fatal').
@@ -331,7 +341,7 @@ class Util {
     static function log($level, $component, $message) {
         $conn = Util::getDbConnection();
         $log = $conn->prepare("insert into `log` (`level`, `component`, `user`, `message`) values(?, ?, ?, ?)");
-        $log->execute(array($level, $component, 
+        $log->execute(array($level, $component,
             isset($_SESSION['auth']) && ($_SESSION['auth'] !== null) ? $_SESSION['auth'] : '', $message));
     }
 
@@ -374,9 +384,9 @@ class Util {
      * @since 0.2.4
      */
     static function getDbConnection() {
-        if (!isset($_SESSION['config']['db_type']) || !isset($_SESSION['config']['db_server']) || !isset($_SESSION['config']['db_db']) || !isset($_SESSION['config']['db_user']) || !isset($_SESSION['config']['db_password'])) {
-            Util::fatal('Database configuration is not properly set up in '
-                    . 'session.');
+        if (!isset($_SESSION['config']['db_type']) || !isset($_SESSION['config']['db_server']) || !isset($_SESSION['config']['db_db']) || !isset($_SESSION['config']['db_user']) || !isset($_SESSION['config']['db_password'])) {            
+            Util::log('fatal', 'util', 'Database configuration is not properly set up in session.');
+            Util::fatal('Database configuration is not properly set up in session.');
         }
         try {
             $pdoconn = new PDO(
@@ -388,6 +398,7 @@ class Util {
             $pdoconn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdoconn->query("SET NAMES utf8");
         } catch (PDOException $e) {
+            Util::log('fatal', 'util', 'Error while connecting to the database: ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         return $pdoconn;

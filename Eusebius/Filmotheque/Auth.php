@@ -90,6 +90,9 @@ class Auth {
             $getUser = $pdo->prepare('select login, password from users where login=?');
             $getUser->execute(array($login));
         } catch (PDOException $e) {
+            Util::log('fatal', 'auth', 'Error while authenticating user "'
+                    . $login . '" from ' . $remoteIP . ': '
+                    . $e->getMessage());
             Util::fatal($e->getMessage());
         }
 
@@ -101,15 +104,15 @@ class Auth {
                 $result = true;
             }
         }
-        
-        $remoteIP = (is_string($_SERVER['REMOTE_ADDR']) ? 
+
+        $remoteIP = (is_string($_SERVER['REMOTE_ADDR']) ?
                 $_SERVER['REMOTE_ADDR'] : '[unknown IP]');
         if ($result === true) {
             Util::log('info', 'auth', 'Successful authentication of user "'
-                        . $login . '" from ' . $remoteIP . '.');
+                    . $login . '" from ' . $remoteIP . '.');
         } else {
             Util::log('warning', 'auth', 'Failed authentication of user "'
-                        . $login . '" from ' . $remoteIP . '.');
+                    . $login . '" from ' . $remoteIP . '.');
         }
 
         return $result;
@@ -185,7 +188,9 @@ class Auth {
                 $countUsers = $pdo->prepare('select count(login) as count from `users-roles` where role=?');
                 $countUsers->execute(array($role));
                 if ($countUsers->rowCount() !== 1) {
-                    Util::fatal('Unexpected database error with query: ' . $countUsers->queryString);
+                    $message = 'Unexpected database error with query: ' . $countUsers->queryString;
+                    Util::log('fatal', 'auth', $message);
+                    Util::fatal($message);
                 } else {
                     $count = $countUsers->fetchAll(PDO::FETCH_ASSOC)[0]['count'];
                     if ($count === '0') {
@@ -193,6 +198,8 @@ class Auth {
                     }
                 }
             } catch (PDOException $e) {
+                Util::log('fatal', 'auth', 'Error while testing role ' . $role
+                        . ': ' . $e->getMessage());
                 Util::fatal($e->getMessage());
             }
         }
@@ -211,6 +218,8 @@ class Auth {
             $listRoles = $pdo->prepare('select role from roles');
             $listRoles->execute();
         } catch (PDOException $e) {
+            Util::log('fatal', 'auth', 'Error while listing roles: '
+                    . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         $roleArray = $listRoles->fetchAll(PDO::FETCH_ASSOC);
@@ -232,6 +241,8 @@ class Auth {
             $listPermissions = $pdo->prepare('select permission from permissions');
             $listPermissions->execute();
         } catch (PDOException $e) {
+            Util::log('fatal', 'auth', 'Error while listing permissions: '
+                    . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         $permissionArray = $listPermissions->fetchAll(PDO::FETCH_ASSOC);
@@ -254,6 +265,8 @@ class Auth {
             $getRoles = $pdo->prepare('select role from `users-roles` where login=?');
             $getRoles->execute(array($login));
         } catch (PDOException $e) {
+            Util::log('fatal', 'auth', 'Error while listing roles of user '
+                    . $login . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         $rolesResult = $getRoles->fetchAll(PDO::FETCH_ASSOC);
@@ -298,6 +311,8 @@ class Auth {
             $getPermissions->execute(array($login));
             $permissionsResult = $getPermissions->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'auth', 'Error while listing permissions of user '
+                    . $login . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         $permissions = array();
@@ -322,6 +337,8 @@ class Auth {
             $getPermissions->execute(array($role));
             $permissionsResult = $getPermissions->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'auth', 'Error while listing permissions of role '
+                    . $role . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         $permissions = array();
@@ -348,6 +365,8 @@ class Auth {
                 $description = $getDescription->fetchAll(PDO::FETCH_ASSOC)[0]['description'];
             }
         } catch (PDOException $e) {
+            Util::log('fatal', 'auth', 'Error while getting description of role '
+                    . $role . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         return $description;

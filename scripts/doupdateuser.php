@@ -41,7 +41,9 @@ $stdRegexp = '/^[a-z_\-0-9]*$/i';
 
 $login = filter_input(INPUT_POST, 'login', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp)));
 if ($login === false || $login === '') {
-    Util::fatal('Invalid login provided: ' . filter_input(INPUT_POST, 'login'));
+    $message = 'Invalid login provided: ' . filter_input(INPUT_POST, 'login');
+    Util::log('fatal', 'doupdateuser', $message);
+    Util::fatal($message);
 }
 
 if (!Auth::hasPermission('admin') && !$_SESSION !== $login) {
@@ -52,7 +54,9 @@ if (!Auth::hasPermission('admin') && !$_SESSION !== $login) {
 
 $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
 if ($email === false) {
-    Util::fatal('Invalid e-mail provided: ' . filter_input(INPUT_POST, 'email'));
+    $message = 'Invalid e-mail provided: ' . filter_input(INPUT_POST, 'email');
+    Util::log('fatal', 'doupdateuser', $message);
+    Util::fatal($message);
 }
 
 // One cannot change one's own roles
@@ -66,7 +70,9 @@ if ($_SESSION['auth'] === $login) {
         $validRoles = Auth::getAllRoles();
         foreach ($roles as $role) {
             if (!in_array($role, $validRoles)) {
-                Util::fatal('Invalid role provided: ' . $role);
+                $message = 'Invalid role provided: ' . $role;
+                Util::log('fatal', 'doupdateuser', $message);
+                Util::fatal($message);
             }
         }
     } else {

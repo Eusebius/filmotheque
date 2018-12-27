@@ -74,6 +74,7 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
                             $containers->execute();
                             $containerArray = $containers->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
+                            Util::log('fatal', 'updatemedium', 'Error while listing containers: ' . $e->getMessage());
                             Util::fatal($e->getMessage());
                         }
                         foreach ($containerArray as $container) {
@@ -96,11 +97,13 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
                 $next = $conn->prepare('SELECT shelfmark+1 next FROM `media` m WHERE not exists (select shelfmark from media where media.shelfmark = m.shelfmark+1) and m.shelfmark is not null order by next limit 1');
                 $next->execute();
                 if ($next->rowCount() == 0) {
+                    Util::log('fatal', 'updatemedium', 'Error while trying to get next shelfmark (no entries in database)');
                     Util::fatal('Impossible de trouver la prochaine cote disponible');
                 }
                 $nextArray = $next->fetchall(PDO::FETCH_ASSOC);
                 $nextShelfmark = $nextArray[0]['next'];
             } catch (PDOException $e) {
+                Util::log('fatal', 'updatemedium', 'Error while trying to get next shelfmark: ' . $e->getMessage());
                 Util::fatal($e->getMessage());
             }
             ?>
@@ -114,6 +117,7 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
                             $languages->execute();
                             $languageArray = $languages->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
+                            Util::log('fatal', 'updatemedium', 'Error while listing languages: ' . $e->getMessage());
                             Util::fatal($e->getMessage());
                         }
                         foreach ($languageArray as $lang) {

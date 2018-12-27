@@ -49,6 +49,7 @@ Auth::ensurePermission('write');
                         $persons->execute();
                         $personArray = $persons->fetchall(PDO::FETCH_ASSOC);
                     } catch (PDOException $e) {
+                        Util::log('fatal', 'addmovie', 'Error while listing all persons: ' . $e->getMessage());
                         Util::fatal($e->getMessage());
                     }
                     foreach ($personArray as $person) {
@@ -74,6 +75,7 @@ Auth::ensurePermission('write');
                         $cats->execute();
                         $catArray = $cats->fetchall(PDO::FETCH_ASSOC);
                     } catch (PDOException $e) {
+                        Util::log('fatal', 'addmovie', 'Error while listing categories: ' . $e->getMessage());
                         Util::fatal($e->getMessage());
                     }
                     foreach ($catArray as $cat) {
@@ -91,6 +93,7 @@ Auth::ensurePermission('write');
                         $shortlists->execute();
                         $slArray = $shortlists->fetchall(PDO::FETCH_ASSOC);
                     } catch (PDOException $e) {
+                        Util::log('fatal', 'addmovie', 'Error while listing shortlists: ' . $e->getMessage());
                         Util::fatal($e->getMessage());
                     }
                     foreach ($slArray as $sl) {

@@ -40,15 +40,21 @@ $stdRegexp = '/^[a-z_\-0-9]*$/i';
 
 $role = filter_input(INPUT_GET, 'role', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp)));
 if ($role === false || $role === '') {
+    Util::log('fatal', 'admin', 'Error while deleting role: invalid role name provided (' 
+            . filter_input(INPUT_POST, 'role') . ')');
     Util::fatal('Invalid role name provided: ' . filter_input(INPUT_POST, 'role'));
 }
 if (!in_array($role, Auth::getAllRoles())) {
+    Util::log('fatal', 'admin', 'Error while deleting role: role ' . $role . ' does not exist');
     Util::fatal('Invalid role provided: ' . $role);
 }
 if (!Auth::isRoleUnused($role)) {
+    Util::log('fatal', 'admin', 'Error while deleting role: role ' . $role 
+            . ' is in use and cannot be deleted');
     Util::fatal('Role ' . $role . ' is in use and cannot be deleted.');
 }
 if ($role === 'admin') {
+    Util::log('fatal', 'admin', 'Error while deleting role: the admin role cannot be deleted');
     Util::fatal('The admin role cannot be deleted.');
 }
 
@@ -63,8 +69,12 @@ try {
     $deleteRole->execute(array($role));
     
     $pdo->commit();
+    Util::log('info', 'admin', 'Role ' . $role 
+            . ' deleted');
 } catch (PDOException $e) {
     $pdo->rollBack();
+    Util::log('fatal', 'admin', 'Error while deleting role ' . $role 
+            . ': ' . $e->getMessage());
     Util::fatal('Impossible to delete role ' . $role . ': ' . $e);
 }
 

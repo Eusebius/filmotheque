@@ -309,6 +309,8 @@ class Medium {
                 }
             }
         } catch (PDOException $e) {
+            Util::log('fatal', 'medium', 'Error while deleting medium '
+                    . $this->mediumID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
     }
@@ -330,10 +332,14 @@ class Medium {
 
             $getMedium->execute(array($this->mediumID));
         } catch (PDOException $e) {
+            Util::log('fatal', 'medium', 'Error while retrieving data for medium '
+                    . $this->mediumID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         $nMedia = $getMedium->rowCount();
         if ($nMedia == 0) {
+            Util::log('fatal', 'medium', 'Error while retrieving data for medium '
+                    . $this->mediumID . ': no corresponding entry in database');
             Util::fatal('<br />' . $getMedium->queryString . '<br />' .
                     'Erreur inattendue : aucun support ne correspond à l\'ID '
                     . $this->mediumID . '.<br /><br />'
@@ -341,6 +347,9 @@ class Medium {
             );
         }
         if ($nMedia > 1) {
+            Util::log('fatal', 'medium', 'Error while retrieving data for medium '
+                    . $this->mediumID 
+                    . ': several corresponding entries in database');
             Util::fatal(
                     "Erreur inattendue : plusieurs supports correspondent à l'ID"
                     . "{$this->mediumID}.<br /><br />"
@@ -376,6 +385,8 @@ class Medium {
             $getAudio->execute(array($this->mediumID));
             $audioArray = $getAudio->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'medium', 'Error while retrieving audio data for medium '
+                    . $this->mediumID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         foreach ($audioArray as $audio) {
@@ -398,6 +409,8 @@ class Medium {
             $getSubs->execute(array($this->mediumID));
             $subArray = $getSubs->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            Util::log('fatal', 'medium', 'Error while retrieving subtitle data for medium '
+                    . $this->mediumID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         foreach ($subArray as $sub) {
@@ -527,6 +540,8 @@ class Medium {
             $conn->commit();
         } catch (PDOException $e) {
             $conn->rollBack();
+            Util::log('fatal', 'medium', 'Error while writing data for medium '
+                    . $this->mediumID . ': ' . $e->getMessage());
             Util::fatal($e->getMessage());
         }
     }

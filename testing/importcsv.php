@@ -95,7 +95,9 @@ while ($line = fgets($csvfile)) {
         $insertMovie = $pdoconn->prepare('insert into `movies` (`title`) values (?)');
         $insertMovieWithYear = $pdoconn->prepare('insert into `movies` (`title`, `year`) values (?, ?)');
     } catch (PDOException $e) {
-        Util::fatal($e->getMessage());
+        $message = 'Error while preparing queries: ' . $e->getMessage();
+        Util::log('fatal', 'importcsv', $message);
+        Util::fatal($message);
     }
 
     if ($entry['comment'] == '') {
@@ -103,7 +105,9 @@ while ($line = fgets($csvfile)) {
             try {
                 $getMovieByTitle->execute(array($entry['title']));
             } catch (PDOException $e) {
-                Util::fatal($e->getMessage());
+                $message = 'Error while getting movies by title: ' . $e->getMessage();
+                Util::log('fatal', 'importcsv', $message);
+                Util::fatal($message);
             }
             if ($getMovieByTitle->rowCount() > 0) {
                 $entryArray = $getMovieByTitle->fetchall(PDO::FETCH_ASSOC);
@@ -173,13 +177,17 @@ while ($line = fgets($csvfile)) {
                     try {
                         $insertMovieWithYear->execute(array($entry['title'], $entry['year']));
                     } catch (PDOException $e) {
-                        Util::fatal($e->getMessage());
+                        $message = 'Error while inserting movie with year: ' . $e->getMessage();
+                        Util::log('fatal', 'importcsv', $message);
+                        Util::fatal($message);
                     }
                 } else {
                     try {
                         $insertMovie->execute(array($entry['title']));
                     } catch (PDOException $e) {
-                        Util::fatal($e->getMessage());
+                        $message = 'Error while inserting movie: ' . $e->getMessage();
+                        Util::log('fatal', 'importcsv', $message);
+                        Util::fatal($message);
                     }
                 }
                 echo 'Movie added (' . $entry['title'] . ').<br />' . "\n";

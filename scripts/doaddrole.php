@@ -40,9 +40,12 @@ $stdRegexp = '/^[a-z_\-0-9]*$/i';
 
 $role = filter_input(INPUT_POST, 'role', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp)));
 if ($role === false || $role === '') {
+    Util::log('fatal', 'admin', 'Error while creating role: invalid role name provided (' 
+            . filter_input(INPUT_POST, 'role') . ')');
     Util::fatal('Invalid role name provided: ' . filter_input(INPUT_POST, 'role'));
 }
 if (in_array($role, Auth::getAllRoles())) {
+    Util::log('error', 'admin', 'Error while creating role: role ' . $role . 'already exists');
     $_SESSION['error'] = 'Ce rôle existe déjà&nbsp;: ' . $role;
     header('Location:../?page=admin/manageusers.inc.php');
     die();
@@ -62,8 +65,13 @@ try {
     $addRole->execute(array($role, $description));
 
     $pdo->commit();
+    Util::log('info', 'admin', 'Role ' . $role 
+            . ' created');
 } catch (PDOException $e) {
     $pdo->rollBack();
+    Util::log('fatal', 'admin', 'Error while creating role ' . $role 
+            . ': ' . $e->getMessage());
+    $_SESSION['error'] = 'Ce rôle existe déjà&nbsp;: ' . $role;
     Util::fatal('Impossible to create role ' . $role . ': ' . $e);
 }
 
