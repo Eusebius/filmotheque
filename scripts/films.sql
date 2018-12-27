@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `borrowers` (
   `borrowername` varchar(128) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id_borrower`),
   UNIQUE KEY `borrowername` (`borrowername`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- RELATIONS POUR LA TABLE `borrowers`:
@@ -189,7 +189,7 @@ CREATE TABLE IF NOT EXISTS `media` (
   KEY `videocodec` (`videocodec`),
   KEY `audiocodec` (`audiocodec`),
   KEY `container` (`container`)
-) ENGINE=InnoDB AUTO_INCREMENT=1112 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- RELATIONS POUR LA TABLE `media`:
@@ -315,7 +315,7 @@ CREATE TABLE IF NOT EXISTS `movies` (
   `originaltitle` varchar(1024) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id_movie`),
   KEY `title` (`title`(255))
-) ENGINE=InnoDB AUTO_INCREMENT=9161 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- RELATIONS POUR LA TABLE `movies`:
@@ -475,7 +475,7 @@ CREATE TABLE IF NOT EXISTS `persons` (
   `name` varchar(1024) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id_person`),
   KEY `name` (`name`(255))
-) ENGINE=InnoDB AUTO_INCREMENT=1823 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- RELATIONS POUR LA TABLE `persons`:
@@ -596,7 +596,7 @@ CREATE TABLE IF NOT EXISTS `shortlists` (
   `listname` varchar(128) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id_shortlist`),
   UNIQUE KEY `name` (`listname`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- RELATIONS POUR LA TABLE `shortlists`:
