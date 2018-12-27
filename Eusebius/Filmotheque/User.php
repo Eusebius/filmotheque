@@ -2,11 +2,11 @@
 
 /**
  * Eusebius/Filmotheque/User.php
- * 
+ *
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.3.2
- * 
- * This is the authentication library of the application, to be included in 
+ *
+ * This is the authentication library of the application, to be included in
  * every page through initialization.inc.php.
  */
 /*
@@ -57,7 +57,7 @@ class User {
      * The new user object is either empty, or populated by fetching data from the database based on the user's login.
      * An authenticated can only fetch his own user object, unless he is an administrator.
      * In this case, he can create an emtpy user object or fetch any user object.
-     * 
+     *
      * @param string $login The login for the user, or null to create an empty user object.
      * @throws UserNotFoundException If a login has been provided but the user does not exist.
      * @since 0.3.2
@@ -238,14 +238,17 @@ class User {
                 throw new UserExistsException('User already exists: ' . $this->login);
             } else {
                 Util::debug($insertUser->errorInfo());
-                Util::log('fatal', 'admin', 'Error while creating user ' 
-                        . $this->login . ': ' . $e->getMessage());
+                Util::log('fatal', 'admin', 'Error while creating user '
+                        . $this->login . ' (attempt by ' . $_SESSION['auth']
+                        . '): ' . $e->getMessage());
                 Util::fatal($e->getMessage());
             }
         }
         $pdo->commit();
-        Util::log('info', 'admin', 'User ' . $this->login . " created.");
         $this->writeRolesInDB();
+        Util::log('info', 'admin', 'User ' . $this->login
+                . ' created by ' . $_SESSION['auth'] . ' with roles: '
+                . implode(', ', $this->roles) . '.');
     }
 
     /**
@@ -266,6 +269,9 @@ class User {
             $deleteRoles->execute(array($this->login));
         } catch (PDOException $e) {
             $pdo->rollBack();
+            Util::log('fatal', 'admin', 'Error while deleting roles of user '
+                    . $this->login . ' (attempt by ' . $_SESSION['auth'] . '): '
+                    . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         try {
@@ -273,9 +279,14 @@ class User {
             $deleteUser->execute(array($this->login));
         } catch (PDOException $e) {
             $pdo->rollBack();
+            Util::log('fatal', 'admin', 'Error while deleting user '
+                    . $this->login . ' (attempt by ' . $_SESSION['auth'] . '): '
+                    . $e->getMessage());
             Util::fatal($e->getMessage());
         }
         $pdo->commit();
+        Util::log('info', 'admin', 'User ' . $this->login
+                . ' deleted by ' . $_SESSION['auth'] . '.');
     }
 
     /**
@@ -298,7 +309,12 @@ class User {
             try {
                 $updateEmail = $pdo->prepare('update users set email=? where login=?');
                 $updateEmail->execute(array($email, $this->login));
+                Util::log('info', 'admin', 'E-mail of user ' . $this->login
+                        . ' updated to ' . $this->email . ' by ' . $_SESSION['auth'] . '.');
             } catch (PDOException $e) {
+                Util::log('fatal', 'admin', 'Error while updating e-mail of user '
+                        . $this->login . ' (attempt by ' . $_SESSION['auth'] . '): '
+                        . $e->getMessage());
                 Util::fatal('Unable to set new e-mail (' . $email
                         . ') for user ' . $this->login . ': ' . $e);
             }
@@ -313,15 +329,20 @@ class User {
      */
     public function updateRoles($roles) {
         if (is_null($this->login)) {
+            Util::log('fatal', 'admin', 'Error while trying to update the roles '
+                    . 'of an incomplete user (attempt by ' . $_SESSION['auth'] . ').');
             Util::fatal('The user object is incomplete, impossible to update it.');
         } else if (!Auth::hasPermission('admin') || $_SESSION['auth'] === $this->login) {
             //The authenticated user has no right to update the user object
             throw new UnauthorizedException('The authenticated user ('
-            . $_SESSION['auth'] . ') is not an admin authorize to update the roles of user '
+            . $_SESSION['auth'] . ') is not an admin authorized to update the roles of user '
             . $this->login . ')');
         } else {
             $this->setRoles($roles);
             $this->writeRolesInDB();
+            Util::log('info', 'admin', 'Roles of user ' . $this->login
+                    . ' updated to (' . implode(', ', $this->roles) . ') by '
+                    . $_SESSION['auth'] . '.');
         }
     }
 
@@ -339,6 +360,9 @@ class User {
                 $deleteRoles->execute(array($this->login));
             } catch (PDOException $e) {
                 $pdo->rollBack();
+                Util::log('fatal', 'admin', 'Error while deleting/updating the roles '
+                        . 'of user ' . $this->login . ' (attempt by '
+                        . $_SESSION['auth'] . '): ' . $e->getMessage());
                 Util::fatal($e->getMessage());
             }
             foreach ($this->roles as $role) {
@@ -347,6 +371,10 @@ class User {
                     $addRole->execute(array($this->login, $role));
                 } catch (PDOException $e) {
                     $pdo->rollBack();
+                    Util::log('fatal', 'admin', 'Error while adding role ' 
+                            . $role. ' to user ' . $this->login 
+                            . ' (attempt by ' . $_SESSION['auth'] . '): ' 
+                            . $e->getMessage());
                     Util::fatal($e->getMessage());
                 }
             }
