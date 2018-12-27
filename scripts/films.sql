@@ -144,7 +144,8 @@ CREATE TABLE IF NOT EXISTS `log` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `level` enum('info','warning','error','fatal') COLLATE utf8_bin NOT NULL DEFAULT 'info',
   `component` varchar(32) COLLATE utf8_bin NOT NULL,
-  `message` varchar(256) COLLATE utf8_bin NOT NULL,
+  `user` varchar(255) COLLATE utf8_bin NOT NULL,
+  `message` varchar(255) COLLATE utf8_bin NOT NULL,
   KEY `level` (`level`),
   KEY `component` (`component`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

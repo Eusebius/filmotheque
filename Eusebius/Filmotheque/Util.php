@@ -330,8 +330,9 @@ class Util {
      */
     static function log($level, $component, $message) {
         $conn = Util::getDbConnection();
-        $log = $conn->prepare("insert into `log` (`level`, `component`, `message`) values(?, ?, ?)");
-        $log->execute(array($level, $component, $message));
+        $log = $conn->prepare("insert into `log` (`level`, `component`, `user`, `message`) values(?, ?, ?, ?)");
+        $log->execute(array($level, $component, 
+            isset($_SESSION['auth']) && ($_SESSION['auth'] !== null) ? $_SESSION['auth'] : '', $message));
     }
 
     /**
