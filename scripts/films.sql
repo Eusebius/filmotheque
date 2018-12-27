@@ -514,8 +514,8 @@ CREATE TABLE IF NOT EXISTS `quality` (
 --
 
 INSERT INTO `quality` (`quality`, `minwidth`, `minheight`, `maxwidth`, `maxheight`) VALUES
-('BluRay', 1280, 544, 1920, 1080),
-('DVD', 720, 300, 1280, 544),
+('BluRay', 1280, 800, 1920, 1080),
+('DVD', 720, 300, 1280, 800),
 ('Full HD', 1920, 1080, 999999, 999999),
 ('indéterminé', NULL, NULL, NULL, NULL),
 ('moyen', 640, 272, 720, 300),
