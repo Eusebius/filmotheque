@@ -14,5 +14,6 @@ This application connects to "My API Films", an interface to the IMDb website, i
 
 ##Database configuration
 
-In the provided configuration, the application expects to work on a "films" MySQL database accessible on localhost, with login and password both set to "films". You should of course change these credentials if you deploy the application on a public server.
-The table generation script is at scripts/films.sql
+In the provided configuration, the application expects to work on a `films` MySQL database accessible on `localhost`, with login and password both set to `films`. You should of course change these credentials if you deploy the application on a public server.
+
+The table generation script is at `scripts/films.sql`. It creates a first entry and a first admin:admin administration account.

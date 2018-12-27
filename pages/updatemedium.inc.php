@@ -65,24 +65,24 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
         <input type="hidden" name="id_medium" value="<?php echo $id_medium; ?>" />
         <table>
             <tr><td>Titre du film&nbsp;:</td><td><?php echo $movie->getTitle(); ?></td></tr>
-            <tr><td>Type&nbsp;:</td><td>
-                    <select name="type">
+            <tr><td>Conteneur&nbsp;:</td><td>
+                    <select name="container">
                         <?php
                         $conn = Util::getDbConnection();
                         try {
-                            $types = $conn->prepare('select distinct type from `media`');
-                            $types->execute();
-                            $typeArray = $types->fetchall(PDO::FETCH_ASSOC);
+                            $containers = $conn->prepare('select distinct container from `containers`');
+                            $containers->execute();
+                            $containerArray = $containers->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
                             Util::fatal($e->getMessage());
                         }
-                        foreach ($typeArray as $type) {
-                            if ($type['type'] != '') {
-                                echo '<option value="' . $type['type'] . '" ';
-                                if ($type['type'] == $medium->getType()) {
+                        foreach ($containerArray as $container) {
+                            if ($container['container'] != '') {
+                                echo '<option value="' . $container['container'] . '" ';
+                                if ($container['container'] == $medium->getContainer()) {
                                     echo 'selected';
                                 }
-                                echo '>' . $type['type'] . '</option>' . "\n";
+                                echo '>' . $container['container'] . '</option>' . "\n";
                             }
                         }
                         ?>

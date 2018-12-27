@@ -46,7 +46,7 @@ if ($id_medium_string !== NULL && $id_medium_string !== '') {
 
     $medium = Util::getMediumInSession($id_medium);
 
-    $medium->setValues(Util::getPOSTValueOrNull('type', Util::POST_CHECK_STRING), 
+    $medium->setValues(Util::getPOSTValueOrNull('container', Util::POST_CHECK_STRING), 
             Util::getPOSTValueOrNull('height', Util::POST_CHECK_INT), 
             Util::getPOSTValueOrNull('width', Util::POST_CHECK_INT), 
             Util::getPOSTValueOrNull('comment', Util::POST_CHECK_STRING), 

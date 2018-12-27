@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.3.1deb1
--- http://www.phpmyadmin.net
+-- version 4.6.6deb4
+-- https://www.phpmyadmin.net/
 --
--- Client :  localhost
--- Généré le :  Mer 02 Mars 2016 à 19:03
--- Version du serveur :  5.6.28-1
--- Version de PHP :  5.6.14-1
+-- Client :  localhost:3306
+-- Généré le :  Jeu 27 Décembre 2018 à 15:29
+-- Version du serveur :  10.1.26-MariaDB-0+deb9u1
+-- Version de PHP :  7.0.33-0+deb9u1
 
 SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -20,6 +20,36 @@ SET time_zone = "+00:00";
 --
 -- Base de données :  `films`
 --
+CREATE DATABASE IF NOT EXISTS `films` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `films`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `audiocodecs`
+--
+
+CREATE TABLE IF NOT EXISTS `audiocodecs` (
+  `audiocodec` varchar(32) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`audiocodec`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- RELATIONS POUR LA TABLE `audiocodecs`:
+--
+
+--
+-- Contenu de la table `audiocodecs`
+--
+
+INSERT INTO `audiocodecs` (`audiocodec`) VALUES
+('AAC'),
+('AC3'),
+('DTS'),
+('FLAC'),
+('MP3'),
+('Vorbis'),
+('WMA');
 
 -- --------------------------------------------------------
 
@@ -53,6 +83,41 @@ CREATE TABLE IF NOT EXISTS `categories` (
 -- RELATIONS POUR LA TABLE `categories`:
 --
 
+--
+-- Contenu de la table `categories`
+--
+
+INSERT INTO `categories` (`category`) VALUES
+('Drame'),
+('Guerre'),
+('Romantique');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `containers`
+--
+
+CREATE TABLE IF NOT EXISTS `containers` (
+  `container` varchar(32) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`container`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- RELATIONS POUR LA TABLE `containers`:
+--
+
+--
+-- Contenu de la table `containers`
+--
+
+INSERT INTO `containers` (`container`) VALUES
+('AVI'),
+('BluRay'),
+('DVD'),
+('MKV'),
+('MPEG4');
+
 -- --------------------------------------------------------
 
 --
@@ -72,6 +137,13 @@ CREATE TABLE IF NOT EXISTS `experience` (
 --       `movies` -> `id_movie`
 --
 
+--
+-- Contenu de la table `experience`
+--
+
+INSERT INTO `experience` (`id_movie`, `rating`, `lastseen`) VALUES
+(9160, 5, '2000-01-01');
+
 -- --------------------------------------------------------
 
 --
@@ -87,6 +159,14 @@ CREATE TABLE IF NOT EXISTS `languages` (
 -- RELATIONS POUR LA TABLE `languages`:
 --
 
+--
+-- Contenu de la table `languages`
+--
+
+INSERT INTO `languages` (`language`) VALUES
+('en'),
+('fr');
+
 -- --------------------------------------------------------
 
 --
@@ -96,21 +176,39 @@ CREATE TABLE IF NOT EXISTS `languages` (
 CREATE TABLE IF NOT EXISTS `media` (
   `id_medium` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_movie` int(10) UNSIGNED NOT NULL,
-  `type` varchar(128) COLLATE utf8_bin NOT NULL,
+  `container` varchar(32) COLLATE utf8_bin NOT NULL,
+  `videocodec` varchar(32) COLLATE utf8_bin DEFAULT NULL,
+  `audiocodec` varchar(32) COLLATE utf8_bin DEFAULT NULL,
   `height` int(10) UNSIGNED DEFAULT NULL,
   `width` int(10) UNSIGNED DEFAULT NULL,
   `comment` text COLLATE utf8_bin,
   `shelfmark` varchar(20) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id_medium`),
   UNIQUE KEY `shelfmark` (`shelfmark`),
-  KEY `id_movie` (`id_movie`)
-) ENGINE=InnoDB AUTO_INCREMENT=1109 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  KEY `id_movie` (`id_movie`),
+  KEY `videocodec` (`videocodec`),
+  KEY `audiocodec` (`audiocodec`),
+  KEY `container` (`container`)
+) ENGINE=InnoDB AUTO_INCREMENT=1112 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- RELATIONS POUR LA TABLE `media`:
 --   `id_movie`
 --       `movies` -> `id_movie`
+--   `videocodec`
+--       `videocodecs` -> `videocodec`
+--   `audiocodec`
+--       `audiocodecs` -> `audiocodec`
+--   `container`
+--       `containers` -> `container`
 --
+
+--
+-- Contenu de la table `media`
+--
+
+INSERT INTO `media` (`id_medium`, `id_movie`, `container`, `videocodec`, `audiocodec`, `height`, `width`, `comment`, `shelfmark`) VALUES
+(1111, 9160, 'BluRay', NULL, NULL, 1080, 1920, '', '0');
 
 -- --------------------------------------------------------
 
@@ -132,6 +230,13 @@ CREATE TABLE IF NOT EXISTS `media-audio` (
 --   `language`
 --       `languages` -> `language`
 --
+
+--
+-- Contenu de la table `media-audio`
+--
+
+INSERT INTO `media-audio` (`id_medium`, `language`) VALUES
+(1111, 'en');
 
 -- --------------------------------------------------------
 
@@ -160,6 +265,7 @@ CREATE TABLE IF NOT EXISTS `media-borrowers` (
 
 --
 -- Doublure de structure pour la vue `media-quality`
+-- (Voir ci-dessous la vue réelle)
 --
 CREATE TABLE IF NOT EXISTS `media-quality` (
 `id_medium` int(10) unsigned
@@ -187,6 +293,14 @@ CREATE TABLE IF NOT EXISTS `media-subs` (
 --       `languages` -> `language`
 --
 
+--
+-- Contenu de la table `media-subs`
+--
+
+INSERT INTO `media-subs` (`id_medium`, `language`) VALUES
+(1111, 'en'),
+(1111, 'fr');
+
 -- --------------------------------------------------------
 
 --
@@ -201,11 +315,18 @@ CREATE TABLE IF NOT EXISTS `movies` (
   `originaltitle` varchar(1024) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id_movie`),
   KEY `title` (`title`(255))
-) ENGINE=InnoDB AUTO_INCREMENT=9160 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=9161 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- RELATIONS POUR LA TABLE `movies`:
 --
+
+--
+-- Contenu de la table `movies`
+--
+
+INSERT INTO `movies` (`id_movie`, `title`, `year`, `imdb_id`, `originaltitle`) VALUES
+(9160, 'Casablanca', 1942, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -228,6 +349,14 @@ CREATE TABLE IF NOT EXISTS `movies-actors` (
 --       `persons` -> `id_person`
 --
 
+--
+-- Contenu de la table `movies-actors`
+--
+
+INSERT INTO `movies-actors` (`id_movie`, `id_person`) VALUES
+(9160, 1821),
+(9160, 1822);
+
 -- --------------------------------------------------------
 
 --
@@ -249,6 +378,15 @@ CREATE TABLE IF NOT EXISTS `movies-categories` (
 --       `categories` -> `category`
 --
 
+--
+-- Contenu de la table `movies-categories`
+--
+
+INSERT INTO `movies-categories` (`id_movie`, `category`) VALUES
+(9160, 'Drame'),
+(9160, 'Guerre'),
+(9160, 'Romantique');
+
 -- --------------------------------------------------------
 
 --
@@ -269,6 +407,13 @@ CREATE TABLE IF NOT EXISTS `movies-makers` (
 --   `id_person`
 --       `persons` -> `id_person`
 --
+
+--
+-- Contenu de la table `movies-makers`
+--
+
+INSERT INTO `movies-makers` (`id_movie`, `id_person`) VALUES
+(9160, 1820);
 
 -- --------------------------------------------------------
 
@@ -311,7 +456,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
 -- Contenu de la table `permissions`
 --
 
-REPLACE INTO `permissions` (`permission`, `permdescription`) VALUES
+INSERT INTO `permissions` (`permission`, `permdescription`) VALUES
 ('admin', 'Allow administration of the website (including user, role and permission management)'),
 ('lastseen', 'Allow read access to lastseen information'),
 ('rating', 'Allow read access to rating information'),
@@ -327,17 +472,23 @@ REPLACE INTO `permissions` (`permission`, `permdescription`) VALUES
 
 CREATE TABLE IF NOT EXISTS `persons` (
   `id_person` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `surname_afac` varchar(1024) COLLATE utf8_bin NOT NULL,
-  `firstnames_afac` varchar(1024) COLLATE utf8_bin DEFAULT NULL,
   `name` varchar(1024) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id_person`),
-  KEY `surname` (`surname_afac`(255)),
   KEY `name` (`name`(255))
-) ENGINE=InnoDB AUTO_INCREMENT=1820 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1823 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- RELATIONS POUR LA TABLE `persons`:
 --
+
+--
+-- Contenu de la table `persons`
+--
+
+INSERT INTO `persons` (`id_person`, `name`) VALUES
+(1820, 'Michael Curtiz'),
+(1821, 'Humphrey Bogart'),
+(1822, 'Ingrid Bergman');
 
 -- --------------------------------------------------------
 
@@ -357,6 +508,18 @@ CREATE TABLE IF NOT EXISTS `quality` (
 --
 -- RELATIONS POUR LA TABLE `quality`:
 --
+
+--
+-- Contenu de la table `quality`
+--
+
+INSERT INTO `quality` (`quality`, `minwidth`, `minheight`, `maxwidth`, `maxheight`) VALUES
+('BluRay', 1280, 544, 1920, 1080),
+('DVD', 720, 300, 1280, 544),
+('Full HD', 1920, 1080, 999999, 999999),
+('indéterminé', NULL, NULL, NULL, NULL),
+('moyen', 640, 272, 720, 300),
+('médiocre', 0, 0, 640, 272);
 
 -- --------------------------------------------------------
 
@@ -378,7 +541,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
 -- Contenu de la table `roles`
 --
 
-REPLACE INTO `roles` (`role`, `description`) VALUES
+INSERT INTO `roles` (`role`, `description`) VALUES
 ('admin', 'Website administrators'),
 ('ro', 'Users with basic read-only rights'),
 ('rw', 'Users with full read/write access, but no administration rights');
@@ -408,18 +571,18 @@ CREATE TABLE IF NOT EXISTS `roles-permissions` (
 -- Contenu de la table `roles-permissions`
 --
 
-REPLACE INTO `roles-permissions` (`role`, `permission`) VALUES
+INSERT INTO `roles-permissions` (`role`, `permission`) VALUES
 ('admin', 'admin'),
 ('admin', 'lastseen'),
-('rw', 'lastseen'),
 ('admin', 'rating'),
-('rw', 'rating'),
 ('admin', 'read'),
-('ro', 'read'),
-('rw', 'read'),
 ('admin', 'shortlists'),
-('rw', 'shortlists'),
 ('admin', 'write'),
+('ro', 'read'),
+('rw', 'lastseen'),
+('rw', 'rating'),
+('rw', 'read'),
+('rw', 'shortlists'),
 ('rw', 'write');
 
 -- --------------------------------------------------------
@@ -456,6 +619,13 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- RELATIONS POUR LA TABLE `users`:
 --
 
+--
+-- Contenu de la table `users`
+--
+
+INSERT INTO `users` (`login`, `email`, `password`) VALUES
+('admin', NULL, '$2y$10$XTOHjbXWky4JHVUaanvWLuJfNvV58IRd1bUuGQp3XicPgJQmJSNDe');
+
 -- --------------------------------------------------------
 
 --
@@ -476,6 +646,42 @@ CREATE TABLE IF NOT EXISTS `users-roles` (
 --   `role`
 --       `roles` -> `role`
 --
+
+--
+-- Contenu de la table `users-roles`
+--
+
+INSERT INTO `users-roles` (`login`, `role`) VALUES
+('admin', 'admin');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `videocodecs`
+--
+
+CREATE TABLE IF NOT EXISTS `videocodecs` (
+  `videocodec` varchar(32) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`videocodec`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- RELATIONS POUR LA TABLE `videocodecs`:
+--
+
+--
+-- Contenu de la table `videocodecs`
+--
+
+INSERT INTO `videocodecs` (`videocodec`) VALUES
+('DivX'),
+('H.261'),
+('H.262'),
+('H.263'),
+('H.264'),
+('H.265'),
+('MPEG4/2'),
+('Xvid');
 
 -- --------------------------------------------------------
 
@@ -500,7 +706,10 @@ ALTER TABLE `experience`
 -- Contraintes pour la table `media`
 --
 ALTER TABLE `media`
-  ADD CONSTRAINT `media_ibfk_1` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`) ON DELETE CASCADE;
+  ADD CONSTRAINT `media_ibfk_1` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`id_movie`) ON DELETE CASCADE,
+  ADD CONSTRAINT `media_ibfk_2` FOREIGN KEY (`videocodec`) REFERENCES `videocodecs` (`videocodec`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `media_ibfk_3` FOREIGN KEY (`audiocodec`) REFERENCES `audiocodecs` (`audiocodec`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `media_ibfk_4` FOREIGN KEY (`container`) REFERENCES `containers` (`container`) ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `media-audio`

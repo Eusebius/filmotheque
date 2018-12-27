@@ -48,7 +48,7 @@ if ($id_movie_string !== NULL && $id_movie_string !== '') {
     }
 
     $medium = new Medium(null);
-    $medium->setValues(Util::getPOSTValueOrNull('type', Util::POST_CHECK_STRING), 
+    $medium->setValues(Util::getPOSTValueOrNull('container', Util::POST_CHECK_STRING), 
             Util::getPOSTValueOrNull('height', Util::POST_CHECK_INT), 
             Util::getPOSTValueOrNull('width', Util::POST_CHECK_INT), 
             Util::getPOSTValueOrNull('comment', Util::POST_CHECK_STRING), 

@@ -60,6 +60,7 @@ Auth::ensureAuthenticated();
             <h1>Filmothèque</h1>
             <?php
             Util::checkChmod();
+            Util::checkAdminPwd();
             if ($_SESSION['debug']) {
                 echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
             }

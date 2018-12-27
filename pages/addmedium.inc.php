@@ -49,26 +49,26 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
 
     $movie = Util::getMovieInSession($id_movie);
     ?>
-    <h3>Création d'un support pour le film numéro <?php echo $id_movie; //'    ?></h3>
+    <h3>Création d'un support pour le film numéro <?php echo $id_movie; //'     ?></h3>
     <form action="scripts/docreatemedium.php" method="POST">
         <input type="hidden" name="id_movie" value="<?php echo $id_movie; ?>" />
         <table>
             <tr><td>Titre du film&nbsp;:</td><td><?php echo $movie->getTitle(); ?></td></tr>
-            <tr><td>Type&nbsp;:</td><td>
-                    <select name="type">
+            <tr><td>Conteneur&nbsp;:</td><td>
+                    <select name="container">
                         <?php
                         $conn = Util::getDbConnection();
                         try {
-                            $types = $conn->prepare('select distinct type from `media`');
+                            $types = $conn->prepare('select distinct `container` from `containers` order by `container`');
                             $types->execute();
                             $typeArray = $types->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
                             Util::fatal($e->getMessage());
                         }
                         foreach ($typeArray as $type) {
-                            if ($type['type'] != '') {
-                                echo '<option value="' . $type['type'] . '" ';
-                                echo '>' . $type['type'] . '</option>' . "\n";
+                            if ($type['container'] != '') {
+                                echo '<option value="' . $type['container'] . '" ';
+                                echo '>' . $type['container'] . '</option>' . "\n";
                             }
                         }
                         ?>
@@ -83,13 +83,15 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
                 $next = $conn2->prepare('SELECT shelfmark+1 next FROM `media` m WHERE not exists (select shelfmark from media where media.shelfmark = m.shelfmark+1) and m.shelfmark is not null order by next limit 1');
                 $next->execute();
                 if ($next->rowCount() == 0) {
-                    Util::fatal('Impossible de trouver la prochaine cote disponible');
+                    //Util::fatal('Impossible de trouver la prochaine cote disponible');
+                    $nextShelfmark = 0;
+                } else {
+                    $nextArray = $next->fetchall(PDO::FETCH_ASSOC);
+                    $nextShelfmark = $nextArray[0]['next'];
                 }
-                $nextArray = $next->fetchall(PDO::FETCH_ASSOC);
             } catch (PDOException $e) {
                 Util::fatal($e->getMessage());
             }
-            $nextShelfmark = $nextArray[0]['next'];
             ?>
             <tr><td>Cote&nbsp;:</td><td><input type="text" name="shelfmark" value="<?php echo $nextShelfmark; ?>" /></td>
             <!-- <td>(première cote disponible&nbsp;: <?php echo $nextShelfmark; ?>)</td></tr> -->

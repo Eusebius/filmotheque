@@ -171,7 +171,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
 
     echo '<table border="1">'
     . '<tr><th align="center">Cote</th>'
-    . '<th align="center">Type</th>'
+    . '<th align="center">Conteneur</th>'
     . '<th align="center">Dimensions</th>'
     . '<th align="center">Langues audio</th>'
     . '<th align="center">Langues sous-titres</th>'
@@ -183,7 +183,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
         $quality = $medium->getQuality();
         echo '<tr>';
         echo '<td align="center" bgcolor="' . $colour[$quality] . '">' . $medium->getShelfmark() . '</td>';
-        echo '<td align="center" bgcolor="' . $colour[$quality] . '">' . $medium->getType() . '</td>';
+        echo '<td align="center" bgcolor="' . $colour[$quality] . '">' . $medium->getContainer() . '</td>';
         echo '<td align="center" bgcolor="' . $colour[$quality] . '">';
         echo ($medium->getWidth() == '' ? '?' : $medium->getWidth());
         echo '&nbsp;x&nbsp;';

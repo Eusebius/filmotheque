@@ -29,7 +29,8 @@
 
 namespace Eusebius\Filmotheque;
 
-use PDO,    PDOException;
+use PDO,
+    PDOException;
 use DateTime;
 
 /**
@@ -201,6 +202,26 @@ class Util {
             echo '<center><strong><font color="red">Erreur de '
             . 'configuration&nbsp;: le répertoire "covers" doit être accessible'
             . 'en écriture.</font></strong></center>';
+        }
+    }
+
+    /**
+     * Check that the password of the initial `admin` account has been changed. 
+     * Otherwise, print an error message informing the user (even if not in
+     * debug mode).
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.3
+     */
+    static function checkAdminPwd() {
+        $dbconn = Util::getDbConnection();
+        
+        $pwRes = $dbconn->query('select login from `users` where login=\'admin\' and '
+                . 'password=\'$2y$10$XTOHjbXWky4JHVUaanvWLuJfNvV58IRd1bUuGQp3XicPgJQmJSNDe\'');
+
+        if ($pwRes->rowCount() > 0) {
+            echo '<center><strong><font color="red">Erreur de '
+            . 'configuration&nbsp;: le mot de passe du compte admin n\'a pas '
+            . 'été modifié.</font></strong></center>';
         }
     }
 
@@ -391,7 +412,7 @@ class Util {
         $withoutParams1 = Util::stripPathFromDir($withoutEusebius, '?');
         $withoutIndex = Util::stripPathFromDir($withoutParams1, 'index.php');
         if (substr($withoutIndex, -1) !== '/') {
-            $withoutIndex .='/';
+            $withoutIndex .= '/';
         }
         return $withoutIndex;
     }
