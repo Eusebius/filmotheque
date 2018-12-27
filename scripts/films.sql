@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  localhost:3306
--- Généré le :  Jeu 27 Décembre 2018 à 15:29
+-- Généré le :  Jeu 27 Décembre 2018 à 16:36
 -- Version du serveur :  10.1.26-MariaDB-0+deb9u1
 -- Version de PHP :  7.0.33-0+deb9u1
 
@@ -35,10 +35,6 @@ CREATE TABLE IF NOT EXISTS `audiocodecs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
--- RELATIONS POUR LA TABLE `audiocodecs`:
---
-
---
 -- Contenu de la table `audiocodecs`
 --
 
@@ -62,11 +58,7 @@ CREATE TABLE IF NOT EXISTS `borrowers` (
   `borrowername` varchar(128) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id_borrower`),
   UNIQUE KEY `borrowername` (`borrowername`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `borrowers`:
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
 
@@ -78,10 +70,6 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `category` varchar(128) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`category`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `categories`:
---
 
 --
 -- Contenu de la table `categories`
@@ -102,10 +90,6 @@ CREATE TABLE IF NOT EXISTS `containers` (
   `container` varchar(32) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`container`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `containers`:
---
 
 --
 -- Contenu de la table `containers`
@@ -132,12 +116,6 @@ CREATE TABLE IF NOT EXISTS `experience` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
--- RELATIONS POUR LA TABLE `experience`:
---   `id_movie`
---       `movies` -> `id_movie`
---
-
---
 -- Contenu de la table `experience`
 --
 
@@ -156,16 +134,27 @@ CREATE TABLE IF NOT EXISTS `languages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
--- RELATIONS POUR LA TABLE `languages`:
---
-
---
 -- Contenu de la table `languages`
 --
 
 INSERT INTO `languages` (`language`) VALUES
 ('en'),
 ('fr');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `log`
+--
+
+CREATE TABLE IF NOT EXISTS `log` (
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `level` enum('info','warning','error','fatal') COLLATE utf8_bin NOT NULL DEFAULT 'info',
+  `component` varchar(32) COLLATE utf8_bin NOT NULL,
+  `message` varchar(256) COLLATE utf8_bin NOT NULL,
+  KEY `level` (`level`),
+  KEY `component` (`component`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
 
@@ -189,19 +178,7 @@ CREATE TABLE IF NOT EXISTS `media` (
   KEY `videocodec` (`videocodec`),
   KEY `audiocodec` (`audiocodec`),
   KEY `container` (`container`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `media`:
---   `id_movie`
---       `movies` -> `id_movie`
---   `videocodec`
---       `videocodecs` -> `videocodec`
---   `audiocodec`
---       `audiocodecs` -> `audiocodec`
---   `container`
---       `containers` -> `container`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- Contenu de la table `media`
@@ -224,14 +201,6 @@ CREATE TABLE IF NOT EXISTS `media-audio` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
--- RELATIONS POUR LA TABLE `media-audio`:
---   `id_medium`
---       `media` -> `id_medium`
---   `language`
---       `languages` -> `language`
---
-
---
 -- Contenu de la table `media-audio`
 --
 
@@ -252,14 +221,6 @@ CREATE TABLE IF NOT EXISTS `media-borrowers` (
   PRIMARY KEY (`id_medium`,`id_borrower`,`loandate`),
   KEY `id_borrower` (`id_borrower`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `media-borrowers`:
---   `id_medium`
---       `media` -> `id_medium`
---   `id_borrower`
---       `borrowers` -> `id_borrower`
---
 
 -- --------------------------------------------------------
 
@@ -286,14 +247,6 @@ CREATE TABLE IF NOT EXISTS `media-subs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
--- RELATIONS POUR LA TABLE `media-subs`:
---   `id_medium`
---       `media` -> `id_medium`
---   `language`
---       `languages` -> `language`
---
-
---
 -- Contenu de la table `media-subs`
 --
 
@@ -315,11 +268,7 @@ CREATE TABLE IF NOT EXISTS `movies` (
   `originaltitle` varchar(1024) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id_movie`),
   KEY `title` (`title`(255))
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `movies`:
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- Contenu de la table `movies`
@@ -342,14 +291,6 @@ CREATE TABLE IF NOT EXISTS `movies-actors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
--- RELATIONS POUR LA TABLE `movies-actors`:
---   `id_movie`
---       `movies` -> `id_movie`
---   `id_person`
---       `persons` -> `id_person`
---
-
---
 -- Contenu de la table `movies-actors`
 --
 
@@ -369,14 +310,6 @@ CREATE TABLE IF NOT EXISTS `movies-categories` (
   PRIMARY KEY (`id_movie`,`category`),
   KEY `category` (`category`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `movies-categories`:
---   `id_movie`
---       `movies` -> `id_movie`
---   `category`
---       `categories` -> `category`
---
 
 --
 -- Contenu de la table `movies-categories`
@@ -401,14 +334,6 @@ CREATE TABLE IF NOT EXISTS `movies-makers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
--- RELATIONS POUR LA TABLE `movies-makers`:
---   `id_movie`
---       `movies` -> `id_movie`
---   `id_person`
---       `persons` -> `id_person`
---
-
---
 -- Contenu de la table `movies-makers`
 --
 
@@ -428,14 +353,6 @@ CREATE TABLE IF NOT EXISTS `movies-shortlists` (
   KEY `id_shortlist` (`id_shortlist`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
---
--- RELATIONS POUR LA TABLE `movies-shortlists`:
---   `id_movie`
---       `movies` -> `id_movie`
---   `id_shortlist`
---       `shortlists` -> `id_shortlist`
---
-
 -- --------------------------------------------------------
 
 --
@@ -447,10 +364,6 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   `permdescription` varchar(255) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`permission`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `permissions`:
---
 
 --
 -- Contenu de la table `permissions`
@@ -475,11 +388,7 @@ CREATE TABLE IF NOT EXISTS `persons` (
   `name` varchar(1024) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id_person`),
   KEY `name` (`name`(255))
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `persons`:
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- Contenu de la table `persons`
@@ -506,10 +415,6 @@ CREATE TABLE IF NOT EXISTS `quality` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
--- RELATIONS POUR LA TABLE `quality`:
---
-
---
 -- Contenu de la table `quality`
 --
 
@@ -534,10 +439,6 @@ CREATE TABLE IF NOT EXISTS `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
--- RELATIONS POUR LA TABLE `roles`:
---
-
---
 -- Contenu de la table `roles`
 --
 
@@ -558,14 +459,6 @@ CREATE TABLE IF NOT EXISTS `roles-permissions` (
   PRIMARY KEY (`role`,`permission`) USING BTREE,
   KEY `roles-permissions_ibfk_2` (`permission`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `roles-permissions`:
---   `role`
---       `roles` -> `role`
---   `permission`
---       `permissions` -> `permission`
---
 
 --
 -- Contenu de la table `roles-permissions`
@@ -596,11 +489,7 @@ CREATE TABLE IF NOT EXISTS `shortlists` (
   `listname` varchar(128) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id_shortlist`),
   UNIQUE KEY `name` (`listname`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `shortlists`:
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
 
@@ -614,10 +503,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`login`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `users`:
---
 
 --
 -- Contenu de la table `users`
@@ -640,14 +525,6 @@ CREATE TABLE IF NOT EXISTS `users-roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
--- RELATIONS POUR LA TABLE `users-roles`:
---   `login`
---       `users` -> `login`
---   `role`
---       `roles` -> `role`
---
-
---
 -- Contenu de la table `users-roles`
 --
 
@@ -664,10 +541,6 @@ CREATE TABLE IF NOT EXISTS `videocodecs` (
   `videocodec` varchar(32) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`videocodec`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- RELATIONS POUR LA TABLE `videocodecs`:
---
 
 --
 -- Contenu de la table `videocodecs`

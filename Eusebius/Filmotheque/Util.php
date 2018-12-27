@@ -319,6 +319,20 @@ class Util {
         }
         return $_SESSION['movie'];
     }
+    
+    /**
+     * Logs a message in the database.
+     * @param type $level The message level ('info', 'warning', 'error', or 'fatal').
+     * @param type $component The component logging the event.
+     * @param type $message The log message.
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.3
+     */
+    static function log($level, $component, $message) {
+        $conn = Util::getDbConnection();
+        $log = $conn->prepare("insert into `log` (`level`, `component`, `message`) values(?, ?, ?)");
+        $log->execute(array($level, $component, $message));
+    }
 
     /**
      * Forget about the movie in session. To be called after an update on the
