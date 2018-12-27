@@ -238,10 +238,13 @@ class User {
                 throw new UserExistsException('User already exists: ' . $this->login);
             } else {
                 Util::debug($insertUser->errorInfo());
+                Util::log('fatal', 'admin', 'Error while creating user ' 
+                        . $this->login . ': ' . $e->getMessage());
                 Util::fatal($e->getMessage());
             }
         }
         $pdo->commit();
+        Util::log('info', 'admin', 'User ' . $this->login . " created.");
         $this->writeRolesInDB();
     }
 
