@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  localhost:3306
--- Généré le :  Jeu 27 Décembre 2018 à 16:36
+-- Généré le :  Jeu 27 Décembre 2018 à 18:36
 -- Version du serveur :  10.1.26-MariaDB-0+deb9u1
 -- Version de PHP :  7.0.33-0+deb9u1
 
@@ -115,13 +115,6 @@ CREATE TABLE IF NOT EXISTS `experience` (
   PRIMARY KEY (`id_movie`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
---
--- Contenu de la table `experience`
---
-
-INSERT INTO `experience` (`id_movie`, `rating`, `lastseen`) VALUES
-(9160, 5, '2000-01-01');
-
 -- --------------------------------------------------------
 
 --
@@ -180,13 +173,6 @@ CREATE TABLE IF NOT EXISTS `media` (
   KEY `container` (`container`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
---
--- Contenu de la table `media`
---
-
-INSERT INTO `media` (`id_medium`, `id_movie`, `container`, `videocodec`, `audiocodec`, `height`, `width`, `comment`, `shelfmark`) VALUES
-(1111, 9160, 'BluRay', NULL, NULL, 1080, 1920, '', '0');
-
 -- --------------------------------------------------------
 
 --
@@ -199,13 +185,6 @@ CREATE TABLE IF NOT EXISTS `media-audio` (
   PRIMARY KEY (`id_medium`,`language`),
   KEY `language` (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- Contenu de la table `media-audio`
---
-
-INSERT INTO `media-audio` (`id_medium`, `language`) VALUES
-(1111, 'en');
 
 -- --------------------------------------------------------
 
@@ -246,14 +225,6 @@ CREATE TABLE IF NOT EXISTS `media-subs` (
   KEY `language` (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
---
--- Contenu de la table `media-subs`
---
-
-INSERT INTO `media-subs` (`id_medium`, `language`) VALUES
-(1111, 'en'),
-(1111, 'fr');
-
 -- --------------------------------------------------------
 
 --
@@ -270,13 +241,6 @@ CREATE TABLE IF NOT EXISTS `movies` (
   KEY `title` (`title`(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
---
--- Contenu de la table `movies`
---
-
-INSERT INTO `movies` (`id_movie`, `title`, `year`, `imdb_id`, `originaltitle`) VALUES
-(9160, 'Casablanca', 1942, NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -289,14 +253,6 @@ CREATE TABLE IF NOT EXISTS `movies-actors` (
   PRIMARY KEY (`id_movie`,`id_person`),
   KEY `id_person` (`id_person`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- Contenu de la table `movies-actors`
---
-
-INSERT INTO `movies-actors` (`id_movie`, `id_person`) VALUES
-(9160, 1821),
-(9160, 1822);
 
 -- --------------------------------------------------------
 
@@ -311,15 +267,6 @@ CREATE TABLE IF NOT EXISTS `movies-categories` (
   KEY `category` (`category`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
---
--- Contenu de la table `movies-categories`
---
-
-INSERT INTO `movies-categories` (`id_movie`, `category`) VALUES
-(9160, 'Drame'),
-(9160, 'Guerre'),
-(9160, 'Romantique');
-
 -- --------------------------------------------------------
 
 --
@@ -332,13 +279,6 @@ CREATE TABLE IF NOT EXISTS `movies-makers` (
   PRIMARY KEY (`id_movie`,`id_person`),
   KEY `id_person` (`id_person`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- Contenu de la table `movies-makers`
---
-
-INSERT INTO `movies-makers` (`id_movie`, `id_person`) VALUES
-(9160, 1820);
 
 -- --------------------------------------------------------
 
