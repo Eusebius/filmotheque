@@ -1,5 +1,4 @@
-Filmothèque
-===========
+#Filmothèque
 
 Author: Eusebius (eusebius@eusebius.fr)
 
@@ -13,7 +12,7 @@ Disclaimer: This is a pre-alpha version. Do not expect it to work properly. This
 
 This application connects to "My API Films", an interface to the IMDb website, in order to link a movie entry in Filmothèque to a movie entry at IMDb. Unlike Filmothèque, the use of My API Films is restricted to personal purposes. If you plan make a commercial use of Filmothèque, you ought to deactivate the use of the API.
 
-#Database configuration
+##Database configuration
 
 In the provided configuration, the application expects to work on a "films" MySQL database accessible on localhost, with login and password both set to "films". You should of course change these credentials if you deploy the application on a public server.
 The table generation script is at scripts/films.sql
