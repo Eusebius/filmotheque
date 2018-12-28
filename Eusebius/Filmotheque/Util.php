@@ -326,11 +326,13 @@ class Util {
      * @since 0.3.3
      */
     static function log($level, $file, $line, $message) {
-        //TODO make level an enum
-        $conn = Util::getDbConnection();
-        $log = $conn->prepare("insert into `log` (`level`, `file`, `line`, `user`, `message`) values(?, ?, ?, ?, ?)");
-        $log->execute(array($level, $file, $line,
-            isset($_SESSION['auth']) && ($_SESSION['auth'] !== null) ? $_SESSION['auth'] : '', $message));
+        if (array_search($level, array('info', 'warning', 'error', 'fatal'), true) === false) {
+            Util::log('error', __FILE__, __LINE__, 'Attempt to log with an invalid level (' . $level . ') at ' . $file . ':' . $line . '.');
+        } else {
+            $conn = Util::getDbConnection();
+            $log = $conn->prepare("insert into `log` (`level`, `file`, `line`, `user`, `message`) values(?, ?, ?, ?, ?)");
+            $log->execute(array($level, $file, $line, isset($_SESSION['auth']) && ($_SESSION['auth'] !== null) ? $_SESSION['auth'] : '', $message));
+        }
     }
 
     /**
