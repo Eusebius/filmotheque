@@ -293,13 +293,14 @@ class Movie {
         try {
             $conn->beginTransaction();
 
-            if ($this->rating != null && $this->rating != '') {
+            //if ($this->rating != null && $this->rating != '') {
                 $setLastSeen = $conn->prepare('update experience set lastseen=? where id_movie=?');
                 $setLastSeen->execute(array($this->lastseen, $this->movieID));
+                /*
             } else {
                 $setLastSeen = $conn->prepare('insert into experience (lastseen, id_movie) values(?, ?)');
                 $setLastSeen->execute(array($this->lastseen, $this->movieID));
-            }
+            }*/
 
             $conn->commit();
         } catch (PDOException $e) {
