@@ -40,8 +40,6 @@ use DateTime;
  * @since 0.2.6
  */
 class Util {
-    
-    //TODO merge Util::fatal into Util::log?
 
     //TODO propose a check for date strings (cf lastseen)
     //TODO propose custom check for rating (scale 1-5)
@@ -102,8 +100,6 @@ class Util {
         //TODO maybe validate against a regexp for a path starting with /
         $sanitizedURI = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
         if ($sanitizedURI === false && strpos('.', $sanitizedURI) !== false) {
-            Util::log('fatal', 'util', 'Unable to validate request URI: '
-                    . filter_input(INPUT_SERVER, 'REQUEST_URI'));
             Util::fatal('Unable to validate request URI: ' . filter_input(INPUT_SERVER, 'REQUEST_URI'));
         }
         return $sanitizedURI;
@@ -125,10 +121,7 @@ class Util {
         if (filter_var('http://' . $strippedHttpHost, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
             return $strippedHttpHost;
         } else {
-            Util::log('fatal', 'util', "Impossible to validate HTTP_HOST: "
-                    . "$filteredHttpHost ($strippedHttpHost).");
             Util::fatal("Impossible to validate HTTP_HOST: $filteredHttpHost ($strippedHttpHost).");
-            exit();
         }
     }
 
@@ -182,12 +175,13 @@ class Util {
      * @since 0.2.4
      */
     static function fatal($message) {
+        $backtrace = debug_backtrace(!DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        Util::log('fatal', basename($backtrace[0]['file']) . ':' . $backtrace[0]['line'], $message);
         if (isset($_SESSION['debug']) && $_SESSION['debug'] === true) {
             print_r($message);
             die();
         } else {
-            die('A fatal error has occurred. This application is currently '
-                    . 'broken.');
+            die('A fatal error has occurred. This application is currently broken.');
         }
     }
 
@@ -200,12 +194,7 @@ class Util {
      */
     static function checkChmod() {
         if (!isset($_SESSION['basepath'])) {
-            Util::log('fatal', 'util', 'The application wants to check the '
-                    . 'rights on the "covers" directory, but the basepath is '
-                    . 'not recorded in the session.');
-            Util::fatal('The application wants to check the rights on the '
-                    . '"covers" directory, but the basepath is not recorded in '
-                    . 'the session.');
+            Util::fatal('The application wants to check the rights on the "covers" directory, but the basepath is not recorded in the session.');
         }
         if (!is_writable($_SESSION['basepath'] . '/covers')) {
             echo '<center><strong><font color="red">Erreur de '
@@ -307,9 +296,7 @@ class Util {
         }
         $result = filter_input(INPUT_POST, $POSTindex, $filter, $options);
         if ($result === false) {
-            Util::log('fatal', 'util', "Unable to validate POST parameter against filter $filter: " . filter_input(INPUT_POST, $POSTindex));
             Util::fatal("Unable to validate POST parameter against filter $filter: " . filter_input(INPUT_POST, $POSTindex));
-            exit();
         }
         return $result;
     }
@@ -384,8 +371,7 @@ class Util {
      * @since 0.2.4
      */
     static function getDbConnection() {
-        if (!isset($_SESSION['config']['db_type']) || !isset($_SESSION['config']['db_server']) || !isset($_SESSION['config']['db_db']) || !isset($_SESSION['config']['db_user']) || !isset($_SESSION['config']['db_password'])) {            
-            Util::log('fatal', 'util', 'Database configuration is not properly set up in session.');
+        if (!isset($_SESSION['config']['db_type']) || !isset($_SESSION['config']['db_server']) || !isset($_SESSION['config']['db_db']) || !isset($_SESSION['config']['db_user']) || !isset($_SESSION['config']['db_password'])) {
             Util::fatal('Database configuration is not properly set up in session.');
         }
         try {
@@ -398,8 +384,7 @@ class Util {
             $pdoconn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdoconn->query("SET NAMES utf8");
         } catch (PDOException $e) {
-            Util::log('fatal', 'util', 'Error while connecting to the database: ' . $e->getMessage());
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while connecting to the database: ' . $e->getMessage());
         }
         return $pdoconn;
     }

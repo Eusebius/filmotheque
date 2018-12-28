@@ -41,15 +41,11 @@ $stdRegexp = '/^[a-z_\-0-9]*$/i';
 
 $login = filter_input(INPUT_POST, 'login', FILTER_VALIDATE_REGEXP, array('options' => array("regexp" => $stdRegexp)));
 if ($login === false || $login === '') {
-    $message = 'Invalid login provided: ' . filter_input(INPUT_POST, 'login');
-    Util::log('fatal', 'doadduser', $message);
-    Util::fatal($message);
+    Util::fatal('Invalid login provided: ' . filter_input(INPUT_POST, 'login'));
 }
 
 $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
 if ($email === false) {
-    $message = 'Invalid e-mail provided: ' . filter_input(INPUT_POST, 'email');
-    Util::log('fatal', 'doadduser', $message);
     Util::fatal('Invalid e-mail provided: ' . filter_input(INPUT_POST, 'email'));
 }
 
@@ -62,8 +58,6 @@ if (!is_null($roles) && $roles !== false) {
     $validRoles = Auth::getAllRoles();
     foreach ($roles as $role) {
         if (!in_array($role, $validRoles)) {
-            $message = 'Invalid role provided: ' . $role;
-            Util::log('fatal', 'doadduser', $message);
             Util::fatal('Invalid role provided: ' . $role);
         }
     }

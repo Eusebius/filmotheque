@@ -74,8 +74,7 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
                             $containers->execute();
                             $containerArray = $containers->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
-                            Util::log('fatal', 'updatemedium', 'Error while listing containers: ' . $e->getMessage());
-                            Util::fatal($e->getMessage());
+                            Util::fatal('Error while listing containers: ' . $e->getMessage());
                         }
                         foreach ($containerArray as $container) {
                             if ($container['container'] != '') {
@@ -97,14 +96,12 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
                 $next = $conn->prepare('SELECT shelfmark+1 next FROM `media` m WHERE not exists (select shelfmark from media where media.shelfmark = m.shelfmark+1) and m.shelfmark is not null order by next limit 1');
                 $next->execute();
                 if ($next->rowCount() == 0) {
-                    Util::log('fatal', 'updatemedium', 'Error while trying to get next shelfmark (no entries in database)');
-                    Util::fatal('Impossible de trouver la prochaine cote disponible');
+                    Util::fatal('Error while trying to get next shelfmark (no entries in database)');
                 }
                 $nextArray = $next->fetchall(PDO::FETCH_ASSOC);
                 $nextShelfmark = $nextArray[0]['next'];
             } catch (PDOException $e) {
-                Util::log('fatal', 'updatemedium', 'Error while trying to get next shelfmark: ' . $e->getMessage());
-                Util::fatal($e->getMessage());
+                Util::fatal('Error while trying to get next shelfmark: ' . $e->getMessage());
             }
             ?>
             <tr><td>Cote&nbsp;:</td><td><input type="text" name="shelfmark" value="<?php echo $medium->getShelfmark(); ?>"/></td><td>(première cote disponible&nbsp;: <?php echo $nextShelfmark; ?>)</td></tr>
@@ -117,8 +114,7 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
                             $languages->execute();
                             $languageArray = $languages->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
-                            Util::log('fatal', 'updatemedium', 'Error while listing languages: ' . $e->getMessage());
-                            Util::fatal($e->getMessage());
+                            Util::fatal('Error while listing languages: ' . $e->getMessage());
                         }
                         foreach ($languageArray as $lang) {
                             echo '<option value="' . $lang['language'] . '" ';
