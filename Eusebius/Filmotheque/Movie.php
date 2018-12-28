@@ -569,6 +569,23 @@ class Movie {
         }
         return $result;
     }
+    
+    /**
+     * Removes the link with an IMDb entry (and immediately commits to the database).
+     * 
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.3
+     */
+    public function unsetIMDb() {
+        $this->imdbID = '';
+        $conn = Util::getDbConnection();
+        try {
+            $unsetIMDb = $conn->prepare("update movies set `imdb_id`=NULL where `id_movie`=?");
+            $unsetIMDb->execute(array($this->movieID));
+        } catch (PDOException $e) {
+            Util::fatal('Error while unsetting IMDb link for movie ' . $this->movieID . ': ' . $e->getMessage());
+        }
+    }
 
     /**
      * Retrieve the names ({@link makers}) and IDs ({@link makersID}) of the 

@@ -157,6 +157,10 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
             echo '<p><a href="?page=getimdb&id_movie=' . $id_movie . '">Lier à une fiche IMDb</a></p>';
             echo '<p><a href="scripts/doabandonimdb.php?id_movie=' . $id_movie . '">Le film n\'a pas de correspondance dans IMDb</a></p>';
             echo "<br /><br />\n";
+        } else {
+            echo '<p><a href="?page=getimdb&id_movie=' . $id_movie . '">Changer la fiche IMDb liée</a></p>';
+            echo '<p><a href="scripts/doremoveimdb.php?id_movie=' . $id_movie . '">Supprimer la correspondance IMDb</p>';
+            echo '<br />';
         }
         echo '<a href="scripts/dodeletemovie.php?id_movie=' . $id_movie . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ' . addslashes($movie->getTitle()) . ' ?\')"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
     }

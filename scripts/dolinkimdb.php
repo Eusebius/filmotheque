@@ -80,10 +80,12 @@ if ($id_movie_string !== NULL && $id_movie_string !== '' && $imdb_id !== NULL &&
             if ($cover != null) {
                 $cover = $cover->nodeValue;
                 $coverdest = $_SESSION['basepath'] . 'covers/' . $movie->getID() . '.jpg';
-                if (!file_exists($coverdest)) {
-                    copy($cover, $coverdest);
+                if (file_exists($coverdest)) {
+                    unlink($coverdest);
                 }
+                copy($cover, $coverdest);
             }
+            unset($_SESSION['imdbdata']);
             header('Location:../?page=moviedetails&id_movie=' . $id_movie);
             die();
         }
