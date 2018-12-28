@@ -30,9 +30,11 @@
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
+
 use Eusebius\Filmotheque\Auth;
 use Eusebius\Filmotheque\Movie;
 use Eusebius\Filmotheque\Util;
+
 Auth::ensurePermission('write');
 
 $id_movie_string = filter_input(INPUT_GET, 'id_movie', FILTER_SANITIZE_NUMBER_INT);
@@ -49,40 +51,39 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
     $movie = new Movie($id_movie);
 
     echo '<h2>' . $movie->getTitle() . " - lier à une fiche IMDb</h2>\n";
-    
+
     $xml = new DomDocument();
-    
+
     $imdb_id = filter_input(INPUT_GET, 'imdb_id', FILTER_SANITIZE_STRING);
     if ($imdb_id !== false && $imdb_id !== NULL && $imdb_id !== '') {
         $xml->load('http://myapifilms.com/imdb/idIMDB?idIMDB=' . $imdb_id . '&format=xml&token=' . $apiToken);
+        $movies = $xml->getElementsByTagName('movie');
         $item = $xml->getElementsByTagName('movie')->item(0);
     } else {
-        $query = 'http://myapifilms.com/imdb/idIMDB?title=' . $movie->getTitle() . '&format=xml&limit=1&token=' . $apiToken;
+        $query = 'http://myapifilms.com/imdb/idIMDB?title=' . $movie->getTitle() . '&format=xml&limit=5&token=' . $apiToken;
         //Util::debug($query);
         $xml->load($query);
+        $movies = $xml->getElementsByTagName('movie');
         $item = $xml->getElementsByTagName('movie')->item(0);
     }
 
     //Util::debug($xml);
     //Util::debug($xml->saveXML());
 
-    if ($item != null) {
-        if (!isset($_SESSION['imdbdata'])) {
-            $_SESSION['imdbdata'] = array();
-        }
-        $_SESSION['imdbdata'][$id_movie] = $xml->saveXML();
-        //die($_SESSION['imdbdata'][$id_movie]);
+    if (!isset($_SESSION['imdbdata'])) {
+        $_SESSION['imdbdata'] = array();
+    }
+    $_SESSION['imdbdata'][$id_movie] = $xml->saveXML();
+
+    foreach ($movies as $item) {
+        $imdb_id = $item->getElementsByTagName('idIMDB')->item(0)->nodeValue;
         $originaltitle = $item->getElementsByTagName('title')->item(0)->nodeValue;
-        if ($imdb_id == '') {
-            $imdb_id = $item->getElementsByTagName('idIMDB')->item(0)->nodeValue;
-        }
         $cover = $item->getElementsByTagName('urlPoster')->item(0);
         if ($cover != null) {
             $cover = $cover->nodeValue;
         }
         $year = $item->getElementsByTagName('year')->item(0)->nodeValue;
         ?>
-
         <table border="1">
             <tr>
                 <td colspan="2" align="center">
@@ -124,41 +125,29 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
                         <input type="hidden" name="imdb_id" value="<?php echo $imdb_id; ?>" />
                         <input type="submit" value="Utiliser cette fiche" />
                     </form>
-                    <br />
-                    <form action="" method="GET">
-                        <input type="hidden" name="page" value="getimdb" />
-                        <input type="hidden" name="id_movie" value="<?php echo $movie->getID(); ?>" />
-                        <input type="text" name="imdb_id"/>
-                        <input type="submit" value="Saisir un identifiant IMDb" />
-                    </form>
-                </td>
-            </tr>
-        </table>
-
-        <?php
-    } else {
-        ?>
-
-        <table border="1">
-            <tr>
-                <td colspan="2" align="center">
-                    <strong>Fiche non trouvée</strong>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" align="center">
-                    <form action="" method="GET">
-                        <input type="hidden" name="page" value="getimdb" />
-                        <input type="hidden" name="id_movie" value="<?php echo $movie->getID(); ?>" />
-                        <input type="text" name="imdb_id"/>
-                        <input type="submit" value="Saisir un identifiant IMDb" />
-                    </form>
                 </td>
             </tr>
         </table>
         <?php
     }
+    ?>
 
+    <br />
+    <table border="1">
+        <tr><th>Saisie manuelle</th></tr>
+        <tr>
+            <td>
+                <form action="" method="GET">
+                    <input type="hidden" name="page" value="getimdb" />
+                    <input type="hidden" name="id_movie" value="<?php echo $movie->getID(); ?>" />
+                    <input type="text" name="imdb_id"/>
+                    <input type="submit" value="Saisir un identifiant IMDb" />
+                </form>
+            </td>
+        </tr>
+    </table>
+    </p>
+    <?php
     echo '<p><a href="?page=moviedetails&id_movie=' . $movie->getID()
     . '">Retour à la page du film</a></p>';
 } else {
