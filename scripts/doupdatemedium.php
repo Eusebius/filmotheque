@@ -48,8 +48,8 @@ if ($id_medium_string !== NULL && $id_medium_string !== '') {
 
     $medium->setValues(Util::getPOSTValueOrNull('container', Util::POST_CHECK_STRING), 
             Util::getPOSTValueOrNull('height', Util::POST_CHECK_INT), 
-            Util::getPOSTValueOrNull('width', Util::POST_CHECK_INT), 
-            Util::getPOSTValueOrNull('comment', Util::POST_CHECK_STRING), 
+            Util::getPOSTValueOrNull('width', Util::POST_CHECK_INT),
+            Util::getPOSTValueOrNull('comment', Util::POST_FILTER_SANITIZE_FULL_SPECIAL_CHARS),
             Util::getPOSTValueOrNull('shelfmark', Util::POST_CHECK_INT), 
             Util::getPOSTValueOrNull('audio', Util::POST_CHECK_STRING_ARRAY), 
             Util::getPOSTValueOrNull('subs', Util::POST_CHECK_STRING_ARRAY));

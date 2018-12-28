@@ -48,6 +48,7 @@ class Util {
     const POST_CHECK_STRING_ARRAY = 2;
     const POST_CHECK_INT_ARRAY = 3;
     const POST_CHECK_RAW = 4;
+    const POST_FILTER_SANITIZE_FULL_SPECIAL_CHARS = 5;
 
     /**
      * Redirects the visitor to the main page of the application and 
@@ -288,6 +289,10 @@ class Util {
             case Util::POST_CHECK_INT_ARRAY:
                 $filter = FILTER_SANITIZE_NUMBER_INT;
                 $options = FILTER_REQUIRE_ARRAY;
+                break;
+            case Util::POST_FILTER_SANITIZE_FULL_SPECIAL_CHARS:
+                $filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
+                $options = FILTER_FLAG_NO_ENCODE_QUOTES;
                 break;
             case Util::POST_CHECK_STRING:
             default:
