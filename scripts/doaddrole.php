@@ -43,7 +43,7 @@ if ($role === false || $role === '') {
     Util::fatal('Error while creating role: invalid role name provided (' . filter_input(INPUT_POST, 'role') . ')');
 }
 if (in_array($role, Auth::getAllRoles())) {
-    Util::log('error', 'admin', 'Error while creating role: role ' . $role . 'already exists');
+    Util::log('error', __FILE__, __LINE__, 'Error while creating role: role ' . $role . ' already exists');
     $_SESSION['error'] = 'Ce rôle existe déjà&nbsp;: ' . $role;
     header('Location:../?page=admin/manageusers.inc.php');
     die();
@@ -63,8 +63,7 @@ try {
     $addRole->execute(array($role, $description));
 
     $pdo->commit();
-    Util::log('info', 'admin', 'Role ' . $role 
-            . ' created');
+    Util::log('info', __FILE__, __LINE__, 'Role ' . $role . ' created');
 } catch (PDOException $e) {
     $pdo->rollBack();
     Util::fatal('Error while creating role ' . $role . ': ' . $e->getMessage());

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  localhost:3306
--- Généré le :  Jeu 27 Décembre 2018 à 18:36
+-- Généré le :  Ven 28 Décembre 2018 à 10:45
 -- Version du serveur :  10.1.26-MariaDB-0+deb9u1
 -- Version de PHP :  7.0.33-0+deb9u1
 
@@ -143,11 +143,12 @@ INSERT INTO `languages` (`language`) VALUES
 CREATE TABLE IF NOT EXISTS `log` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `level` enum('info','warning','error','fatal') COLLATE utf8_bin NOT NULL DEFAULT 'info',
-  `component` varchar(32) COLLATE utf8_bin NOT NULL,
+  `file` varchar(255) COLLATE utf8_bin NOT NULL,
+  `line` int(11) NOT NULL,
   `user` varchar(255) COLLATE utf8_bin NOT NULL,
   `message` varchar(255) COLLATE utf8_bin NOT NULL,
   KEY `level` (`level`),
-  KEY `component` (`component`)
+  KEY `file` (`file`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
@@ -450,7 +451,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`login`, `email`, `password`) VALUES
-('admin', NULL, '$2y$10$XTOHjbXWky4JHVUaanvWLuJfNvV58IRd1bUuGQp3XicPgJQmJSNDe');
+('admin', NULL, '$2y$10$XTOHjbXWky4JHVUaanvWLuJfNvV58IRd1bUuGQp3XicPgJQmJSNDe'),
+('test', 'test@euserbius.fr', '$2y$10$DvaR7I3dndjEeH/32wLYou9WjpYIKjD8QnM0.ut/a2QdY2n6VEUiO');
 
 -- --------------------------------------------------------
 
@@ -470,7 +472,8 @@ CREATE TABLE IF NOT EXISTS `users-roles` (
 --
 
 INSERT INTO `users-roles` (`login`, `role`) VALUES
-('admin', 'admin');
+('admin', 'admin'),
+('test', 'ro');
 
 -- --------------------------------------------------------
 

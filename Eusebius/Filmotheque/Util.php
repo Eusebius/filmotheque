@@ -176,7 +176,7 @@ class Util {
      */
     static function fatal($message) {
         $backtrace = debug_backtrace(!DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 1);
-        Util::log('fatal', basename($backtrace[0]['file']) . ':' . $backtrace[0]['line'], $message);
+        Util::log('fatal', $backtrace[0]['file'], $backtrace[0]['line'], $message);
         if (isset($_SESSION['debug']) && $_SESSION['debug'] === true) {
             print_r($message);
             die();
@@ -325,10 +325,11 @@ class Util {
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.3.3
      */
-    static function log($level, $component, $message) {
+    static function log($level, $file, $line, $message) {
+        //TODO make level an enum
         $conn = Util::getDbConnection();
-        $log = $conn->prepare("insert into `log` (`level`, `component`, `user`, `message`) values(?, ?, ?, ?)");
-        $log->execute(array($level, $component,
+        $log = $conn->prepare("insert into `log` (`level`, `file`, `line`, `user`, `message`) values(?, ?, ?, ?, ?)");
+        $log->execute(array($level, $file, $line,
             isset($_SESSION['auth']) && ($_SESSION['auth'] !== null) ? $_SESSION['auth'] : '', $message));
     }
 

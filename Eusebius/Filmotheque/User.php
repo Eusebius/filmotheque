@@ -243,9 +243,7 @@ class User {
         }
         $pdo->commit();
         $this->writeRolesInDB();
-        Util::log('info', 'admin', 'User ' . $this->login
-                . ' created with roles: '
-                . implode(', ', $this->roles) . '.');
+        Util::log('info', __FILE__, __LINE__, 'User ' . $this->login . ' created with roles: ' . implode(', ', $this->roles) . '.');
     }
 
     /**
@@ -276,8 +274,7 @@ class User {
             Util::fatal('Error while deleting user ' . $this->login . ': ' . $e->getMessage());
         }
         $pdo->commit();
-        Util::log('info', 'admin', 'User ' . $this->login
-                . ' deleted');
+        Util::log('info', __FILE__, __LINE__, 'User ' . $this->login . ' deleted');
     }
 
     /**
@@ -300,7 +297,7 @@ class User {
             try {
                 $updateEmail = $pdo->prepare('update users set email=? where login=?');
                 $updateEmail->execute(array($email, $this->login));
-                Util::log('info', 'admin', 'E-mail of user ' . $this->login  . ' updated to ' . $this->email);
+                Util::log('info', __FILE__, __LINE__, 'E-mail of user ' . $this->login  . ' updated to ' . $this->email);
             } catch (PDOException $e) {
                 Util::fatal('Error while updating e-mail of user ' . $this->login . ': ' . $e->getMessage());
             }
@@ -324,8 +321,7 @@ class User {
         } else {
             $this->setRoles($roles);
             $this->writeRolesInDB();
-            Util::log('info', 'admin', 'Roles of user ' . $this->login
-                    . ' updated to (' . implode(', ', $this->roles) . ')');
+            Util::log('info', __FILE__, __LINE__, 'Roles of user ' . $this->login . ' updated to (' . implode(', ', $this->roles) . ')');
         }
     }
 

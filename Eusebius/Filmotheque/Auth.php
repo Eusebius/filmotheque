@@ -105,11 +105,9 @@ class Auth {
         $remoteIP = (is_string($_SERVER['REMOTE_ADDR']) ?
                 $_SERVER['REMOTE_ADDR'] : '[unknown IP]');
         if ($result === true) {
-            Util::log('info', 'auth', 'Successful authentication of user "'
-                    . $login . '" from ' . $remoteIP . '.');
+            Util::log('info', __FILE__, __LINE__, 'Successful authentication of user "' . $login . '" from ' . $remoteIP . '.');
         } else {
-            Util::log('warning', 'auth', 'Failed authentication of user "'
-                    . $login . '" from ' . $remoteIP . '.');
+            Util::log('warning', __FILE__, __LINE__, 'Failed authentication of user "' . $login . '" from ' . $remoteIP . '.');
         }
 
         return $result;

@@ -63,8 +63,7 @@ try {
     $deleteRole->execute(array($role));
     
     $pdo->commit();
-    Util::log('info', 'admin', 'Role ' . $role 
-            . ' deleted');
+    Util::log('info', __FILE__, __LINE__, 'Role ' . $role . ' deleted');
 } catch (PDOException $e) {
     $pdo->rollBack();
     Util::fatal('Error while deleting role ' . $role . ': ' . $e->getMessage());
