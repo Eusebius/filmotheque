@@ -34,7 +34,7 @@ use Eusebius\Filmotheque\Movie;
 use Eusebius\Filmotheque\Util;
 Auth::ensurePermission('write');
 
-$title = Util::getPOSTValueOrNull('title', Util::POST_CHECK_STRING);
+$title = Util::getPOSTValueOrNull('title', Util::POST_FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
 if ($title !== NULL && $title !== '') {
 
