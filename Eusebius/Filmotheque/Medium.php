@@ -30,7 +30,12 @@
 
 namespace Eusebius\Filmotheque;
 
-use PDO,    PDOException;
+use PDO, PDOException;
+
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 /**
  * Class representing a given medium in the application, and managing its 
@@ -65,11 +70,25 @@ class Medium {
     private $movieID;
 
     /**
-     * @var \string Type of medium (e.g. 'DVD', 'mkv'...).
+     * @var \string Medium physical or logical container (e.g. 'DVD', 'MKV'...).
      * @author Eusebius <eusebius@eusebius.fr>
-     * @since 0.2.4
+     * @since 0.3.3
      */
-    private $type;
+    private $container;
+
+    /**
+     * @var \string Main video codec (e.g. 'DivX', 'H.264'...).
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.3
+     */
+    private $videocodec;
+
+    /**
+     * @var \string Main audio codec (e.g. 'FLAC', 'MP3'...).
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.3
+     */
+    private $audiocodec;
 
     /**
      * @var \int Screen height in pixels.
@@ -168,13 +187,33 @@ class Medium {
     }
 
     /**
-     * Get the type of the medium.
-     * @return \string The type of the medium.
+     * Get the medium's container type.
+     * @return \string The container type.
      * @author Eusebius <eusebius@eusebius.fr>
-     * @since 0.2.4
+     * @since 0.3.3
      */
-    public function getType() {
-        return $this->type;
+    public function getContainer() {
+        return $this->container;
+    }
+
+    /**
+     * Get the medium's main video codec.
+     * @return \string The main video codec.
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.3
+     */
+    public function getVideoCodec() {
+        return $this->videocodec;
+    }
+
+    /**
+     * Get the medium's main audio codec
+     * @return \string The main audio codec.
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.3
+     */
+    public function getAudioCodec() {
+        return $this->audiocodec;
     }
 
     /**
@@ -234,11 +273,11 @@ class Medium {
      * @since 0.2.4
      */
     public function getAudio() {
-        $r = array();
+        $audioLanguages = array();
         foreach ($this->audio as $lang) {
-            array_push($r, $lang);
+            array_push($audioLanguages, $lang);
         }
-        return $r;
+        return $audioLanguages;
     }
 
     /**
@@ -248,15 +287,17 @@ class Medium {
      * @since 0.2.4
      */
     public function getSubs() {
-        $r = array();
+        $subLanguages = array();
         foreach ($this->subs as $lang) {
-            array_push($r, $lang);
+            array_push($subLanguages, $lang);
         }
-        return $r;
+        return $subLanguages;
     }
 
     /**
      * Delete the medium and all associated information from the database.
+     * 
+     * @SuppressWarnings(PHPMD.ExitExpression)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
@@ -273,7 +314,7 @@ class Medium {
                 }
             }
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while deleting medium ' . $this->mediumID . ': ' . $e->getMessage());
         }
     }
 
@@ -286,34 +327,29 @@ class Medium {
     public function updateAll() {
         $conn = Util::getDbConnection();
         try {
-            $getMedium = $conn->prepare('select media.id_medium, id_movie, type, '
+            $getMedium = $conn->prepare('select media.id_medium, id_movie, '
+                    . 'container, videocodec, audiocodec, '
                     . 'height, width, comment, shelfmark, quality from media, '
                     . '`media-quality` where media.id_medium = ? and '
                     . 'media.id_medium=`media-quality`.id_medium');
 
             $getMedium->execute(array($this->mediumID));
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while retrieving data for medium ' . $this->mediumID . ': ' . $e->getMessage());
         }
         $nMedia = $getMedium->rowCount();
         if ($nMedia == 0) {
-            Util::fatal('<br />' . $getMedium->queryString . '<br />' .
-                    'Erreur inattendue : aucun support ne correspond à l\'ID '
-                    . $this->mediumID . '.<br /><br />'
-                    . '<a href=".">Retour à la page principale</a>'
-            );
+            Util::fatal('Error while retrieving data for medium ' . $this->mediumID . ': no corresponding entry in database');
         }
         if ($nMedia > 1) {
-            Util::fatal(
-                    "Erreur inattendue : plusieurs supports correspondent à l'ID"
-                    . "{$this->mediumID}.<br /><br />"
-                    . '<a href=".">Retour à la page principale</a>'
-            );
+            Util::fatal('Error while retrieving data for medium ' . $this->mediumID . ': several corresponding entries in database');
         }
 
         $mediumArray = $getMedium->fetchall(PDO::FETCH_ASSOC);
         $this->movieID = $mediumArray[0]['id_movie'];
-        $this->type = $mediumArray[0]['type'];
+        $this->container = $mediumArray[0]['container'];
+        $this->videocodec = $mediumArray[0]['videocodec'];
+        $this->audiocodec = $mediumArray[0]['audiocodec'];
         $this->height = $mediumArray[0]['height'];
         $this->width = $mediumArray[0]['width'];
         $this->comment = $mediumArray[0]['comment'];
@@ -337,7 +373,7 @@ class Medium {
             $getAudio->execute(array($this->mediumID));
             $audioArray = $getAudio->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while retrieving audio data for medium ' . $this->mediumID . ': ' . $e->getMessage());
         }
         foreach ($audioArray as $audio) {
             array_push($this->audio, $audio['language']);
@@ -359,7 +395,7 @@ class Medium {
             $getSubs->execute(array($this->mediumID));
             $subArray = $getSubs->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while retrieving subtitle data for medium ' . $this->mediumID . ': ' . $e->getMessage());
         }
         foreach ($subArray as $sub) {
             array_push($this->subs, $sub['language']);
@@ -407,7 +443,7 @@ class Medium {
     /**
      * Set the fields of the medium object, and update the database to mirror 
      * the changes.
-     * @param \string $type The type of the medium ({@link type}).
+     * @param \string $container The container type of the medium ({@link type}).
      * @param \int $height The screen height of the medium, in pixels 
      * ({@link height}).
      * @param \int $width The screen width of the medium, in pixels 
@@ -421,14 +457,16 @@ class Medium {
      * ({@link subs}).
      * @param \int $id_movie The unique identifier of the movie associated to 
      * the medium ({@link id_movie}).
+     * 
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
-    public function setValues($type, $height, $width, $comment, $shelfmark, $audio, $subs, $id_movie = null) {
+    public function setValues($container, $height, $width, $comment, $shelfmark, $audio, $subs, $id_movie = null) {
         if ($id_movie != null) {
             $this->movieID = $id_movie;
         }
-        $this->type = ($type != null ? $type : '');
+        $this->container = ($container != null ? $container : '');
         $this->height = ($height != null ? $height : '');
         $this->width = ($width != null ? $width : '');
         $this->comment = ($comment != null ? $comment : '');
@@ -456,14 +494,14 @@ class Medium {
                     . 'id_medium = ?');
             $checkMedium->execute(array($this->mediumID));
             if ($checkMedium->rowCount() == 0) {
-                $insertMedium = $conn->prepare('insert into media (id_movie, type) '
+                $insertMedium = $conn->prepare('insert into media (id_movie, container) '
                         . 'values (?, ?)');
-                $insertMedium->execute(array($this->movieID, $this->type));
+                $insertMedium->execute(array($this->movieID, $this->container));
                 $this->mediumID = $conn->lastInsertId();
             }
-            $updateMovies = $conn->prepare('update media set type=?, height=?, '
+            $updateMovies = $conn->prepare('update media set container=?, height=?, '
                     . 'width=?, comment=?, shelfmark=? where id_medium=?');
-            $updateMovies->execute(array($this->type,
+            $updateMovies->execute(array($this->container,
                 ($this->height != '' ? $this->height : null),
                 ($this->width != '' ? $this->width : null), $this->comment,
                 ($this->shelfmark != '' ? $this->shelfmark : null),
@@ -486,7 +524,7 @@ class Medium {
             $conn->commit();
         } catch (PDOException $e) {
             $conn->rollBack();
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while writing data for medium ' . $this->mediumID . ': ' . $e->getMessage());
         }
     }
 

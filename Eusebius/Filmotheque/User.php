@@ -2,16 +2,16 @@
 
 /**
  * Eusebius/Filmotheque/User.php
- * 
+ *
  * @author Eusebius <eusebius@eusebius.fr>
  * @since 0.3.2
- * 
- * This is the authentication library of the application, to be included in 
+ *
+ * This is the authentication library of the application, to be included in
  * every page through initialization.inc.php.
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2016 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -36,6 +36,11 @@ use PDO,
     Eusebius\Exceptions\UserExistsException,
     Eusebius\Exceptions\UnauthorizedException;
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 //TODO enforce authorizations on this class's methods
 
 /**
@@ -57,7 +62,7 @@ class User {
      * The new user object is either empty, or populated by fetching data from the database based on the user's login.
      * An authenticated can only fetch his own user object, unless he is an administrator.
      * In this case, he can create an emtpy user object or fetch any user object.
-     * 
+     *
      * @param string $login The login for the user, or null to create an empty user object.
      * @throws UserNotFoundException If a login has been provided but the user does not exist.
      * @since 0.3.2
@@ -71,7 +76,7 @@ class User {
             $this->roles = array();
             $this->permissions = array();
         } else if (!is_string($login)) {
-            Util::fatal("Login provided for user creation is not a string - " . var_dump($login));
+            Util::fatal('Error while building user object: Login provided for user creation is not a string - ' . var_dump($login));
         } else {
             //An authenticated user can only fetch his own record, unless he is an administrator
             if (!isset($_SESSION['auth']) || $_SESSION['auth'] !== $login) {
@@ -90,7 +95,7 @@ class User {
                         . 'where `users`.login=?');
                 $getUser->execute(array($login));
             } catch (PDOException $e) {
-                Util::fatal($e->getMessage());
+                Util::fatal('Error while retrieving data to build ' . 'user object for user ' . $login . ': '. $e->getMessage());
             }
 
             $nbUsers = $getUser->rowCount();
@@ -125,7 +130,7 @@ class User {
             $fetchUserLogins = $pdo->prepare('select login from users');
             $fetchUserLogins->execute();
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while retrieving user list: ' . $e->getMessage());
         }
         $loginArray = $fetchUserLogins->fetchall(PDO::FETCH_ASSOC);
         foreach ($loginArray as $loginEntry) {
@@ -224,7 +229,7 @@ class User {
      */
     public function createInDB() {
         if (is_null($this->login) || is_null($this->email) || is_null($this->password) || is_null($this->roles)) {
-            Util::fatal('The user object is incomplete, impossible to create it.');
+            Util::fatal('Error while trying to create an incomplete user object in database (' . var_dump($this->login) . ', ' . var_dump($this->email) . ', ' . var_dump($this->roles) . ')');
         }
         $pdo = Util::getDbConnection();
         $pdo->beginTransaction();
@@ -238,11 +243,12 @@ class User {
                 throw new UserExistsException('User already exists: ' . $this->login);
             } else {
                 Util::debug($insertUser->errorInfo());
-                Util::fatal($e->getMessage());
+                Util::fatal('Error while creating user ' . $this->login . ': ' . $e->getMessage());
             }
         }
         $pdo->commit();
         $this->writeRolesInDB();
+        Util::log('info', __FILE__, __LINE__, 'User ' . $this->login . ' created with roles: ' . implode(', ', $this->roles) . '.');
     }
 
     /**
@@ -252,7 +258,7 @@ class User {
      */
     public function deleteFromDB() {
         if (is_null($this->login)) {
-            Util::fatal('The user object is incomplete, impossible to delete it.');
+            Util::fatal('Error while trying to delete an incomplete user (no login)');
         }
 
         $pdo = Util::getDbConnection();
@@ -263,16 +269,17 @@ class User {
             $deleteRoles->execute(array($this->login));
         } catch (PDOException $e) {
             $pdo->rollBack();
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while deleting roles of user ' . $this->login . ': ' . $e->getMessage());
         }
         try {
             $deleteUser = $pdo->prepare('delete from users where login=?');
             $deleteUser->execute(array($this->login));
         } catch (PDOException $e) {
             $pdo->rollBack();
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while deleting user ' . $this->login . ': ' . $e->getMessage());
         }
         $pdo->commit();
+        Util::log('info', __FILE__, __LINE__, 'User ' . $this->login . ' deleted');
     }
 
     /**
@@ -283,7 +290,7 @@ class User {
      */
     public function updateEmail($email) {
         if (is_null($this->login)) {
-            Util::fatal('The user object is incomplete, impossible to update it.');
+            Util::fatal('Error while setting the e-mail of an ' . 'incomplete user (no login).');
         } else if (!Auth::hasPermission('admin') && $_SESSION['auth'] !== $this->login) {
             //The authenticated user has no right to update the user object
             throw new UnauthorizedException('The authenticated user ('
@@ -295,9 +302,9 @@ class User {
             try {
                 $updateEmail = $pdo->prepare('update users set email=? where login=?');
                 $updateEmail->execute(array($email, $this->login));
+                Util::log('info', __FILE__, __LINE__, 'E-mail of user ' . $this->login  . ' updated to ' . $this->email);
             } catch (PDOException $e) {
-                Util::fatal('Unable to set new e-mail (' . $email
-                        . ') for user ' . $this->login . ': ' . $e);
+                Util::fatal('Error while updating e-mail of user ' . $this->login . ': ' . $e->getMessage());
             }
         }
     }
@@ -310,15 +317,16 @@ class User {
      */
     public function updateRoles($roles) {
         if (is_null($this->login)) {
-            Util::fatal('The user object is incomplete, impossible to update it.');
+            Util::fatal('Error while trying to update the roles ' . 'of an incomplete user (no login)');
         } else if (!Auth::hasPermission('admin') || $_SESSION['auth'] === $this->login) {
             //The authenticated user has no right to update the user object
             throw new UnauthorizedException('The authenticated user ('
-            . $_SESSION['auth'] . ') is not an admin authorize to update the roles of user '
+            . $_SESSION['auth'] . ') is not an admin authorized to update the roles of user '
             . $this->login . ')');
         } else {
             $this->setRoles($roles);
             $this->writeRolesInDB();
+            Util::log('info', __FILE__, __LINE__, 'Roles of user ' . $this->login . ' updated to (' . implode(', ', $this->roles) . ')');
         }
     }
 
@@ -336,7 +344,7 @@ class User {
                 $deleteRoles->execute(array($this->login));
             } catch (PDOException $e) {
                 $pdo->rollBack();
-                Util::fatal($e->getMessage());
+                Util::fatal('Error while deleting/updating the roles ' . 'of user ' . $this->login . ': ' . $e->getMessage());
             }
             foreach ($this->roles as $role) {
                 try {
@@ -344,7 +352,7 @@ class User {
                     $addRole->execute(array($this->login, $role));
                 } catch (PDOException $e) {
                     $pdo->rollBack();
-                    Util::fatal($e->getMessage());
+                    Util::fatal('Error while adding role '  . $role. ' to user ' . $this->login . ': ' . $e->getMessage());
                 }
             }
             $pdo->commit();

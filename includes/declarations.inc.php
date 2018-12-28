@@ -28,6 +28,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 require_once(__DIR__.'/../Eusebius/Exceptions/UserNotFoundException.php');
 require_once(__DIR__.'/../Eusebius/Exceptions/UserExistsException.php');
 require_once(__DIR__.'/../Eusebius/Filmotheque/Medium.php');

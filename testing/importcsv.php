@@ -11,7 +11,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -95,7 +95,7 @@ while ($line = fgets($csvfile)) {
         $insertMovie = $pdoconn->prepare('insert into `movies` (`title`) values (?)');
         $insertMovieWithYear = $pdoconn->prepare('insert into `movies` (`title`, `year`) values (?, ?)');
     } catch (PDOException $e) {
-        Util::fatal($e->getMessage());
+        Util::fatal('Error while preparing queries: ' . $e->getMessage());
     }
 
     if ($entry['comment'] == '') {
@@ -103,7 +103,7 @@ while ($line = fgets($csvfile)) {
             try {
                 $getMovieByTitle->execute(array($entry['title']));
             } catch (PDOException $e) {
-                Util::fatal($e->getMessage());
+                Util::fatal('Error while getting movies by title: ' . $e->getMessage());
             }
             if ($getMovieByTitle->rowCount() > 0) {
                 $entryArray = $getMovieByTitle->fetchall(PDO::FETCH_ASSOC);
@@ -173,13 +173,13 @@ while ($line = fgets($csvfile)) {
                     try {
                         $insertMovieWithYear->execute(array($entry['title'], $entry['year']));
                     } catch (PDOException $e) {
-                        Util::fatal($e->getMessage());
+                        Util::fatal('Error while inserting movie with year: ' . $e->getMessage());
                     }
                 } else {
                     try {
                         $insertMovie->execute(array($entry['title']));
                     } catch (PDOException $e) {
-                        Util::fatal($e->getMessage());
+                        Util::fatal('Error while inserting movie: ' . $e->getMessage());
                     }
                 }
                 echo 'Movie added (' . $entry['title'] . ').<br />' . "\n";

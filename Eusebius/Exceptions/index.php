@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Eusebius/Exceptions/UserNotFoundException.php
+ * index.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.3.2
+ * @since 0.3.3
  * 
- * Exception thrown when a particular user cannot be found.
+ * This is a redirection to the main page.
  */
 /*
   Filmothèque
@@ -27,25 +27,4 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Eusebius\Exceptions;
-
-use Exception;
-
-if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
-    header('Location: ../');
-    die();
-}
-
-/**
- * Exception thrown when a particular user cannot be found.
- *
- * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.3.2
- */
-class UserNotFoundException extends Exception {
-
-    public function __construct($message) {
-        parent::__construct($message);
-    }
-
-}
+header('Location: ../');

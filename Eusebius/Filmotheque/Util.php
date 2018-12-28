@@ -29,8 +29,14 @@
 
 namespace Eusebius\Filmotheque;
 
-use PDO,    PDOException;
+use PDO,
+    PDOException;
 use DateTime;
+
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 /**
  * Class providing static utility functions.
@@ -47,6 +53,7 @@ class Util {
     const POST_CHECK_STRING_ARRAY = 2;
     const POST_CHECK_INT_ARRAY = 3;
     const POST_CHECK_RAW = 4;
+    const POST_FILTER_SANITIZE_FULL_SPECIAL_CHARS = 5;
 
     /**
      * Redirects the visitor to the main page of the application and 
@@ -100,7 +107,6 @@ class Util {
         $sanitizedURI = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
         if ($sanitizedURI === false && strpos('.', $sanitizedURI) !== false) {
             Util::fatal('Unable to validate request URI: ' . filter_input(INPUT_SERVER, 'REQUEST_URI'));
-            exit();
         }
         return $sanitizedURI;
     }
@@ -122,7 +128,6 @@ class Util {
             return $strippedHttpHost;
         } else {
             Util::fatal("Impossible to validate HTTP_HOST: $filteredHttpHost ($strippedHttpHost).");
-            exit();
         }
     }
 
@@ -170,16 +175,19 @@ class Util {
      * Halts the application, with an error message if in debug mode, or 
      * with a generic message otherwise.
      * @param $message The message to display (can be a string or an array).
+     * 
+     * @SuppressWarnings(PHPMD.ExitExpression)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
     static function fatal($message) {
+        $backtrace = debug_backtrace(!DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        Util::log('fatal', $backtrace[0]['file'], $backtrace[0]['line'], $message);
         if (isset($_SESSION['debug']) && $_SESSION['debug'] === true) {
             print_r($message);
             die();
         } else {
-            die('A fatal error has occurred. This application is currently '
-                    . 'broken.');
+            die('A fatal error has occurred. This application is currently broken.');
         }
     }
 
@@ -192,14 +200,32 @@ class Util {
      */
     static function checkChmod() {
         if (!isset($_SESSION['basepath'])) {
-            Util::fatal('The application wants to check the rights on the '
-                    . '"covers" directory, but the basepath is not recorded in '
-                    . 'the session.');
+            Util::fatal('The application wants to check the rights on the "covers" directory, but the basepath is not recorded in the session.');
         }
         if (!is_writable($_SESSION['basepath'] . '/covers')) {
             echo '<center><strong><font color="red">Erreur de '
             . 'configuration&nbsp;: le répertoire "covers" doit être accessible'
             . 'en écriture.</font></strong></center>';
+        }
+    }
+
+    /**
+     * Check that the password of the initial `admin` account has been changed. 
+     * Otherwise, print an error message informing the user (even if not in
+     * debug mode).
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.3
+     */
+    static function checkAdminPwd() {
+        $dbconn = Util::getDbConnection();
+
+        $pwRes = $dbconn->query('select login from `users` where login=\'admin\' and '
+                . 'password=\'$2y$10$XTOHjbXWky4JHVUaanvWLuJfNvV58IRd1bUuGQp3XicPgJQmJSNDe\'');
+
+        if ($pwRes->rowCount() > 0) {
+            echo '<center><strong><font color="red">Erreur de '
+            . 'configuration&nbsp;: le mot de passe du compte admin n\'a pas '
+            . 'été modifié.</font></strong></center>';
         }
     }
 
@@ -269,6 +295,10 @@ class Util {
                 $filter = FILTER_SANITIZE_NUMBER_INT;
                 $options = FILTER_REQUIRE_ARRAY;
                 break;
+            case Util::POST_FILTER_SANITIZE_FULL_SPECIAL_CHARS:
+                $filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
+                $options = FILTER_FLAG_NO_ENCODE_QUOTES;
+                break;
             case Util::POST_CHECK_STRING:
             default:
                 $filter = FILTER_SANITIZE_STRING;
@@ -277,7 +307,6 @@ class Util {
         $result = filter_input(INPUT_POST, $POSTindex, $filter, $options);
         if ($result === false) {
             Util::fatal("Unable to validate POST parameter against filter $filter: " . filter_input(INPUT_POST, $POSTindex));
-            exit();
         }
         return $result;
     }
@@ -296,6 +325,24 @@ class Util {
             $_SESSION['movie'] = new Movie($movieID);
         }
         return $_SESSION['movie'];
+    }
+
+    /**
+     * Logs a message in the database.
+     * @param type $level The message level ('info', 'warning', 'error', or 'fatal').
+     * @param type $component The component logging the event.
+     * @param type $message The log message.
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.3
+     */
+    static function log($level, $file, $line, $message) {
+        if (array_search($level, array('info', 'warning', 'error', 'fatal'), true) === false) {
+            Util::log('error', __FILE__, __LINE__, 'Attempt to log with an invalid level (' . $level . ') at ' . $file . ':' . $line . '.');
+        } else {
+            $conn = Util::getDbConnection();
+            $log = $conn->prepare("insert into `log` (`level`, `file`, `line`, `user`, `message`) values(?, ?, ?, ?, ?)");
+            $log->execute(array($level, $file, $line, isset($_SESSION['auth']) && ($_SESSION['auth'] !== null) ? $_SESSION['auth'] : '', $message));
+        }
     }
 
     /**
@@ -338,8 +385,7 @@ class Util {
      */
     static function getDbConnection() {
         if (!isset($_SESSION['config']['db_type']) || !isset($_SESSION['config']['db_server']) || !isset($_SESSION['config']['db_db']) || !isset($_SESSION['config']['db_user']) || !isset($_SESSION['config']['db_password'])) {
-            Util::fatal('Database configuration is not properly set up in '
-                    . 'session.');
+            Util::fatal('Database configuration is not properly set up in session.');
         }
         try {
             $pdoconn = new PDO(
@@ -351,7 +397,7 @@ class Util {
             $pdoconn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdoconn->query("SET NAMES utf8");
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while connecting to the database: ' . $e->getMessage());
         }
         return $pdoconn;
     }
@@ -390,7 +436,7 @@ class Util {
         $withoutParams1 = Util::stripPathFromDir($withoutEusebius, '?');
         $withoutIndex = Util::stripPathFromDir($withoutParams1, 'index.php');
         if (substr($withoutIndex, -1) !== '/') {
-            $withoutIndex .='/';
+            $withoutIndex .= '/';
         }
         return $withoutIndex;
     }
@@ -400,6 +446,7 @@ class Util {
      * 
      * @param \string $path The original string.
      * @dir \string $dir The prefix to look for.
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
      * 
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.6

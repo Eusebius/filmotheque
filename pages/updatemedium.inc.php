@@ -9,7 +9,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,11 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
@@ -65,24 +70,24 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
         <input type="hidden" name="id_medium" value="<?php echo $id_medium; ?>" />
         <table>
             <tr><td>Titre du film&nbsp;:</td><td><?php echo $movie->getTitle(); ?></td></tr>
-            <tr><td>Type&nbsp;:</td><td>
-                    <select name="type">
+            <tr><td>Conteneur&nbsp;:</td><td>
+                    <select name="container">
                         <?php
                         $conn = Util::getDbConnection();
                         try {
-                            $types = $conn->prepare('select distinct type from `media`');
-                            $types->execute();
-                            $typeArray = $types->fetchall(PDO::FETCH_ASSOC);
+                            $containers = $conn->prepare('select distinct container from `containers`');
+                            $containers->execute();
+                            $containerArray = $containers->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
-                            Util::fatal($e->getMessage());
+                            Util::fatal('Error while listing containers: ' . $e->getMessage());
                         }
-                        foreach ($typeArray as $type) {
-                            if ($type['type'] != '') {
-                                echo '<option value="' . $type['type'] . '" ';
-                                if ($type['type'] == $medium->getType()) {
+                        foreach ($containerArray as $container) {
+                            if ($container['container'] != '') {
+                                echo '<option value="' . $container['container'] . '" ';
+                                if ($container['container'] == $medium->getContainer()) {
                                     echo 'selected';
                                 }
-                                echo '>' . $type['type'] . '</option>' . "\n";
+                                echo '>' . $container['container'] . '</option>' . "\n";
                             }
                         }
                         ?>
@@ -96,12 +101,12 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
                 $next = $conn->prepare('SELECT shelfmark+1 next FROM `media` m WHERE not exists (select shelfmark from media where media.shelfmark = m.shelfmark+1) and m.shelfmark is not null order by next limit 1');
                 $next->execute();
                 if ($next->rowCount() == 0) {
-                    Util::fatal('Impossible de trouver la prochaine cote disponible');
+                    Util::fatal('Error while trying to get next shelfmark (no entries in database)');
                 }
                 $nextArray = $next->fetchall(PDO::FETCH_ASSOC);
                 $nextShelfmark = $nextArray[0]['next'];
             } catch (PDOException $e) {
-                Util::fatal($e->getMessage());
+                Util::fatal('Error while trying to get next shelfmark: ' . $e->getMessage());
             }
             ?>
             <tr><td>Cote&nbsp;:</td><td><input type="text" name="shelfmark" value="<?php echo $medium->getShelfmark(); ?>"/></td><td>(première cote disponible&nbsp;: <?php echo $nextShelfmark; ?>)</td></tr>
@@ -114,7 +119,7 @@ if ($id_medium_string !== false && $id_medium_string !== NULL && $id_medium_stri
                             $languages->execute();
                             $languageArray = $languages->fetchall(PDO::FETCH_ASSOC);
                         } catch (PDOException $e) {
-                            Util::fatal($e->getMessage());
+                            Util::fatal('Error while listing languages: ' . $e->getMessage());
                         }
                         foreach ($languageArray as $lang) {
                             echo '<option value="' . $lang['language'] . '" ';

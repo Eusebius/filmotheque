@@ -9,7 +9,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,11 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
@@ -49,7 +54,7 @@ Auth::ensurePermission('write');
                         $persons->execute();
                         $personArray = $persons->fetchall(PDO::FETCH_ASSOC);
                     } catch (PDOException $e) {
-                        Util::fatal($e->getMessage());
+                        Util::fatal('Error while listing all persons: ' . $e->getMessage());
                     }
                     foreach ($personArray as $person) {
                         echo '<option value="' . $person['id_person'] . '">' . $person['name'] . '</option>' . "\n";
@@ -74,7 +79,7 @@ Auth::ensurePermission('write');
                         $cats->execute();
                         $catArray = $cats->fetchall(PDO::FETCH_ASSOC);
                     } catch (PDOException $e) {
-                        Util::fatal($e->getMessage());
+                        Util::fatal('Error while listing categories: ' . $e->getMessage());
                     }
                     foreach ($catArray as $cat) {
                         echo '<option value="' . $cat['category'] . '"';
@@ -91,7 +96,7 @@ Auth::ensurePermission('write');
                         $shortlists->execute();
                         $slArray = $shortlists->fetchall(PDO::FETCH_ASSOC);
                     } catch (PDOException $e) {
-                        Util::fatal($e->getMessage());
+                        Util::fatal('Error while listing shortlists: ' . $e->getMessage());
                     }
                     foreach ($slArray as $sl) {
                         echo '<option value="' . $sl['id_shortlist'] . '"';

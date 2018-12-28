@@ -11,7 +11,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2016 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@ Auth::ensureAuthenticated();
             <h1>Filmothèque</h1>
             <?php
             Util::checkChmod();
+            Util::checkAdminPwd();
             if ($_SESSION['debug']) {
                 echo "<hr /><center><em><strong>DEBUG MODE</strong></em></center><hr /><br />\n";
             }
@@ -70,17 +71,19 @@ Auth::ensureAuthenticated();
             //TODO provide a specific input filter for page names
             $getPage = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
 
-            if ($getPage === 'moviedetails') {
+            if (!Auth::hasPermission('read')) {
+                include('pages/noaccess.inc.php');
+            } else if ($getPage === 'moviedetails') {
                 include('pages/moviedetails.inc.php');
-            } else if ($getPage === 'updatemovie') {
+            } else if ($getPage === 'updatemovie' && Auth::hasPermission('write')) {
                 include('pages/updatemovie.inc.php');
-            } else if ($getPage === 'updatemedium') {
+            } else if ($getPage === 'updatemedium' && Auth::hasPermission('write')) {
                 include('pages/updatemedium.inc.php');
-            } else if ($getPage === 'addmedium') {
+            } else if ($getPage === 'addmedium' && Auth::hasPermission('write')) {
                 include('pages/addmedium.inc.php');
-            } else if ($getPage === 'addmovie') {
+            } else if ($getPage === 'addmovie' && Auth::hasPermission('write')) {
                 include('pages/addmovie.inc.php');
-            } else if ($getPage === 'getimdb') {
+            } else if ($getPage === 'getimdb' && Auth::hasPermission('write')) {
                 include('pages/getimdb.inc.php');
             } else if($getPage === 'admin/manageusers.inc.php' && Auth::hasPermission('admin')) {
                 include('pages/admin/manageusers.inc.php');

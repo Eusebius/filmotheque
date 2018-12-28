@@ -11,7 +11,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2016 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,6 +32,11 @@ namespace Eusebius\Filmotheque;
 
 use PDO,
     PDOException;
+
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 /**
  * Class providing static authentication and access control functions.
@@ -61,7 +66,7 @@ class Auth {
     /**
      * Checks that a cleartext password matches with a given hash (as stored in 
      * the database).
-     * This function is to be used jointly with password_encrypt, and uses the 
+     * This function is to be used jointly with encryptPassword, and uses the 
      * same process (SHA256 hashing and base64 encoding of the cleartext 
      * password before passing it to the standard PHP method).
      * @param string $clearTextPassword The cleartext password, as provided by the user.
@@ -90,7 +95,7 @@ class Auth {
             $getUser = $pdo->prepare('select login, password from users where login=?');
             $getUser->execute(array($login));
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while authenticating user "' . $login . '" from ' . $remoteIP . ': ' . $e->getMessage());
         }
 
         $nbUsers = $getUser->rowCount();
@@ -100,6 +105,14 @@ class Auth {
             if (Auth::checkPassword($password, $dbpassword)) {
                 $result = true;
             }
+        }
+
+        $remoteIP = (is_string($_SERVER['REMOTE_ADDR']) ?
+                $_SERVER['REMOTE_ADDR'] : '[unknown IP]');
+        if ($result === true) {
+            Util::log('info', __FILE__, __LINE__, 'Successful authentication of user "' . $login . '" from ' . $remoteIP . '.');
+        } else {
+            Util::log('warning', __FILE__, __LINE__, 'Failed authentication of user "' . $login . '" from ' . $remoteIP . '.');
         }
 
         return $result;
@@ -183,7 +196,7 @@ class Auth {
                     }
                 }
             } catch (PDOException $e) {
-                Util::fatal($e->getMessage());
+                Util::fatal('Error while testing role ' . $role . ': ' . $e->getMessage());
             }
         }
         return $result;
@@ -201,7 +214,7 @@ class Auth {
             $listRoles = $pdo->prepare('select role from roles');
             $listRoles->execute();
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while listing roles: ' . $e->getMessage());
         }
         $roleArray = $listRoles->fetchAll(PDO::FETCH_ASSOC);
         foreach ($roleArray as $roleEntry) {
@@ -222,7 +235,7 @@ class Auth {
             $listPermissions = $pdo->prepare('select permission from permissions');
             $listPermissions->execute();
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while listing permissions: ' . $e->getMessage());
         }
         $permissionArray = $listPermissions->fetchAll(PDO::FETCH_ASSOC);
         foreach ($permissionArray as $permissionEntry) {
@@ -244,7 +257,7 @@ class Auth {
             $getRoles = $pdo->prepare('select role from `users-roles` where login=?');
             $getRoles->execute(array($login));
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while listing roles of user ' . $login . ': ' . $e->getMessage());
         }
         $rolesResult = $getRoles->fetchAll(PDO::FETCH_ASSOC);
         $roles = array();
@@ -288,7 +301,7 @@ class Auth {
             $getPermissions->execute(array($login));
             $permissionsResult = $getPermissions->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while listing permissions of user ' . $login . ': ' . $e->getMessage());
         }
         $permissions = array();
         foreach ($permissionsResult as $permissionRecord) {
@@ -312,7 +325,7 @@ class Auth {
             $getPermissions->execute(array($role));
             $permissionsResult = $getPermissions->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while listing permissions of role ' . $role . ': ' . $e->getMessage());
         }
         $permissions = array();
         foreach ($permissionsResult as $permissionRecord) {
@@ -338,7 +351,7 @@ class Auth {
                 $description = $getDescription->fetchAll(PDO::FETCH_ASSOC)[0]['description'];
             }
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while getting description of role ' . $role . ': ' . $e->getMessage());
         }
         return $description;
     }

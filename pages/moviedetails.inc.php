@@ -10,7 +10,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,11 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
@@ -152,8 +157,12 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
             echo '<p><a href="?page=getimdb&id_movie=' . $id_movie . '">Lier à une fiche IMDb</a></p>';
             echo '<p><a href="scripts/doabandonimdb.php?id_movie=' . $id_movie . '">Le film n\'a pas de correspondance dans IMDb</a></p>';
             echo "<br /><br />\n";
+        } else {
+            echo '<p><a href="?page=getimdb&id_movie=' . $id_movie . '">Changer la fiche IMDb liée</a></p>';
+            echo '<p><a href="scripts/doremoveimdb.php?id_movie=' . $id_movie . '">Supprimer la correspondance IMDb</p>';
+            echo '<br />';
         }
-        echo '<a href="scripts/dodeletemovie.php?id_movie=' . $id_movie . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ' . $movie->getTitle() . ' ?\')"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
+        echo '<a href="scripts/dodeletemovie.php?id_movie=' . $id_movie . '" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ' . addslashes($movie->getTitle()) . ' ?\')"><font face="red"><strong>!!! - Supprimer le film</strong></font></a>';
     }
     // Fetching corresponding media
     $movie->retrieveMedia();
@@ -171,7 +180,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
 
     echo '<table border="1">'
     . '<tr><th align="center">Cote</th>'
-    . '<th align="center">Type</th>'
+    . '<th align="center">Conteneur</th>'
     . '<th align="center">Dimensions</th>'
     . '<th align="center">Langues audio</th>'
     . '<th align="center">Langues sous-titres</th>'
@@ -183,7 +192,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
         $quality = $medium->getQuality();
         echo '<tr>';
         echo '<td align="center" bgcolor="' . $colour[$quality] . '">' . $medium->getShelfmark() . '</td>';
-        echo '<td align="center" bgcolor="' . $colour[$quality] . '">' . $medium->getType() . '</td>';
+        echo '<td align="center" bgcolor="' . $colour[$quality] . '">' . $medium->getContainer() . '</td>';
         echo '<td align="center" bgcolor="' . $colour[$quality] . '">';
         echo ($medium->getWidth() == '' ? '?' : $medium->getWidth());
         echo '&nbsp;x&nbsp;';
@@ -215,7 +224,7 @@ if ($id_movie_string !== false && $id_movie_string !== NULL && $id_movie_string 
             $getMediaBorrowers->execute(array($medium->getID()));
             $borrowerArray = $getMediaBorrowers->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while getting borrowers for medium ' . $medium->getID() . ': ' . $e->getMessage());
         }
         if (count($borrowerArray) > 0) {
             echo $borrowerArray[0]['borrowername'] . ', le ';

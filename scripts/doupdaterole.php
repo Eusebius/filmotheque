@@ -10,7 +10,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2016 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,11 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+if (__FILE__ !== $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
@@ -43,7 +48,7 @@ if ($role === false || $role === '') {
     Util::fatal('Invalid role name provided: ' . filter_input(INPUT_POST, 'role'));
 }
 if (!in_array($role, Auth::getAllRoles())) {
-    Util::fatal('Invalid role provided: ' . $role);
+    Util::fatal('Invalid role name provided: ' . $role);
 }
 if ($role === 'admin') {
     Util::fatal('The admin role cannot be updated.');
@@ -98,7 +103,7 @@ try {
     $pdo->commit();
 } catch (PDOException $e) {
     $pdo->rollBack();
-    Util::fatal('Impossible to update permissions for role ' . $role . ': ' . $e);
+    Util::fatal('Impossible to update permissions for role ' . $role . ': ' . $e->getMessage());
 }
 
 header('Location:../?page=admin/manageusers.inc.php');

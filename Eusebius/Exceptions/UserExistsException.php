@@ -10,7 +10,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2016 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,6 +30,11 @@
 namespace Eusebius\Exceptions;
 
 use Exception;
+
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 /**
  * Exception thrown when a user already exists, when it should not (at creation time for instance).

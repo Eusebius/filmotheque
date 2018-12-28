@@ -11,7 +11,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2016 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ function generateOptions($prefix) {
         //$getPersons->execute(array($length, $prefix, $prefix));
         $persons = $getPersons->fetchall(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        Util::fatal($e->getMessage());
+        Util::fatal('Error while retrieving person suggestions: ' . $e->getMessage());
     }
     foreach ($persons as $person) {
         echo('<option value="' . htmlspecialchars($person['id_person'])

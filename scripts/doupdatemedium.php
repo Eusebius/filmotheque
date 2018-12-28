@@ -10,7 +10,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,11 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+if (__FILE__ !== $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
@@ -46,10 +51,10 @@ if ($id_medium_string !== NULL && $id_medium_string !== '') {
 
     $medium = Util::getMediumInSession($id_medium);
 
-    $medium->setValues(Util::getPOSTValueOrNull('type', Util::POST_CHECK_STRING), 
+    $medium->setValues(Util::getPOSTValueOrNull('container', Util::POST_CHECK_STRING), 
             Util::getPOSTValueOrNull('height', Util::POST_CHECK_INT), 
-            Util::getPOSTValueOrNull('width', Util::POST_CHECK_INT), 
-            Util::getPOSTValueOrNull('comment', Util::POST_CHECK_STRING), 
+            Util::getPOSTValueOrNull('width', Util::POST_CHECK_INT),
+            Util::getPOSTValueOrNull('comment', Util::POST_FILTER_SANITIZE_FULL_SPECIAL_CHARS),
             Util::getPOSTValueOrNull('shelfmark', Util::POST_CHECK_INT), 
             Util::getPOSTValueOrNull('audio', Util::POST_CHECK_STRING_ARRAY), 
             Util::getPOSTValueOrNull('subs', Util::POST_CHECK_STRING_ARRAY));

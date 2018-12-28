@@ -9,7 +9,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,12 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 require_once('includes/declarations.inc.php');
 require_once('includes/initialization.inc.php');
 
@@ -81,7 +87,7 @@ try {
     $getAllCats->execute();
     $catArray = $getAllCats->fetchall(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    Util::fatal($e->getMessage());
+    Util::fatal('Error while listing categories and shortlists: ' . $e->getMessage());
 }
 
 // Fetch date filter
@@ -262,13 +268,13 @@ if ($minRatingFilter !== NULL || $maxRatingFilter !== NULL) {
     } else {
         $ratingWhere .= ' AND `rating` is null';
     }
-    
+
     if ($minRatingFilter === NULL || $maxRatingFilter === NULL) {
         $ratingWhere .= ' OR ';
     } else {
         $ratingWhere .= ' AND ';
     }
-    
+
     if ($maxRatingFilter !== NULL) {
         $ratingWhere .= "`rating` <= $maxRatingFilter";
     } else {
@@ -324,7 +330,7 @@ try {
     $nMovies = $listMovies->rowCount();
 } catch (PDOException $e) {
     Util::debug($listMovies->queryString);
-    Util::fatal($e->getMessage());
+    Util::fatal('Error while listing movies: ' . $e->getMessage());
 }
 ?>
 
@@ -358,17 +364,16 @@ try {
 
         echo "<tr>\n";
 
-        //TODO get best available quality
         try {
             $getBestQuality->execute(array($movie['id_movie']));
             $quality = $getBestQuality->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while getting best quality for movie ' . $movie->getID() . ': ' . $e->getMessage());
         }
         if ($quality) {
             $quality = $quality['quality'];
         } else {
-            $quality='absent';
+            $quality = 'absent';
         }
 
         echo '<td bgcolor="' . $colour[$quality] . '"><a href="?page=moviedetails&id_movie=' . $movie['id_movie'] . '">'
@@ -382,7 +387,7 @@ try {
             $getCategoriesByMovie->execute(array($movie['id_movie']));
             $categoryArray = $getCategoriesByMovie->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while getting categories for movie ' . $movie->getID . ': ' . $e->getMessage());
         }
         $ncat = count($categoryArray);
         if ($ncat > 0) {
@@ -403,7 +408,7 @@ try {
                 $getShortlistsByMovie->execute(array($movie['id_movie']));
                 $ShortlistArray = $getShortlistsByMovie->fetchall(PDO::FETCH_ASSOC);
             } catch (PDOException $e) {
-                Util::fatal($e->getMessage());
+                Util::fatal('Error while getting shortlists for movie ' . $movie->getID . ': ' . $e->getMessage());
             }
             $nsl = count($ShortlistArray);
             if ($nsl > 0) {

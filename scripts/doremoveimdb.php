@@ -1,12 +1,12 @@
 <?php
 
 /**
- * scripts/docreatemovie.php
+ * scripts/doremoveimdb.php
  * 
  * @author Eusebius <eusebius@eusebius.fr>
- * @since 0.2.4
+ * @since 0.3.3
  * 
- * This is the script taking care of the creation of a movie.
+ * This is the script removing the link between an movie and an IMDb entry.
  */
 /*
   Filmothèque
@@ -34,30 +34,31 @@ if (__FILE__ !== $_SERVER["SCRIPT_FILENAME"]) {
 
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
+
 use Eusebius\Filmotheque\Auth;
 use Eusebius\Filmotheque\Movie;
 use Eusebius\Filmotheque\Util;
+
 Auth::ensurePermission('write');
 
-$title = Util::getPOSTValueOrNull('title', Util::POST_FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$id_movie_string = filter_input(INPUT_GET, 'id_movie', FILTER_SANITIZE_NUMBER_INT);
 
-if ($title !== NULL && $title !== '') {
+if ($id_movie_string !== NULL && $id_movie_string !== '') {
 
-    $movie = new Movie(null);
-    $movie->setValues($title, 
-            Util::getPOSTValueOrNull('year', Util::POST_CHECK_INT), 
-            Util::getPOSTValueOrNull('makers', Util::POST_CHECK_INT_ARRAY), 
-            Util::getPOSTValueOrNull('actors', Util::POST_CHECK_INT_ARRAY), 
-            Util::getPOSTValueOrNull('categories', Util::POST_CHECK_STRING_ARRAY), 
-            Util::getPOSTValueOrNull('shortlists', Util::POST_CHECK_INT_ARRAY), 
-            Util::getPOSTValueOrNull('rating', Util::POST_CHECK_INT), 
-            //TODO check as date
-            Util::getPOSTValueOrNull('lastseen', Util::POST_CHECK_STRING));
+    if ((string) (int) $id_movie_string == $id_movie_string) {
+        $id_movie = (int) $id_movie_string;
+    } else {
+        // Return to home page if movie ID is not a number
+        Util::gotoMainPage();
+    }
 
-    //$movie->dump();die();
-    $_SESSION['movie'] = $movie;
-    header('Location:../?page=moviedetails&id_movie=' . $movie->getID());
+    $movie = new Movie($id_movie);
+    $movie->unsetIMDb();
+    unset($_SESSION['movie']);
+    header('Location:../?page=moviedetails&id_movie=' . $id_movie);
+    die();
+    
 } else {
-    // Return to home page if no movie title is provided
+    // Return to home page if movie ID is not provided
     Util::gotoMainPage();
 }

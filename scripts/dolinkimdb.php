@@ -10,7 +10,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,11 +27,18 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+if (__FILE__ !== $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 require_once('../includes/declarations.inc.php');
 require_once('../includes/initialization.inc.php');
+
 use Eusebius\Filmotheque\Auth;
 use Eusebius\Filmotheque\Movie;
 use Eusebius\Filmotheque\Util;
+
 Auth::ensurePermission('write');
 
 $id_movie_string = Util::getPOSTValueOrNull('id_movie', Util::POST_CHECK_INT);
@@ -56,26 +63,33 @@ if ($id_movie_string !== NULL && $id_movie_string !== '' && $imdb_id !== NULL &&
         $xml = new DomDocument();
         $xml->loadXML($_SESSION['imdbdata'][$id_movie]);
     }
-    $item = $xml->getElementsByTagName('movie')->item(0);
-    $originaltitle = $item->getElementsByTagName('title')->item(0)->nodeValue;
-    $year = $item->getElementsByTagName('year')->item(0)->nodeValue;
-    
-    $movie->setFieldAndWait("imdb_id", $imdb_id);
-    $movie->setFieldAndWait("originaltitle", $originaltitle);
-    $movie->setFieldAndWait("year", $year);
-    $movie->writeAll();
-    
-    Util::resetMovieInSession();
+    $movies = $xml->getElementsByTagName('movie');
+    foreach ($movies as $item) {
+        if ($imdb_id === $item->getElementsByTagName('idIMDB')->item(0)->nodeValue) {
+            $originaltitle = $item->getElementsByTagName('title')->item(0)->nodeValue;
+            $year = $item->getElementsByTagName('year')->item(0)->nodeValue;
 
-    $cover = $item->getElementsByTagName('urlPoster')->item(0);
-    if ($cover != null) {
-        $cover = $cover->nodeValue;
-        $coverdest = $_SESSION['basepath'] . 'covers/' . $movie->getID() . '.jpg';
-        if (!file_exists($coverdest)) {
-            copy($cover, $coverdest);
+            $movie->setFieldAndWait("imdb_id", $imdb_id);
+            $movie->setFieldAndWait("originaltitle", $originaltitle);
+            $movie->setFieldAndWait("year", $year);
+            $movie->writeAll();
+
+            Util::resetMovieInSession();
+
+            $cover = $item->getElementsByTagName('urlPoster')->item(0);
+            if ($cover != null) {
+                $cover = $cover->nodeValue;
+                $coverdest = $_SESSION['basepath'] . 'covers/' . $movie->getID() . '.jpg';
+                if (file_exists($coverdest)) {
+                    unlink($coverdest);
+                }
+                copy($cover, $coverdest);
+            }
+            unset($_SESSION['imdbdata']);
+            header('Location:../?page=moviedetails&id_movie=' . $id_movie);
+            die();
         }
     }
-    header('Location:../?page=moviedetails&id_movie=' . $id_movie);
 } else {
     // Return to home page if either movie ID or imdb ID is not provided
     Util::gotoMainPage();

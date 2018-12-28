@@ -11,7 +11,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,8 +30,14 @@
 
 namespace Eusebius\Filmotheque;
 
-use PDO,    PDOException;
+use PDO,
+    PDOException;
 use DateTime;
+
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 /**
  * Class representing a given movie in the application, and managing its 
@@ -185,6 +191,7 @@ class Movie {
     /**
      * Delete the movie and all associated information from the database.
      * 
+     * @SuppressWarnings(PHPMD.ExitExpression)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
@@ -194,15 +201,14 @@ class Movie {
             try {
                 $delMovie = $conn->prepare('delete from `movies` where `id_movie`=?');
                 if (!$delMovie->execute(array($this->movieID))) {
-                    //What on Earth is this td function?
-                    //Why do we die silently in debug mode?
-                    td($delMovie->errorInfo());
-                    if ($_SESSION['debug']) {
-                        die();
-                    }
+                    Util::fatal('Error while deleting movie ' . $this->movieID . ': ' . $delMovie->errorInfo());
+                }
+                $cover = $_SESSION['basepath'] . 'covers/' . $this->getID() . '.jpg';
+                if (file_exists($cover)) {
+                    unlink($cover);
                 }
             } catch (PDOException $e) {
-                Util::fatal($e->getMessage());
+                Util::fatal('Error while deleting movie ' . $this->movieID . ': ' . $e->getMessage());
             }
         }
     }
@@ -296,18 +302,19 @@ class Movie {
         try {
             $conn->beginTransaction();
 
-            if ($this->rating != null && $this->rating != '') {
+            //if ($this->rating != null && $this->rating != '') {
                 $setLastSeen = $conn->prepare('update experience set lastseen=? where id_movie=?');
                 $setLastSeen->execute(array($this->lastseen, $this->movieID));
+                /*
             } else {
                 $setLastSeen = $conn->prepare('insert into experience (lastseen, id_movie) values(?, ?)');
                 $setLastSeen->execute(array($this->lastseen, $this->movieID));
-            }
+            }*/
 
             $conn->commit();
         } catch (PDOException $e) {
             $conn->rollBack();
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while writing experience data for movie ' . $this->movieID . ': ' . $e->getMessage());
         }
     }
 
@@ -316,6 +323,8 @@ class Movie {
      * includes information contained in secondary tables, such as related 
      * persons, categories, and so on.
      * 
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      * @author Eusebius <eusebius@eusebius.fr>
      * @since 0.2.4
      */
@@ -336,7 +345,7 @@ class Movie {
                 $updateMovies = $conn->prepare('update movies set title=?, year=?, imdb_id=?, originaltitle=? where id_movie=?');
                 $result = $updateMovies->execute(array($this->title, ($this->year != '' ? $this->year : null), ($this->imdbID != '' ? $this->imdbID : null), ($this->originaltitle != '' ? $this->originaltitle : null), $this->movieID));
                 if (!$result) {
-                    Util::fatal($updateMovies->errorInfo());
+                    Util::fatal('Error while updating data for movie ' . $this->movieID . ': ' . $updateMovies->errorInfo());
                 }
             }
 
@@ -377,7 +386,7 @@ class Movie {
             $conn->commit();
         } catch (PDOException $e) {
             $conn->rollBack();
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while writing all data for movie ' . $this->movieID . ': ' . $e->getMessage());
         }
     }
 
@@ -450,11 +459,11 @@ class Movie {
      * @since 0.2.4
      */
     public function getMakers() {
-        $r = array();
+        $movieMakers = array();
         foreach ($this->makers as $maker) {
-            array_push($r, $maker);
+            array_push($movieMakers, $maker);
         }
-        return $r;
+        return $movieMakers;
     }
 
     /**
@@ -560,6 +569,23 @@ class Movie {
         }
         return $result;
     }
+    
+    /**
+     * Removes the link with an IMDb entry (and immediately commits to the database).
+     * 
+     * @author Eusebius <eusebius@eusebius.fr>
+     * @since 0.3.3
+     */
+    public function unsetIMDb() {
+        $this->imdbID = '';
+        $conn = Util::getDbConnection();
+        try {
+            $unsetIMDb = $conn->prepare("update movies set `imdb_id`=NULL where `id_movie`=?");
+            $unsetIMDb->execute(array($this->movieID));
+        } catch (PDOException $e) {
+            Util::fatal('Error while unsetting IMDb link for movie ' . $this->movieID . ': ' . $e->getMessage());
+        }
+    }
 
     /**
      * Retrieve the names ({@link makers}) and IDs ({@link makersID}) of the 
@@ -577,7 +603,7 @@ class Movie {
             $getMakers->execute(array($this->movieID));
             $makerArray = $getMakers->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while retrieving maker data for movie ' . $this->movieID . ': ' . $e->getMessage());
         }
         foreach ($makerArray as $maker) {
             array_push($this->makers, $maker['name']);
@@ -601,7 +627,7 @@ class Movie {
             $getActors->execute(array($this->movieID));
             $actorArray = $getActors->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while retrieving actor data for movie ' . $this->movieID . ': ' . $e->getMessage());
         }
         foreach ($actorArray as $actor) {
             array_push($this->actors, $actor['name']);
@@ -624,7 +650,7 @@ class Movie {
             $getCategories->execute(array($this->movieID));
             $categoryArray = $getCategories->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while retrieving categories for movie ' . $this->movieID . ': ' . $e->getMessage());
         }
         foreach ($categoryArray as $category) {
             array_push($this->categories, $category['category']);
@@ -647,7 +673,7 @@ class Movie {
             $getShortlists->execute(array($this->movieID));
             $shortlistArray = $getShortlists->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while retrieving shortlists for movie ' . $this->movieID . ': ' . $e->getMessage());
         }
         foreach ($shortlistArray as $shortlist) {
             array_push($this->shortlists, $shortlist['listname']);
@@ -673,21 +699,14 @@ class Movie {
 
             $getMovie->execute(array($this->movieID));
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while retrieving all data for movie ' . $this->movieID . ': ' . $e->getMessage());
         }
         $nMovies = $getMovie->rowCount();
         if ($nMovies == 0) {
-            Util::fatal(
-                    "Erreur inattendue : aucun film ne correspond à l'ID {$this->movieID}.<br /><br />"
-                    . '<a href=".">Retour à la page principale</a>'
-            );
+            Util::fatal('Error while retrieving all data for movie ' . $this->movieID . ': no corresponding movie in database');
         }
         if ($nMovies > 1) {
-            Util::fatal(
-                    "Erreur inattendue : plusieurs films correspondent à l'ID"
-                    . "{$this->movieID}.<br /><br />"
-                    . '<a href=".">Retour à la page principale</a>'
-            );
+            Util::fatal('Error while retrieving all data for movie ' . $this->movieID . ': more than one corresponding movie in database');
         }
 
         $movieArray = $getMovie->fetchall(PDO::FETCH_ASSOC);
@@ -727,7 +746,7 @@ class Movie {
             $getMedia->execute(array($this->movieID));
             $mediaArray = $getMedia->fetchall(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            Util::fatal($e->getMessage());
+            Util::fatal('Error while retrieving media for movie ' . $this->movieID . ': ' . $e->getMessage());
         }
         foreach ($mediaArray as $mediumArray) {
             $id_medium = $mediumArray['id_medium'];

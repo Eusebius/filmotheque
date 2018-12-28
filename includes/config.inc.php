@@ -12,7 +12,7 @@
  */
 /*
   Filmothèque
-  Copyright (C) 2012-2015 Eusebius (eusebius@eusebius.fr)
+  Copyright (C) 2012-2018 Eusebius (eusebius@eusebius.fr)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,11 @@
   with this program; if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
 
 /**
  * Configuration array
@@ -55,7 +60,7 @@ $_SESSION['config']['db_prefix'] = '';
  * Current software version
  * *DON'T TOUCH THIS*
  */
-$_SESSION['config']['version'] = "0.3.2";
+$_SESSION['config']['version'] = "0.3.3";
 
 /**
  *  Assigned background colours for each medium quality
