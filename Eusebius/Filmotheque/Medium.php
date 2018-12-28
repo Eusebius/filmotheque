@@ -32,6 +32,11 @@ namespace Eusebius\Filmotheque;
 
 use PDO, PDOException;
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 /**
  * Class representing a given medium in the application, and managing its 
  * persistency in the database.

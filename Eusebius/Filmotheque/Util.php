@@ -33,6 +33,11 @@ use PDO,
     PDOException;
 use DateTime;
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 /**
  * Class providing static utility functions.
  *

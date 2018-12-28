@@ -29,6 +29,11 @@
 
 use Eusebius\Filmotheque\Util;
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 //Check whether we are in HTTPS or not
 $secure = Util::isHTTPS();
 

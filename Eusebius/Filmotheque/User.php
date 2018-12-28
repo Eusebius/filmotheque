@@ -36,6 +36,11 @@ use PDO,
     Eusebius\Exceptions\UserExistsException,
     Eusebius\Exceptions\UnauthorizedException;
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 //TODO enforce authorizations on this class's methods
 
 /**

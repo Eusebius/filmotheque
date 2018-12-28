@@ -31,6 +31,11 @@ namespace Eusebius\Exceptions;
 
 use Exception;
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 //TODO use this exception more extensively in the application
 
 /**

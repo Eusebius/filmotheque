@@ -33,6 +33,11 @@ namespace Eusebius\Filmotheque;
 use PDO,
     PDOException;
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 /**
  * Class providing static authentication and access control functions.
  *

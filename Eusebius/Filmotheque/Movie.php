@@ -34,6 +34,11 @@ use PDO,
     PDOException;
 use DateTime;
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 /**
  * Class representing a given movie in the application, and managing its 
  * persistency in the database.

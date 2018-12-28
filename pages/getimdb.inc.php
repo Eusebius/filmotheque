@@ -26,6 +26,11 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 //TODO manage exceptions when there is no Internet connectivity
 
 require_once('includes/declarations.inc.php');

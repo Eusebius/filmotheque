@@ -31,6 +31,11 @@ namespace Eusebius\Exceptions;
 
 use Exception;
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 /**
  * Exception thrown when a user already exists, when it should not (at creation time for instance).
  *

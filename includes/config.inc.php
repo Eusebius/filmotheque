@@ -29,6 +29,11 @@
   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+if (__FILE__ === $_SERVER["SCRIPT_FILENAME"]) {
+    header('Location: ../');
+    die();
+}
+
 /**
  * Configuration array
  * *DON'T TOUCH THIS*
