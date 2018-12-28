@@ -198,6 +198,10 @@ class Movie {
                 if (!$delMovie->execute(array($this->movieID))) {
                     Util::fatal('Error while deleting movie ' . $this->movieID . ': ' . $delMovie->errorInfo());
                 }
+                $cover = $_SESSION['basepath'] . 'covers/' . $this->getID() . '.jpg';
+                if (file_exists($cover)) {
+                    unlink($cover);
+                }
             } catch (PDOException $e) {
                 Util::fatal('Error while deleting movie ' . $this->movieID . ': ' . $e->getMessage());
             }
