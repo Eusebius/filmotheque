@@ -1,0 +1,66 @@
+/**
+ * style.css
+ * 
+ * @author Eusebius <eusebius@eusebius.fr>
+ * @since 0.3.4
+ * 
+ * This is an additional stylesheet for the application.
+ */
+/*
+    Filmothèque
+    Copyright (C) 2012-2019 Eusebius (eusebius@eusebius.fr)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+ 
+/* Adapted from https://bootstrapious.com/tutorial/sidebar/index2.html */
+ 
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+#sidebar {
+    width: 250px;
+    margin-top: 20px;
+    margin-left: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 999;
+    /* background: #7386D5; */
+    /* color: #fff; */
+    transition: all 0.3s;
+}
+
+
+/* ---------------------------------------------------
+    CONTENT STYLE
+----------------------------------------------------- */
+
+#content {
+    width: calc(100% - 250px);
+    padding: 40px;
+    min-height: 100vh;
+    transition: all 0.3s;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#content.active {
+    width: 100%;
+}

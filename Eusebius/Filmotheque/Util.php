@@ -203,9 +203,14 @@ class Util {
             Util::fatal('The application wants to check the rights on the "covers" directory, but the basepath is not recorded in the session.');
         }
         if (!is_writable($_SESSION['basepath'] . '/covers')) {
-            echo '<center><strong><font color="red">Erreur de '
-            . 'configuration&nbsp;: le répertoire "covers" doit être accessible'
-            . 'en écriture.</font></strong></center>';
+            ?>
+            
+                <div class="bs-component">
+                    <div class="alert alert-warning">
+                        <center><strong>Erreur de configuration&nbsp;:</strong> Le répertoire "covers" doit être accessible en écriture.</center>
+                    </div>
+                </div>
+            <?php
         }
     }
 
@@ -223,9 +228,14 @@ class Util {
                 . 'password=\'$2y$10$XTOHjbXWky4JHVUaanvWLuJfNvV58IRd1bUuGQp3XicPgJQmJSNDe\'');
 
         if ($pwRes->rowCount() > 0) {
-            echo '<center><strong><font color="red">Erreur de '
-            . 'configuration&nbsp;: le mot de passe du compte admin n\'a pas '
-            . 'été modifié.</font></strong></center>';
+            ?>
+            
+                <div class="bs-component">
+                    <div class="alert alert-warning">
+                        <center><strong>Erreur de configuration&nbsp;:</strong> Le mot de passe du compte admin n'a pas été modifié.</center>
+                    </div>
+                </div>
+            <?php
         }
     }
 

@@ -39,52 +39,71 @@ use Eusebius\Filmotheque\Auth;
 Auth::ensureAuthenticated();
 ?>
 
-<hr />
-<ul>
-    <?php
-    if (Auth::hasPermission('read')) {
-        ?>
-        <li><a href="?page=listmovies">Liste des films</a></li>
+
+
+<div class="bs-component">
+    <div class="btn-group-vertical" style="width: 100%;">
         <?php
-    }
-    if (Auth::hasPermission('write')) {
+        if (Auth::hasPermission('read')) {
+            ?>
+            <a class="btn btn-primary" href="?page=listmovies" role="button">Liste des films</a>
+            <?php
+        }
+        if (Auth::hasPermission('write')) {
+            ?>
+            <a class="btn btn-primary" href="?page=addmovie" role="button">Ajouter un nouveau film</a>
+            <?php
+        }
         ?>
-        <li><a href="?page=addmovie">Ajouter un nouveau film</a></li>
-        <?php
-    }
-    ?>
-</ul>
-<ul>
-    <li><a href="scripts/disconnect.php">Se déconnecter</a></li>
-</ul>
+    </div>
+</div>
 
 <br />
-<br />
-<hr />
-<h3>Qualité des supports</h3>
-<ul>
-    <?php
-    foreach($colour as $quality=>$col) {
-        echo '<li><div style="background-color:' . $col . ';">';
-        echo $quality;
-        echo '</div></li>';
-    }
-    ?>
-</ul>
-<hr />
+
+<div class="card text-white bg-secondary mb-3" style="max-width: 20rem;">
+  <div class="card-header text-center">Qualité des supports</div>
+  <div class="card-body">
+    <table class="table table-hover">
+       <tbody>
+<?php
+            foreach ($colour as $quality => $col) {
+                echo '<tr class="table-dark"><td style="background-color:' . $col . ';">';
+                echo $quality;
+                echo '</td></tr>';
+            }
+?>
+       </tbody>
+    </table>
+  </div>
+</div>
+
 <?php
 if (Auth::hasRole('admin')) {
     ?>
-    <h3>[Administration]</h3>
-    <ul>
-        <li><a href="?page=admin/manageusers.inc.php">Gestion des utilisateurs</a></li>
-    </ul>
-    <hr />
+    <div class="bs-component">
+        <div class="btn-group-vertical" style="width: 100%;">
+            <button class="btn btn-info" disabled>Administration</button>
+            <a class="btn btn-info" href="?page=admin/manageusers.inc.php" role="button">Gestion des utilisateurs</a>
+        </div>
+    </div>
+
     <br />
     <?php
 }
 ?>
-<p>
-    Filmothèque by Eusebius<br />
-    version <?php echo $_SESSION['config']['version']; ?>
-</p>
+
+<div class="bs-component">
+    <div class="btn-group-vertical" style="width: 100%;">
+        <a class="btn btn-warning" href="scripts/disconnect.php" role="button">Se déconnecter</a>
+    </div>
+</div>
+
+<br />
+
+<div class="card text-light bg-secondary mb-3" style="max-width: 20rem;">
+  <div class="card-body text-center">
+      <a href="https://github.com/Eusebius/filmotheque">Filmothèque by Eusebius</a>
+      <br />
+      version <?php echo $_SESSION['config']['version'];?>
+  </div>
+</div>
